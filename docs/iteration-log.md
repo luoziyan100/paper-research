@@ -391,3 +391,37 @@
 - `python3 -m unittest discover -s tests` passed with 26 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter12 python3 -m compileall -q paper_research` passed.
 - `paper_research/workflow.py` is 1,065 lines, still below the 1,100-line structure threshold.
+
+## Iteration 13 - 2026-05-04 08:09 PDT
+
+### Current Problems
+
+- `paper_research/workflow.py` had grown back to 1,065 lines after search and benchmark improvements.
+- Benchmark search mixed local search, web parsing, built-in fallback reports, and workflow orchestration in one module.
+- Future search-quality work would be harder to isolate if benchmark code stayed inside the main workflow file.
+
+### Planned Changes
+
+- Add a structure test requiring a dedicated `paper_research.benchmark` module.
+- Tighten the `workflow.py` maintainability threshold from 1,100 lines to 950 lines.
+- Move benchmark search code and helper functions into the new module while preserving `from paper_research.workflow import BenchmarkSearchAgent` compatibility.
+
+### Changes Made
+
+- Added `paper_research/benchmark.py`.
+- Moved `BenchmarkSearchAgent`, local benchmark scoring, web result parsing, fallback benchmark generation, keyword extraction, and benchmark strength inference into the new module.
+- Updated `workflow.py` to import and re-export `BenchmarkSearchAgent`.
+- Removed benchmark-only URL/HTML parsing imports from `workflow.py`.
+- Tightened the structure test threshold to 950 lines and added a direct import check for `paper_research.benchmark`.
+
+### Verification After Changes
+
+- Red tests first failed because `paper_research.benchmark` did not exist and `workflow.py` had 1,065 lines.
+- Target tests passed:
+  - `python3 -m unittest tests.test_structure.CodeStructureTest`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_builtin_benchmark_fallback_returns_diverse_report_archetypes tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 27 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter13 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter13_final` produced JSONL and DOCX outputs.
+- `git diff --check` passed after removing a trailing blank line.
+- `paper_research/workflow.py` is now 737 lines; `paper_research/benchmark.py` is 339 lines.
