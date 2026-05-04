@@ -14,6 +14,7 @@ from urllib.request import Request, urlopen
 
 from paper_research.export import write_docx
 from paper_research.models import BenchmarkReport, ContinuousRunConfig, CriterionScore, CriticReview, ResearchReport, RoundResult, Rubric, RubricCriterion, Scorecard, WorkflowConfig, WorkflowResult
+from paper_research.scoring import critic_mentions_reproducibility, low_score_summary
 
 
 class BenchmarkSearchAgent:
@@ -193,6 +194,7 @@ class ReportWriterAgent:
         paper_text: str,
         benchmark_reports: Sequence[BenchmarkReport],
         previous_report: Optional[ResearchReport],
+        prior_scorecard: Optional[Scorecard],
         round_number: int,
         language: str = "en",
     ) -> ResearchReport:
@@ -266,9 +268,11 @@ class ReportWriterAgent:
                 ),
             }
             if previous_report:
+                low_score_text = low_score_summary(prior_scorecard, language)
                 sections["本轮改进"] = (
                     "本轮结合上一轮报告，进一步关注缺失证据、评分标准过拟合风险，"
                     "以及评分标准本身是否公平。"
+                    f"上一轮低分项：{low_score_text}。"
                 )
             return ResearchReport(title=title, sections=sections)
 
@@ -304,10 +308,12 @@ class ReportWriterAgent:
             ),
         }
         if previous_report:
+            low_score_text = low_score_summary(prior_scorecard, language)
             sections["Round Refinement"] = (
                 "This round incorporates the previous report by adding sharper attention "
                 "to missing evidence, rubric overfitting risk, and whether the scoring "
-                "standard itself is fair."
+                "standard itself is fair. "
+                f"Prior low-score items: {low_score_text}."
             )
         return ResearchReport(title=title, sections=sections)
 
@@ -349,12 +355,12 @@ class RubricBuilderAgent:
                 RubricCriterion(
                     name=(
                         "可复现性与证据引用"
-                        if _critic_mentions_reproducibility(prior_critic_review)
+                        if critic_mentions_reproducibility(prior_critic_review)
                         else "研究价值"
                     ),
                     description=(
                         "要求报告引用具体论文证据，并说明复现实验、数据、baseline 和评估缺口。"
-                        if _critic_mentions_reproducibility(prior_critic_review)
+                        if critic_mentions_reproducibility(prior_critic_review)
                         else "产出可执行的后续问题、复现实验和决策建议。"
                     ),
                     max_points=20,
@@ -555,12 +561,14 @@ def run_research_workflow(paper_text: str, config: WorkflowConfig) -> WorkflowRe
     rounds: List[RoundResult] = []
     previous_report: Optional[ResearchReport] = None
     prior_critic_review: Optional[CriticReview] = None
+    prior_scorecard: Optional[Scorecard] = None
     for round_number in range(1, config.rounds + 1):
         benchmark_reports = search_agent.search(paper_text, round_number, previous_report)
         report = report_agent.write(
             paper_text=paper_text,
             benchmark_reports=benchmark_reports,
             previous_report=previous_report,
+            prior_scorecard=prior_scorecard,
             round_number=round_number,
             language=config.language,
         )
@@ -591,6 +599,7 @@ def run_research_workflow(paper_text: str, config: WorkflowConfig) -> WorkflowRe
         _append_jsonl(jsonl_path, round_result)
         previous_report = report
         prior_critic_review = critic_review
+        prior_scorecard = scorecard
 
     write_docx(docx_path, rounds, config.language)
     return WorkflowResult(rounds=rounds, jsonl_path=jsonl_path, docx_path=docx_path)
@@ -639,6 +648,7 @@ def run_continuous_workflow(
 
     previous_report = rounds[-1].report if rounds else None
     prior_critic_review = rounds[-1].critic_review if rounds else None
+    prior_scorecard = rounds[-1].scorecard if rounds else None
     deadline = clock() + continuous_config.duration_seconds
     new_rounds = 0
 
@@ -654,6 +664,7 @@ def run_continuous_workflow(
             paper_text=paper_text,
             benchmark_reports=benchmark_reports,
             previous_report=previous_report,
+            prior_scorecard=prior_scorecard,
             round_number=round_number,
             language=config.language,
         )
@@ -685,6 +696,7 @@ def run_continuous_workflow(
         write_docx(docx_path, rounds, config.language)
         previous_report = report
         prior_critic_review = critic_review
+        prior_scorecard = scorecard
         new_rounds += 1
 
         if continuous_config.max_rounds is not None and new_rounds >= continuous_config.max_rounds:
@@ -933,13 +945,6 @@ def _benchmark_source_type(source: str, language: str) -> str:
     if source.startswith("http://") or source.startswith("https://"):
         return "网页搜索" if language == "zh" else "web search"
     return "本地 benchmark" if language == "zh" else "local benchmark"
-
-
-def _critic_mentions_reproducibility(critic_review: Optional[CriticReview]) -> bool:
-    if not critic_review:
-        return False
-    combined = " ".join(critic_review.issues + critic_review.recommendations).lower()
-    return "reproduc" in combined or "可复现" in combined or "证据引用" in combined
 
 
 def _find_evidence_snippet(report: ResearchReport, keywords: Sequence[str]) -> str:

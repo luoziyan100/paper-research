@@ -160,3 +160,31 @@
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter5 python3 -m compileall -q paper_research` passed.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter5_final` produced JSONL and DOCX outputs.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 0` exited with code 2 and printed `--rounds must be at least 1`.
+
+## Iteration 6 - 2026-05-04 07:45 PDT
+
+### Current Problems
+
+- Round 2 reports said they incorporated the previous report, but did not identify the previous round's low-scoring rubric items.
+- This made the score-report-critique loop less actionable because later reports could ignore the concrete weaknesses found by scoring.
+
+### Planned Changes
+
+- Add a test requiring the second Chinese report to mention prior low-score items.
+- Pass prior scorecards into report writing.
+- Keep `workflow.py` under the structure threshold by extracting scoring helpers if needed.
+
+### Changes Made
+
+- `ReportWriterAgent.write(...)` now accepts `prior_scorecard`.
+- Round 2+ report refinement sections include `上一轮低分项`.
+- Added `paper_research/scoring.py` for scoring helper functions.
+- Kept `paper_research/workflow.py` under the 1,100-line threshold after the new feature.
+
+### Verification After Changes
+
+- `python3 -m unittest discover -s tests` passed with 21 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter6_final python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter6_final` produced JSONL and DOCX outputs.
+- Final output inspected from `/tmp/paper_research_iter6_final/research_rounds.jsonl`.
+- Round 2 `本轮改进` now includes `上一轮低分项：问题定义 12/20；限制与失败模式 12/20`.

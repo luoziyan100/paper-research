@@ -92,6 +92,19 @@ class ResearchWorkflowTest(unittest.TestCase):
                 second_round.rubric.source_notes.lower(),
             )
 
+    def test_second_round_report_uses_prior_low_score_items(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp), language="zh"),
+            )
+
+            refinement = result.rounds[1].report.sections["本轮改进"]
+
+            self.assertIn("上一轮低分项", refinement)
+            self.assertIn("问题定义", refinement)
+            self.assertIn("限制与失败模式", refinement)
+
     def test_searches_local_benchmark_reports_when_provided(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
