@@ -1213,3 +1213,31 @@
 - `python3 -m unittest discover -s tests` passed with 49 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter40 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 41 - 2026-05-04 09:30 PDT
+
+### Current Problems
+
+- Chinese heading parsing handled `一、摘要`, but not whitespace-numbered headings such as `一 摘要` or `2 方法`.
+- Papers using that style fell back to generic method and experiment summaries.
+
+### Planned Changes
+
+- Add a Chinese fixture with whitespace-numbered headings.
+- Extend heading normalization for Chinese numerals and Arabic digits followed by spaces.
+- Preserve existing numbered, parenthesized, and inline heading behavior.
+
+### Changes Made
+
+- Added `SPACE_NUMBERED_CHINESE_PAPER_TEXT`.
+- Added `test_space_numbered_chinese_headings_are_parsed`.
+- `normalize_chinese_heading(...)` now strips Chinese-numeral and digit prefixes followed by whitespace.
+
+### Verification After Changes
+
+- Red test first failed because `方法与证据` did not include `多角色流程`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_space_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_inline_chinese_headings_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 50 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter41 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
