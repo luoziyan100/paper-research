@@ -580,6 +580,8 @@ def run_continuous_workflow(
 
         if continuous_config.max_rounds is not None and new_rounds >= continuous_config.max_rounds:
             break
+        if continuous_config.max_rounds is None and clock() >= deadline:
+            break
         sleeper(continuous_config.sleep_seconds)
 
     if not docx_path.exists():

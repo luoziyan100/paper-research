@@ -1072,3 +1072,31 @@
 - `python3 -m unittest discover -s tests` passed with 44 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter35 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 36 - 2026-05-04 09:21 PDT
+
+### Current Problems
+
+- Continuous mode slept once more after the duration deadline had already been reached.
+- A zero-hour dry run still waited for `sleep_seconds`, and a 120-second fake run advanced the clock to 180 seconds.
+
+### Planned Changes
+
+- Add duration-boundary tests around the post-round sleep point.
+- Keep the guarantee that continuous mode runs at least one round.
+- Stop before sleeping when the deadline is already reached.
+
+### Changes Made
+
+- Added `test_continuous_runner_does_not_sleep_after_duration_deadline`.
+- Tightened `test_continuous_runner_uses_duration_without_waiting_in_tests` to assert no oversleep.
+- `run_continuous_workflow(...)` now checks `clock() >= deadline` before calling `sleeper(...)`.
+
+### Verification After Changes
+
+- Red tests first failed with fake clock values `60.0` and `180.0`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_does_not_sleep_after_duration_deadline tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_uses_duration_without_waiting_in_tests tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_resumes_and_keeps_appending_rounds`
+- `python3 -m unittest discover -s tests` passed with 45 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter36 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

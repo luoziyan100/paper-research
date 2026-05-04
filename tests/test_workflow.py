@@ -761,7 +761,34 @@ class ResearchWorkflowTest(unittest.TestCase):
             )
 
             self.assertEqual([round.round_number for round in result.rounds], [1, 2, 3])
-            self.assertEqual(fake_clock.current, 180)
+            self.assertEqual(fake_clock.current, 120)
+
+    def test_continuous_runner_does_not_sleep_after_duration_deadline(self):
+        class FakeClock:
+            def __init__(self) -> None:
+                self.current = 0.0
+
+            def monotonic(self) -> float:
+                return self.current
+
+            def sleep(self, seconds: float) -> None:
+                self.current += seconds
+
+        fake_clock = FakeClock()
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_continuous_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=0,
+                    sleep_seconds=60,
+                ),
+                clock=fake_clock.monotonic,
+                sleeper=fake_clock.sleep,
+            )
+
+            self.assertEqual([round.round_number for round in result.rounds], [1])
+            self.assertEqual(fake_clock.current, 0)
 
 
 if __name__ == "__main__":
