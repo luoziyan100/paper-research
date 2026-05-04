@@ -166,3 +166,12 @@ def join_phrases(text: str) -> str:
         if item:
             phrases.append(item)
     return "；".join(phrases)
+
+
+def join_english_phrases(text: str) -> str:
+    phrases = []
+    for raw_item in text.split("; "):
+        item = raw_item.strip().rstrip(".;")
+        if item:
+            phrases.append(item)
+    return "; ".join(phrases)

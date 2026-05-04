@@ -790,3 +790,32 @@
   - JSONL report sections include `Claim-Evidence Ledger` and `Key Assumptions and Verification Gaps`.
   - DOCX `word/document.xml` includes both section headings.
   - `workflow.py` remains under the 950-line threshold at 792 lines.
+
+## Iteration 26 - 2026-05-04 08:54 PDT
+
+### Current Problems
+
+- English `Benchmark-Informed Improvements` text could contain punctuation artifacts such as `.;` and `..`.
+- The issue came from joining benchmark strengths that already ended in periods, then adding a final period.
+
+### Planned Changes
+
+- Add a regression test for clean English benchmark-improvement punctuation.
+- Preserve the existing Chinese punctuation cleanup.
+- Add a small English phrase joiner that strips trailing punctuation before joining.
+
+### Changes Made
+
+- Added `join_english_phrases(...)`.
+- English benchmark-improvement sections now strip trailing periods/semicolons before joining reusable traits.
+- Added test coverage against `..` and `.;`.
+
+### Verification After Changes
+
+- Red test first failed on `Turns critique into testable next-round research questions..`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_benchmark_improvement_has_clean_punctuation tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_has_clean_punctuation`
+- `python3 -m unittest discover -s tests` passed with 35 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter26 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 1 --output-dir /tmp/paper_research_iter26_final` produced JSONL and DOCX outputs.
+- Output inspection confirmed the English benchmark-improvement section ends cleanly with a single period and no `.;`.

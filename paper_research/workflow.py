@@ -12,7 +12,7 @@ from paper_research.benchmark import BenchmarkSearchAgent
 from paper_research.export import write_docx
 from paper_research.models import BenchmarkReport, ContinuousRunConfig, CriterionScore, CriticReview, ResearchReport, RoundResult, Rubric, RubricCriterion, Scorecard, WorkflowConfig, WorkflowResult
 from paper_research.scoring import critic_mentions_reproducibility, low_score_summary
-from paper_research.text import compact as _compact, first_sentences as _first_sentences, join_phrases as _join_phrases, paper_title as _paper_title, parse_sections as _parse_sections, problem_statement as _problem_statement, zh_evidence_summary as _zh_evidence_summary, zh_limitation_summary as _zh_limitation_summary, zh_method_summary as _zh_method_summary, zh_problem_summary as _zh_problem_summary
+from paper_research.text import compact as _compact, first_sentences as _first_sentences, join_english_phrases as _join_english_phrases, join_phrases as _join_phrases, paper_title as _paper_title, parse_sections as _parse_sections, problem_statement as _problem_statement, zh_evidence_summary as _zh_evidence_summary, zh_limitation_summary as _zh_limitation_summary, zh_method_summary as _zh_method_summary, zh_problem_summary as _zh_problem_summary
 
 
 class ReportWriterAgent:
@@ -135,7 +135,7 @@ class ReportWriterAgent:
             ),
             "Benchmark-Informed Improvements": (
                 f"Round {round_number} searched benchmark reports first. Reusable traits: "
-                f"{benchmark_lessons or 'clear claims, evidence, limitations, and next steps'}."
+                f"{_join_english_phrases(benchmark_lessons) or 'clear claims, evidence, limitations, and next steps'}."
             ),
             "Benchmark Quality": _benchmark_quality_summary(benchmark_reports, language),
             "Key Assumptions and Verification Gaps": (

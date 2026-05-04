@@ -409,6 +409,18 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("。。", benchmark_section)
             self.assertNotIn(".。", benchmark_section)
 
+    def test_english_benchmark_improvement_has_clean_punctuation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            benchmark_section = result.rounds[0].report.sections["Benchmark-Informed Improvements"]
+
+            self.assertNotIn("..", benchmark_section)
+            self.assertNotIn(".;", benchmark_section)
+
     def test_chinese_paper_headings_and_title_are_parsed(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
