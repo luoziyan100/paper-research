@@ -182,7 +182,11 @@ class BenchmarkSearchAgent:
         round_number: int,
     ) -> List[BenchmarkReport]:
         title = _paper_title(paper_text) or "paper"
-        query = quote_plus(f"{title} excellent research report paper analysis")
+        if self.language == "zh":
+            query_text = f"{title} 优秀 论文 研究报告 分析"
+        else:
+            query_text = f"{title} excellent research report paper analysis"
+        query = quote_plus(query_text)
         url = f"https://duckduckgo.com/html/?q={query}"
         try:
             html = self.web_fetcher(url)

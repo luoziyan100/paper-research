@@ -906,3 +906,31 @@
 - `python3 -m unittest discover -s tests` passed with 39 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter29 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 30 - 2026-05-04 09:06 PDT
+
+### Current Problems
+
+- Chinese web benchmark search still used English query terms: `excellent research report paper analysis`.
+- This made Chinese mode less likely to retrieve Chinese benchmark reports.
+
+### Planned Changes
+
+- Add a web-search test that captures and decodes the DuckDuckGo query URL in Chinese mode.
+- Require Chinese query terms such as `优秀`, `论文`, and `研究报告`.
+- Preserve the English web-search query behavior.
+
+### Changes Made
+
+- `_search_web_benchmarks(...)` now builds language-specific query text.
+- Chinese query text now uses `{title} 优秀 论文 研究报告 分析`.
+- English query text still uses `{title} excellent research report paper analysis`.
+
+### Verification After Changes
+
+- Red test first failed because the decoded query was `多智能体论文审查系统 excellent research report paper analysis`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_uses_chinese_query_terms tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 40 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter30 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

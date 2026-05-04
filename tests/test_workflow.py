@@ -3,6 +3,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from urllib.parse import unquote_plus
 
 from paper_research.workflow import (
     BenchmarkSearchAgent,
@@ -290,6 +291,36 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("Connects claims to experimental evidence.", results[0].strengths)
         self.assertEqual(results[0].source_type, "web")
         self.assertIn("DuckDuckGo query", results[0].search_note)
+
+    def test_chinese_web_search_uses_chinese_query_terms(self):
+        captured_urls = []
+        html = """
+        <a class="result__a" href="https://example.com/zh-report">
+          中文优秀论文研究报告
+        </a>
+        <a class="result__snippet">
+          这份报告连接论文证据、限制和后续研究。
+        </a>
+        """
+
+        def fetcher(url: str) -> str:
+            captured_urls.append(url)
+            return html
+
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=fetcher,
+            language="zh",
+        )
+
+        results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
+
+        decoded_query = unquote_plus(captured_urls[0])
+        self.assertIn("优秀", decoded_query)
+        self.assertIn("论文", decoded_query)
+        self.assertIn("研究报告", decoded_query)
+        self.assertNotIn("excellent research report", decoded_query)
+        self.assertEqual(results[0].source_type, "web")
 
     def test_builtin_benchmark_fallback_returns_diverse_report_archetypes(self):
         agent = BenchmarkSearchAgent(language="zh")
