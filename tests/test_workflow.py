@@ -138,6 +138,34 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("Excellent Paper Research Report", results[0].title)
         self.assertIn("Connects claims to experimental evidence.", results[0].strengths)
 
+    def test_builtin_benchmark_fallback_returns_diverse_report_archetypes(self):
+        agent = BenchmarkSearchAgent(language="zh")
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+        sources = {result.source for result in results}
+
+        self.assertGreaterEqual(len(results), 3)
+        self.assertIn("built-in://claim-evidence-round-1", sources)
+        self.assertIn("built-in://methodology-round-1", sources)
+        self.assertIn("built-in://limitations-round-1", sources)
+
+    def test_chinese_report_records_benchmark_source_quality(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            section = result.rounds[0].report.sections["Benchmark 对照质量"]
+
+            self.assertIn("来源数量：3", section)
+            self.assertIn("内置 fallback", section)
+            self.assertIn("主张-证据", section)
+
+            with zipfile.ZipFile(result.docx_path) as archive:
+                document_xml = archive.read("word/document.xml").decode("utf-8")
+            self.assertIn("Benchmark 对照质量", document_xml)
+
     def test_can_generate_chinese_report_and_docx(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

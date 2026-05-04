@@ -149,34 +149,74 @@ class BenchmarkSearchAgent:
         if self.language == "zh":
             return [
                 BenchmarkReport(
-                    title=f"{theme} 的优秀研究报告模式",
-                    source=f"built-in://benchmark-round-{round_number}",
+                    title=f"{theme} 的主张-证据型优秀报告模式",
+                    source=f"built-in://claim-evidence-round-{round_number}",
                     summary=(
-                        "高质量研究报告会说明问题、拆解核心技术贡献、检查证据是否支撑主张，"
-                        "并在提出后续研究前明确限制。"
-                        + refinement
+                        "主张-证据型报告会先列出论文核心主张，再逐条检查方法、实验和限制是否支撑这些主张。"
                     ),
                     strengths=[
                         "区分论文原始主张和评审者解释。",
                         "使用方法与实验中的证据，而不只依赖摘要。",
+                    ],
+                ),
+                BenchmarkReport(
+                    title=f"{theme} 的方法审计型优秀报告模式",
+                    source=f"built-in://methodology-round-{round_number}",
+                    summary="方法审计型报告关注研究设计、baseline、评估指标、消融实验和可复现设置。",
+                    strengths=[
+                        "检查方法选择是否匹配论文目标。",
+                        "追问 baseline、数据和消融实验是否充分。",
+                    ],
+                ),
+                BenchmarkReport(
+                    title=f"{theme} 的限制与后续研究型优秀报告模式",
+                    source=f"built-in://limitations-round-{round_number}",
+                    summary=(
+                        "限制型报告把失败模式、适用边界和后续研究计划作为核心产物。"
+                        + refinement
+                    ),
+                    strengths=[
                         "把限制和可复现性纳入评分，而不只评价新颖性。",
+                        "将批评意见转化为下一轮可验证的研究问题。",
                     ],
                 )
             ]
         return [
             BenchmarkReport(
-                title=f"Benchmark research report pattern for {theme}",
-                source=f"built-in://benchmark-round-{round_number}",
+                title=f"Claim-evidence benchmark report pattern for {theme}",
+                source=f"built-in://claim-evidence-round-{round_number}",
                 summary=(
-                    "High-quality research reports explain the problem, isolate the core "
-                    "technical contribution, test whether evidence supports the claims, "
-                    "and make limitations explicit before proposing follow-up work."
-                    + refinement
+                    "Claim-evidence reports list the paper's core claims and test whether "
+                    "method, experiment, and limitation evidence supports them."
                 ),
                 strengths=[
                     "Separates paper claims from evaluator interpretation.",
                     "Uses evidence from methods and experiments, not only the abstract.",
+                ],
+            ),
+            BenchmarkReport(
+                title=f"Methodology audit benchmark report pattern for {theme}",
+                source=f"built-in://methodology-round-{round_number}",
+                summary=(
+                    "Methodology-audit reports examine research design, baselines, metrics, "
+                    "ablations, and reproducibility setup."
+                ),
+                strengths=[
+                    "Checks whether method choices match the paper's goals.",
+                    "Questions whether baselines, data, and ablations are sufficient.",
+                ],
+            ),
+            BenchmarkReport(
+                title=f"Limitations benchmark report pattern for {theme}",
+                source=f"built-in://limitations-round-{round_number}",
+                summary=(
+                    "Limitations-focused reports make failure modes, scope boundaries, and "
+                    "future research plans central outputs."
+                    + refinement
+                ),
+                strengths=[
                     "Scores limitations and reproducibility instead of only novelty.",
+                    "Turns critique into testable next-round research questions.",
                 ],
             )
         ]
@@ -306,6 +346,10 @@ class ReportWriterAgent:
                     f"第 {round_number} 轮先搜索优秀研究报告。可复用特征："
                     f"{_join_phrases(benchmark_lessons) or '清晰主张、证据、限制和后续问题'}。"
                 ),
+                "Benchmark 对照质量": _benchmark_quality_summary(
+                    benchmark_reports,
+                    language,
+                ),
                 "后续研究议程": (
                     "可继续推进的工作包括：复现核心结果，在分布外论文上测试稳健性，"
                     "与更简单的 baseline 对比，并做 ablation 来隔离各个 agent 角色的贡献。"
@@ -342,6 +386,7 @@ class ReportWriterAgent:
                 f"Round {round_number} searched benchmark reports first. Reusable traits: "
                 f"{benchmark_lessons or 'clear claims, evidence, limitations, and next steps'}."
             ),
+            "Benchmark Quality": _benchmark_quality_summary(benchmark_reports, language),
             "Research Agenda": (
                 "Useful follow-up work: reproduce the central result, test robustness on "
                 "out-of-distribution papers, compare against simpler baselines, and run an "
@@ -987,6 +1032,58 @@ def _join_phrases(text: str) -> str:
         if item:
             phrases.append(item)
     return "；".join(phrases)
+
+
+def _benchmark_quality_summary(
+    benchmark_reports: Sequence[BenchmarkReport],
+    language: str,
+) -> str:
+    source_count = len(benchmark_reports)
+    source_types = sorted({_benchmark_source_type(report.source, language) for report in benchmark_reports})
+    strength_text = " ".join(
+        strength
+        for report in benchmark_reports
+        for strength in report.strengths
+    )
+    if language == "zh":
+        coverage = []
+        if "主张" in strength_text or "claims" in strength_text.lower():
+            coverage.append("主张-证据")
+        if "baseline" in strength_text.lower() or "消融" in strength_text:
+            coverage.append("方法审计")
+        if "限制" in strength_text or "limitations" in strength_text.lower():
+            coverage.append("限制/可复现性")
+        if not coverage:
+            coverage.append("通用研究报告模式")
+        return (
+            f"来源数量：{source_count}。来源类型：{', '.join(source_types)}。"
+            f"覆盖维度：{'、'.join(coverage)}。"
+            "如果后续接入真实网页或本地 benchmark，应继续记录来源多样性和领域差异。"
+        )
+
+    coverage = []
+    lower_strengths = strength_text.lower()
+    if "claim" in lower_strengths:
+        coverage.append("claim-evidence")
+    if "baseline" in lower_strengths or "ablation" in lower_strengths:
+        coverage.append("methodology audit")
+    if "limitation" in lower_strengths or "reproduc" in lower_strengths:
+        coverage.append("limitations/reproducibility")
+    if not coverage:
+        coverage.append("general research-report pattern")
+    return (
+        f"Source count: {source_count}. Source types: {', '.join(source_types)}. "
+        f"Coverage: {', '.join(coverage)}. Future web or local benchmarks should "
+        "continue tracking source diversity and field differences."
+    )
+
+
+def _benchmark_source_type(source: str, language: str) -> str:
+    if source.startswith("built-in://"):
+        return "内置 fallback" if language == "zh" else "built-in fallback"
+    if source.startswith("http://") or source.startswith("https://"):
+        return "网页搜索" if language == "zh" else "web search"
+    return "本地 benchmark" if language == "zh" else "local benchmark"
 
 
 def _critic_mentions_reproducibility(critic_review: Optional[CriticReview]) -> bool:

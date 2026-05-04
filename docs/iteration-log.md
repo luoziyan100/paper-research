@@ -41,3 +41,38 @@
   - Round 1 score changed from `91/100` to `64/100`.
   - Round 2 rubric includes `可复现性与证据引用`.
   - DOCX contains `word/document.xml` with 20,858 bytes.
+
+## Iteration 2 - 2026-05-04 07:31 PDT
+
+### Current Problems
+
+- When no local or web benchmark reports are available, the built-in fallback returns only one benchmark pattern, which is too thin to simulate searching multiple excellent reports.
+- The generated report uses benchmark strengths but does not explicitly record benchmark source diversity, source count, or fallback status.
+- The DOCX includes benchmark entries, but readers cannot quickly tell whether the report was based on real local/web benchmarks or internal fallback examples.
+
+### Planned Changes
+
+- Add tests requiring multiple diverse built-in benchmark archetypes.
+- Add a Chinese `Benchmark 对照质量` section that reports benchmark count, source type, and coverage traits.
+- Ensure the generated DOCX includes this benchmark quality section through the normal report section rendering.
+
+### Changes Made
+
+- Expanded built-in benchmark fallback from one generic pattern to three archetypes:
+  - `claim-evidence`
+  - `methodology`
+  - `limitations`
+- Added English and Chinese fallback content for those benchmark archetypes.
+- Added `Benchmark 对照质量` / `Benchmark Quality` report sections that summarize source count, source type, and coverage dimensions.
+- Added tests that verify benchmark diversity and DOCX inclusion of the benchmark quality section.
+
+### Verification After Changes
+
+- `python3 -m unittest discover -s tests` passed with 13 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter2 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter2_final` produced JSONL and DOCX outputs.
+- Final output inspected from `/tmp/paper_research_iter2_final/research_rounds.jsonl`.
+- Observed improvements:
+  - Each round now records 3 built-in benchmark archetypes.
+  - `Benchmark 对照质量` reports `来源数量：3` and `来源类型：内置 fallback`.
+  - DOCX `word/document.xml` grew to 24,620 bytes and includes the new section.
