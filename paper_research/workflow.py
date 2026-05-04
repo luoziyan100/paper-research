@@ -5,8 +5,11 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import asdict, dataclass
+from html import unescape
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence
+from typing import Callable, Dict, Iterable, List, Optional, Sequence
+from urllib.parse import parse_qs, quote_plus, unquote, urlparse
+from urllib.request import Request, urlopen
 
 from paper_research.docx import DocxDocument, bullet, heading, paragraph
 
@@ -16,6 +19,7 @@ class WorkflowConfig:
     rounds: int = 3
     output_dir: Path = Path("research_output")
     benchmark_dir: Optional[Path] = None
+    web_search: bool = False
     jsonl_filename: str = "research_rounds.jsonl"
     docx_filename: str = "research_report.docx"
 
@@ -95,8 +99,15 @@ class WorkflowResult:
 class BenchmarkSearchAgent:
     """Searches for strong report examples before each report iteration."""
 
-    def __init__(self, benchmark_dir: Optional[Path] = None) -> None:
+    def __init__(
+        self,
+        benchmark_dir: Optional[Path] = None,
+        web_search: bool = False,
+        web_fetcher: Optional[Callable[[str], str]] = None,
+    ) -> None:
         self.benchmark_dir = benchmark_dir
+        self.web_search = web_search
+        self.web_fetcher = web_fetcher or _fetch_url
 
     def search(
         self,
@@ -107,6 +118,11 @@ class BenchmarkSearchAgent:
         local_results = self._search_local_benchmarks(paper_text)
         if local_results:
             return local_results
+
+        if self.web_search:
+            web_results = self._search_web_benchmarks(paper_text, round_number)
+            if web_results:
+                return web_results
 
         theme = _paper_title(paper_text) or "the target paper"
         refinement = (
@@ -155,6 +171,35 @@ class BenchmarkSearchAgent:
                     )
                 )
         return results
+
+    def _search_web_benchmarks(
+        self,
+        paper_text: str,
+        round_number: int,
+    ) -> List[BenchmarkReport]:
+        title = _paper_title(paper_text) or "paper"
+        query = quote_plus(f"{title} excellent research report paper analysis")
+        url = f"https://duckduckgo.com/html/?q={query}"
+        try:
+            html = self.web_fetcher(url)
+        except Exception:
+            return []
+
+        links = _extract_duckduckgo_results(html)
+        reports = []
+        for index, item in enumerate(links[:5], start=1):
+            summary = item["snippet"] or (
+                "External search result for an excellent research-report example."
+            )
+            reports.append(
+                BenchmarkReport(
+                    title=item["title"] or f"External benchmark report {index}",
+                    source=item["url"] or f"web-search://round-{round_number}-{index}",
+                    summary=summary,
+                    strengths=_infer_report_strengths(f"{item['title']} {summary}"),
+                )
+            )
+        return reports
 
 
 class ReportWriterAgent:
@@ -354,7 +399,10 @@ def run_research_workflow(paper_text: str, config: WorkflowConfig) -> WorkflowRe
     docx_path = output_dir / config.docx_filename
     jsonl_path.write_text("", encoding="utf-8")
 
-    search_agent = BenchmarkSearchAgent(config.benchmark_dir)
+    search_agent = BenchmarkSearchAgent(
+        benchmark_dir=config.benchmark_dir,
+        web_search=config.web_search,
+    )
     report_agent = ReportWriterAgent()
     rubric_agent = RubricBuilderAgent()
     scoring_agent = ReportScoringAgent()
@@ -561,3 +609,51 @@ def _infer_report_strengths(content: str) -> List[str]:
     if not strengths:
         strengths.append("Provides a reusable external comparison point.")
     return strengths
+
+
+def _fetch_url(url: str) -> str:
+    request = Request(
+        url,
+        headers={
+            "User-Agent": (
+                "Mozilla/5.0 paper-research/0.1 "
+                "(https://github.com/luoziyan100/paper-research)"
+            )
+        },
+    )
+    with urlopen(request, timeout=10) as response:
+        return response.read().decode("utf-8", errors="ignore")
+
+
+def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
+    link_pattern = re.compile(
+        r'<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
+        re.IGNORECASE | re.DOTALL,
+    )
+    snippet_pattern = re.compile(
+        r'<a[^>]*class="[^"]*result__snippet[^"]*"[^>]*>(.*?)</a>',
+        re.IGNORECASE | re.DOTALL,
+    )
+    snippets = [_strip_html(match) for match in snippet_pattern.findall(raw_html)]
+    results: List[Dict[str, str]] = []
+    for index, (href, title_html) in enumerate(link_pattern.findall(raw_html)):
+        title = _strip_html(title_html)
+        source = _clean_result_url(href)
+        snippet = snippets[index] if index < len(snippets) else ""
+        if title or source:
+            results.append({"title": title, "url": source, "snippet": snippet})
+    return results
+
+
+def _strip_html(value: str) -> str:
+    without_tags = re.sub(r"<[^>]+>", " ", value)
+    return " ".join(unescape(without_tags).split())
+
+
+def _clean_result_url(href: str) -> str:
+    href = unescape(href)
+    parsed = urlparse(href)
+    query = parse_qs(parsed.query)
+    if "uddg" in query and query["uddg"]:
+        return unquote(query["uddg"][0])
+    return href

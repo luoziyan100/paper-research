@@ -9,9 +9,10 @@ records every round in both JSONL and DOCX.
 Each round follows the same agent pipeline:
 
 1. `BenchmarkSearchAgent` searches for strong external research-report examples.
-   It can search a local benchmark directory of `.txt` or `.md` reports. If no
-   benchmark directory is available, it uses a built-in benchmark pattern so the
-   workflow still runs from an empty repo.
+   It can search a local benchmark directory of `.txt` or `.md` reports, and
+   `--web-search` enables a lightweight web search fallback. If neither returns
+   results, it uses a built-in benchmark pattern so the workflow still runs from
+   an empty repo.
 2. `ReportWriterAgent` writes the current deep research report for the paper.
 3. `RubricBuilderAgent` creates a fresh scoring standard from the benchmark
    results, the current report, the previous report, and the previous rubric
@@ -42,6 +43,12 @@ python3 -m paper_research path/to/paper.txt \
   --output-dir research_output
 ```
 
+With web search fallback enabled:
+
+```bash
+python3 -m paper_research path/to/paper.txt --rounds 3 --web-search
+```
+
 Text and Markdown inputs work without extra dependencies. PDF input is supported
 when the optional `pypdf` package is installed.
 
@@ -53,7 +60,7 @@ Run the test suite:
 python3 -m unittest discover -s tests
 ```
 
-The current implementation is deterministic and local-first. The agent classes
-are intentionally separated so a future change can replace the local benchmark
-search or deterministic writing/scoring with real web search and an LLM provider
-without changing the persistence format.
+The current report writing and scoring are deterministic and local-first. The
+agent classes are intentionally separated so a future change can replace the
+deterministic writer/scorer with an LLM provider without changing the
+persistence format.

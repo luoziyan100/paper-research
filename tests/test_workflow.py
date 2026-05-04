@@ -4,7 +4,11 @@ import unittest
 import zipfile
 from pathlib import Path
 
-from paper_research.workflow import WorkflowConfig, run_research_workflow
+from paper_research.workflow import (
+    BenchmarkSearchAgent,
+    WorkflowConfig,
+    run_research_workflow,
+)
 
 
 PAPER_TEXT = """
@@ -111,6 +115,26 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("excellent_report.md", source)
             strengths = result.rounds[0].benchmark_reports[0].strengths
             self.assertIn("Connects claims to experimental evidence.", strengths)
+
+    def test_web_search_agent_extracts_external_report_results(self):
+        html = """
+        <a class="result__a" href="https://example.com/excellent-report">
+          Excellent Paper Research Report
+        </a>
+        <a class="result__snippet">
+          This report connects experiment evidence, limitations, and future work.
+        </a>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "https://example.com/excellent-report")
+        self.assertIn("Excellent Paper Research Report", results[0].title)
+        self.assertIn("Connects claims to experimental evidence.", results[0].strengths)
 
 
 if __name__ == "__main__":

@@ -28,6 +28,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional directory of excellent research reports to search each round.",
     )
+    parser.add_argument(
+        "--web-search",
+        action="store_true",
+        help="Search the web for external benchmark reports when no local reports match.",
+    )
     return parser
 
 
@@ -41,6 +46,7 @@ def main(argv: list[str] | None = None) -> int:
             rounds=args.rounds,
             output_dir=args.output_dir,
             benchmark_dir=args.benchmark_dir,
+            web_search=args.web_search,
         ),
     )
     print(f"Wrote {result.jsonl_path}")
