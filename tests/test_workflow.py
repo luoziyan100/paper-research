@@ -193,6 +193,24 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("Evidence:", sections["Claim-Evidence Ledger"])
             self.assertIn("Verification gap:", sections["Claim-Evidence Ledger"])
 
+    def test_english_scorecard_cites_report_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            rationales = [score.rationale for score in result.rounds[0].scorecard.scores]
+
+            self.assertTrue(
+                all("Evidence:" in rationale for rationale in rationales),
+                rationales,
+            )
+            self.assertTrue(
+                any("Claim-Evidence Ledger" in rationale for rationale in rationales),
+                rationales,
+            )
+
     def test_second_round_report_uses_prior_low_score_items(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

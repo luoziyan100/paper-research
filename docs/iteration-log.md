@@ -1100,3 +1100,31 @@
 - `python3 -m unittest discover -s tests` passed with 45 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter36 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 37 - 2026-05-04 09:22 PDT
+
+### Current Problems
+
+- English scorecard rationales only reported keyword marker counts.
+- Unlike Chinese scorecards, they did not cite a concrete generated-report section or snippet.
+
+### Planned Changes
+
+- Add a regression test requiring `Evidence:` in every English score rationale.
+- Reuse the existing report-snippet finder for English scoring.
+- Keep score values unchanged while improving rationale traceability.
+
+### Changes Made
+
+- Added `test_english_scorecard_cites_report_evidence`.
+- English `ReportScoringAgent` rationales now include `Evidence: <section - snippet>`.
+- `_find_evidence_snippet(...)` now has an English fallback message for empty reports.
+
+### Verification After Changes
+
+- Red test first failed because rationales looked like `Found 2 evidence markers...` with no evidence snippet.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_cites_report_evidence tests.test_workflow.ResearchWorkflowTest.test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score`
+- `python3 -m unittest discover -s tests` passed with 46 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter37 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

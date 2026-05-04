@@ -303,10 +303,11 @@ class ReportScoringAgent:
                     f"找到 {hits} 个相关标记。证据：{evidence}"
                 )
             else:
+                evidence = _find_evidence_snippet(report, keywords, language)
                 points = min(criterion.max_points, 8 + hits * 3)
                 rationale = (
                     f"Found {hits} evidence markers for {criterion.name.lower()} "
-                    "in the generated report."
+                    f"in the generated report. Evidence: {evidence}"
                 )
             scores.append(
                 CriterionScore(
@@ -766,7 +767,9 @@ def _find_evidence_snippet(
     first_section = next(iter(report.sections.items()), None)
     if first_section:
         return f"{first_section[0]}{separator}{_compact(first_section[1], 180)}"
-    return "报告没有提供可引用的证据片段。"
+    if language == "zh":
+        return "报告没有提供可引用的证据片段。"
+    return "The report did not provide a citable evidence snippet."
 
 
 def _matching_line(content: str, keywords: Sequence[str]) -> str:
