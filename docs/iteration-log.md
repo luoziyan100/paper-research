@@ -1351,3 +1351,29 @@
 - `python3 -m unittest discover -s tests` passed with 54 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter45 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 46 - 2026-05-04 09:38 PDT
+
+### Current Problems
+
+- Chinese web benchmark provenance used a Chinese query but kept the English label `DuckDuckGo query:`.
+- This left Chinese JSONL and DOCX search notes partially untranslated.
+
+### Planned Changes
+
+- Extend the Chinese web-query regression test to assert the search-note label.
+- Localize the query label while preserving English behavior.
+
+### Changes Made
+
+- `test_chinese_web_search_uses_chinese_query_terms` now checks for `DuckDuckGo 查询：`.
+- `_search_web_benchmarks(...)` now renders Chinese search notes with `DuckDuckGo 查询：...`.
+
+### Verification After Changes
+
+- Red test first failed because `search_note` was `DuckDuckGo query: 多智能体论文审查系统 优秀 论文 研究报告 分析`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_uses_chinese_query_terms tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 54 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter46 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

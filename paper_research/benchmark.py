@@ -212,7 +212,11 @@ class BenchmarkSearchAgent:
                     summary=summary,
                     strengths=_infer_report_strengths(f"{item['title']} {summary}", self.language),
                     source_type="web",
-                    search_note=f"DuckDuckGo query: {query_text}",
+                    search_note=(
+                        f"DuckDuckGo 查询：{query_text}"
+                        if self.language == "zh"
+                        else f"DuckDuckGo query: {query_text}"
+                    ),
                 )
             )
         return reports
