@@ -438,6 +438,23 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("优秀 论文 研究报告", results[0].search_note)
         self.assertEqual(results[0].source_type, "web")
 
+    def test_chinese_web_search_localizes_missing_snippet_summary(self):
+        html = """
+        <a class="result__a" href="https://example.com/zh-report">
+          中文优秀论文研究报告
+        </a>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+            language="zh",
+        )
+
+        results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertIn("外部搜索结果", results[0].summary)
+        self.assertNotIn("External search result", results[0].summary)
+
     def test_builtin_benchmark_fallback_returns_diverse_report_archetypes(self):
         agent = BenchmarkSearchAgent(language="zh")
 

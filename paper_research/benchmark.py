@@ -197,7 +197,9 @@ class BenchmarkSearchAgent:
         reports = []
         for index, item in enumerate(links[:5], start=1):
             summary = item["snippet"] or (
-                "External search result for an excellent research-report example."
+                "外部搜索结果：可能包含优秀研究报告样例。"
+                if self.language == "zh"
+                else "External search result for an excellent research-report example."
             )
             reports.append(
                 BenchmarkReport(

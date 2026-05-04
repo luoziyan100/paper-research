@@ -1297,3 +1297,30 @@
 - `python3 -m unittest discover -s tests` passed with 52 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter43 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 44 - 2026-05-04 09:35 PDT
+
+### Current Problems
+
+- Chinese web benchmark search used a Chinese query, but still fell back to an English summary when a search result lacked a snippet.
+- That English fallback could leak into JSONL and DOCX outputs.
+
+### Planned Changes
+
+- Add a Chinese web-search regression test with a result title but no snippet.
+- Localize the missing-snippet fallback summary.
+- Preserve existing English web-search behavior.
+
+### Changes Made
+
+- Added `test_chinese_web_search_localizes_missing_snippet_summary`.
+- `_search_web_benchmarks(...)` now uses `外部搜索结果：可能包含优秀研究报告样例。` in Chinese mode.
+
+### Verification After Changes
+
+- Red test first failed with `External search result for an excellent research-report example.`
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_localizes_missing_snippet_summary tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_uses_chinese_query_terms tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 53 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter44 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
