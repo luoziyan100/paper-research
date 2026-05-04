@@ -674,6 +674,68 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(legacy_benchmark.source_type, "built-in")
             self.assertIn("legacy JSONL", legacy_benchmark.search_note)
 
+    def test_chinese_resume_hydrates_legacy_benchmark_note_in_chinese(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+            legacy_round = {
+                "round_number": 1,
+                "benchmark_reports": [
+                    {
+                        "title": "旧版 fallback",
+                        "source": "built-in://legacy",
+                        "summary": "旧版记录没有 benchmark trace metadata。",
+                        "strengths": ["区分论文原始主张和评审者解释。"],
+                    }
+                ],
+                "report": {"title": "旧版报告", "sections": {"摘要": "旧输出"}},
+                "rubric": {
+                    "title": "旧版评分标准",
+                    "criteria": [
+                        {
+                            "name": "问题定义",
+                            "description": "解释问题。",
+                            "max_points": 20,
+                        }
+                    ],
+                    "source_notes": "旧版说明",
+                },
+                "scorecard": {
+                    "total_score": 12,
+                    "scores": [
+                        {
+                            "name": "问题定义",
+                            "points": 12,
+                            "max_points": 20,
+                            "rationale": "旧版理由",
+                        }
+                    ],
+                    "summary": "旧版评分",
+                },
+                "critic_review": {
+                    "issues": ["旧版问题"],
+                    "recommendations": ["旧版建议"],
+                },
+            }
+            (output_dir / "research_rounds.jsonl").write_text(
+                json.dumps(legacy_round, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+
+            result = run_continuous_workflow(
+                paper_text=CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=output_dir, language="zh"),
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=0,
+                    sleep_seconds=0,
+                    max_rounds=1,
+                    resume=True,
+                ),
+            )
+
+            legacy_benchmark = result.rounds[0].benchmark_reports[0]
+            self.assertIn("旧版 JSONL", legacy_benchmark.search_note)
+            self.assertNotIn("Recovered from legacy JSONL", legacy_benchmark.search_note)
+
     def test_continuous_runner_uses_duration_without_waiting_in_tests(self):
         class FakeClock:
             def __init__(self) -> None:

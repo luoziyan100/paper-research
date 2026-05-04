@@ -508,7 +508,7 @@ def run_continuous_workflow(
     jsonl_path = output_dir / config.jsonl_filename
     docx_path = output_dir / config.docx_filename
     if continuous_config.resume:
-        rounds = _load_jsonl_rounds(jsonl_path)
+        rounds = _load_jsonl_rounds(jsonl_path, config.language)
     else:
         rounds = []
         jsonl_path.write_text("", encoding="utf-8")
@@ -592,17 +592,17 @@ def _append_jsonl(path: Path, round_result: RoundResult) -> None:
         handle.write(json.dumps(asdict(round_result), ensure_ascii=False) + "\n")
 
 
-def _load_jsonl_rounds(path: Path) -> List[RoundResult]:
+def _load_jsonl_rounds(path: Path, language: str = "en") -> List[RoundResult]:
     if not path.exists():
         return []
     rounds = []
     for raw_line in path.read_text(encoding="utf-8").splitlines():
         if raw_line.strip():
-            rounds.append(_round_from_dict(json.loads(raw_line)))
+            rounds.append(_round_from_dict(json.loads(raw_line), language))
     return rounds
 
 
-def _round_from_dict(data: Dict[str, object]) -> RoundResult:
+def _round_from_dict(data: Dict[str, object], language: str = "en") -> RoundResult:
     benchmark_reports = [
         BenchmarkReport(
             title=str(item["title"]),
@@ -618,7 +618,7 @@ def _round_from_dict(data: Dict[str, object]) -> RoundResult:
             search_note=str(
                 item.get(  # type: ignore[union-attr]
                     "search_note",
-                    _legacy_search_note(str(item["source"])),
+                    _legacy_search_note(str(item["source"]), language),
                 )
             ),
         )
@@ -734,7 +734,9 @@ def _infer_benchmark_source_type(source: str) -> str:
     return "local"
 
 
-def _legacy_search_note(source: str) -> str:
+def _legacy_search_note(source: str, language: str = "en") -> str:
+    if language == "zh":
+        return f"从缺少 benchmark trace metadata 的旧版 JSONL 恢复：{source}。"
     return f"Recovered from legacy JSONL without benchmark trace metadata: {source}."
 
 

@@ -1016,3 +1016,31 @@
 - `python3 -m unittest discover -s tests` passed with 42 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter33 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 34 - 2026-05-04 09:17 PDT
+
+### Current Problems
+
+- Continuous resume could hydrate legacy JSONL benchmark entries that lacked `search_note`.
+- In Chinese mode, the fallback legacy trace note was still English: `Recovered from legacy JSONL...`.
+
+### Planned Changes
+
+- Add a Chinese resume regression test for legacy benchmark metadata.
+- Pass the active workflow language into JSONL hydration.
+- Keep English legacy hydration output unchanged.
+
+### Changes Made
+
+- Added `test_chinese_resume_hydrates_legacy_benchmark_note_in_chinese`.
+- `_load_jsonl_rounds(...)`, `_round_from_dict(...)`, and `_legacy_search_note(...)` now accept language context.
+- Chinese legacy trace notes now render as `从缺少 benchmark trace metadata 的旧版 JSONL 恢复：...`。
+
+### Verification After Changes
+
+- Red test first failed because the hydrated note contained `Recovered from legacy JSONL...`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_resume_hydrates_legacy_benchmark_note_in_chinese tests.test_workflow.ResearchWorkflowTest.test_resume_hydrates_legacy_benchmark_metadata tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_resumes_and_keeps_appending_rounds`
+- `python3 -m unittest discover -s tests` passed with 43 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter34 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
