@@ -642,3 +642,32 @@
 - `python3 -m unittest discover -s tests` passed with 30 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter20 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 21 - 2026-05-04 08:40 PDT
+
+### Current Problems
+
+- `WorkflowConfig` supported custom `jsonl_filename` and `docx_filename`, but the CLI did not expose those fields.
+- CLI users could not change output filenames without writing Python code.
+
+### Planned Changes
+
+- Add a CLI regression test for custom output filenames.
+- Add `--jsonl-filename` and `--docx-filename` arguments.
+- Pass both values into `WorkflowConfig`.
+
+### Changes Made
+
+- Added `--jsonl-filename` with default `research_rounds.jsonl`.
+- Added `--docx-filename` with default `research_report.docx`.
+- Added a CLI test that verifies both files are created and printed.
+
+### Verification After Changes
+
+- Red test first failed with `unrecognized arguments: --jsonl-filename ... --docx-filename ...`.
+- Target test passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- `python3 -m unittest discover -s tests` passed with 31 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter21 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter21_final --jsonl-filename custom-rounds.jsonl --docx-filename custom-report.docx` wrote both custom output files.
+- `git diff --check` passed.

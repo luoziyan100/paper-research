@@ -51,6 +51,35 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("--sleep-seconds must be positive", stderr.getvalue())
             self.assertNotIn("Traceback", stderr.getvalue())
 
+    def test_cli_accepts_custom_output_filenames(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "paper.txt"
+            output_dir = root / "out"
+            paper.write_text("Title: T\n\nAbstract\ncontent", encoding="utf-8")
+
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                exit_code = main(
+                    [
+                        str(paper),
+                        "--rounds",
+                        "1",
+                        "--output-dir",
+                        str(output_dir),
+                        "--jsonl-filename",
+                        "custom-rounds.jsonl",
+                        "--docx-filename",
+                        "custom-report.docx",
+                    ]
+                )
+
+            self.assertEqual(exit_code, 0)
+            self.assertTrue((output_dir / "custom-rounds.jsonl").exists())
+            self.assertTrue((output_dir / "custom-report.docx").exists())
+            self.assertIn("custom-rounds.jsonl", stdout.getvalue())
+            self.assertIn("custom-report.docx", stdout.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

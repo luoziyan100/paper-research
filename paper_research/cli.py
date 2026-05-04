@@ -34,6 +34,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory for JSONL and DOCX outputs.",
     )
     parser.add_argument(
+        "--jsonl-filename",
+        default="research_rounds.jsonl",
+        help="JSONL filename to write inside --output-dir.",
+    )
+    parser.add_argument(
+        "--docx-filename",
+        default="research_report.docx",
+        help="DOCX filename to write inside --output-dir.",
+    )
+    parser.add_argument(
         "--benchmark-dir",
         type=Path,
         default=None,
@@ -97,6 +107,8 @@ def main(argv: list[str] | None = None) -> int:
         benchmark_dir=args.benchmark_dir,
         web_search=args.web_search,
         language=args.language,
+        jsonl_filename=args.jsonl_filename,
+        docx_filename=args.docx_filename,
     )
     if args.duration_hours is None:
         result = run_research_workflow(paper_text=paper_text, config=config)
