@@ -15,6 +15,14 @@ class InputAndCliTest(unittest.TestCase):
         with self.assertRaisesRegex(FileNotFoundError, "Paper file does not exist"):
             load_paper_text(missing)
 
+    def test_load_paper_text_lists_supported_types_for_unsupported_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "paper.docx"
+            paper.write_text("not supported", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "Supported types: .txt, .md, .pdf"):
+                load_paper_text(paper)
+
     def test_cli_rejects_invalid_rounds_without_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:
             paper = Path(tmp) / "paper.txt"

@@ -1460,3 +1460,30 @@
 - `python3 -m unittest discover -s tests` passed with 57 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter49 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 50 - 2026-05-04 09:46 PDT
+
+### Current Problems
+
+- Unsupported paper input errors only said `Unsupported paper file type: .docx`.
+- The message did not tell users which input types are accepted.
+
+### Planned Changes
+
+- Add an input-helper regression test for unsupported file types.
+- Include the supported extension list in the error message.
+- Preserve existing empty-file and CLI validation behavior.
+
+### Changes Made
+
+- Added `test_load_paper_text_lists_supported_types_for_unsupported_file`.
+- `load_paper_text(...)` now reports: `Supported types: .txt, .md, .pdf.`
+
+### Verification After Changes
+
+- Red test first failed because the error message lacked the supported type list.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_load_paper_text_lists_supported_types_for_unsupported_file tests.test_cli_io.InputAndCliTest.test_cli_rejects_empty_paper_without_traceback tests.test_cli_io.InputAndCliTest.test_cli_rejects_output_filenames_with_wrong_extensions`
+- `python3 -m unittest discover -s tests` passed with 58 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter50 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

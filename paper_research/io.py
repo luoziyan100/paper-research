@@ -19,7 +19,9 @@ def load_paper_text(path: Path) -> str:
         return text
     if suffix == ".pdf":
         return _load_pdf_text(path)
-    raise ValueError(f"Unsupported paper file type: {path.suffix}")
+    raise ValueError(
+        f"Unsupported paper file type: {path.suffix}. Supported types: .txt, .md, .pdf."
+    )
 
 
 def _load_pdf_text(path: Path) -> str:
