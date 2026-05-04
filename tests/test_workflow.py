@@ -6,7 +6,9 @@ from pathlib import Path
 
 from paper_research.workflow import (
     BenchmarkSearchAgent,
+    ContinuousRunConfig,
     WorkflowConfig,
+    run_continuous_workflow,
     run_research_workflow,
 )
 
@@ -135,6 +137,92 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source, "https://example.com/excellent-report")
         self.assertIn("Excellent Paper Research Report", results[0].title)
         self.assertIn("Connects claims to experimental evidence.", results[0].strengths)
+
+    def test_can_generate_chinese_report_and_docx(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(
+                    rounds=1,
+                    output_dir=Path(tmp),
+                    language="zh",
+                ),
+            )
+
+            first_round = result.rounds[0]
+            self.assertIn("深度研究报告", first_round.report.title)
+            self.assertIn("执行摘要", first_round.report.sections)
+            self.assertIn("当前报告", first_round.rubric.source_notes)
+            self.assertIn("总分", first_round.scorecard.summary)
+            self.assertIn("评分标准", first_round.critic_review.issues[0])
+
+            with zipfile.ZipFile(result.docx_path) as archive:
+                document_xml = archive.read("word/document.xml").decode("utf-8")
+            self.assertIn("第 1 轮", document_xml)
+            self.assertIn("评分标准", document_xml)
+            self.assertIn("评分标准批评", document_xml)
+
+    def test_continuous_runner_resumes_and_keeps_appending_rounds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+
+            first = run_continuous_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=output_dir),
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=0,
+                    sleep_seconds=0,
+                    max_rounds=1,
+                ),
+            )
+            second = run_continuous_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=output_dir),
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=0,
+                    sleep_seconds=0,
+                    max_rounds=2,
+                    resume=True,
+                ),
+            )
+
+            self.assertEqual([round.round_number for round in first.rounds], [1])
+            self.assertEqual(
+                [round.round_number for round in second.rounds],
+                [1, 2, 3],
+            )
+            lines = (output_dir / "research_rounds.jsonl").read_text(encoding="utf-8").splitlines()
+            self.assertEqual(len(lines), 3)
+            with zipfile.ZipFile(output_dir / "research_report.docx") as archive:
+                document_xml = archive.read("word/document.xml").decode("utf-8")
+            self.assertIn("Round 3", document_xml)
+
+    def test_continuous_runner_uses_duration_without_waiting_in_tests(self):
+        class FakeClock:
+            def __init__(self) -> None:
+                self.current = 0.0
+
+            def monotonic(self) -> float:
+                return self.current
+
+            def sleep(self, seconds: float) -> None:
+                self.current += seconds
+
+        fake_clock = FakeClock()
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_continuous_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=120,
+                    sleep_seconds=60,
+                ),
+                clock=fake_clock.monotonic,
+                sleeper=fake_clock.sleep,
+            )
+
+            self.assertEqual([round.round_number for round in result.rounds], [1, 2, 3])
+            self.assertEqual(fake_clock.current, 180)
 
 
 if __name__ == "__main__":

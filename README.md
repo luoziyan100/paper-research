@@ -34,6 +34,15 @@ Run from the repository root:
 python3 -m paper_research examples/sample_paper.txt --rounds 2 --output-dir research_output
 ```
 
+Generate a Chinese report:
+
+```bash
+python3 -m paper_research examples/sample_paper.txt \
+  --rounds 2 \
+  --language zh \
+  --output-dir research_output
+```
+
 With your own benchmark report folder:
 
 ```bash
@@ -47,6 +56,29 @@ With web search fallback enabled:
 
 ```bash
 python3 -m paper_research path/to/paper.txt --rounds 3 --web-search
+```
+
+Run continuous iteration for ten hours. The runner resumes existing
+`research_rounds.jsonl` records by default, appends every new round, and rewrites
+the DOCX after each round so progress is recoverable if the process stops:
+
+```bash
+python3 -m paper_research path/to/paper.txt \
+  --language zh \
+  --web-search \
+  --duration-hours 10 \
+  --sleep-seconds 300 \
+  --output-dir research_output
+```
+
+For a short dry run of continuous mode:
+
+```bash
+python3 -m paper_research examples/sample_paper.txt \
+  --duration-hours 10 \
+  --max-rounds 2 \
+  --sleep-seconds 0 \
+  --output-dir research_output
 ```
 
 Text and Markdown inputs work without extra dependencies. PDF input is supported
@@ -63,4 +95,5 @@ python3 -m unittest discover -s tests
 The current report writing and scoring are deterministic and local-first. The
 agent classes are intentionally separated so a future change can replace the
 deterministic writer/scorer with an LLM provider without changing the
-persistence format.
+persistence format. Continuous mode is intended for long-running LLM/web-search
+iterations, but it also works offline through the built-in benchmark fallback.
