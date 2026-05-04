@@ -132,3 +132,31 @@
 - `python3 -m unittest discover -s tests` passed with 17 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter4 python3 -m compileall -q paper_research` passed.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter4_final` produced JSONL and DOCX outputs.
+
+## Iteration 5 - 2026-05-04 07:41 PDT
+
+### Current Problems
+
+- Invalid CLI options such as `--rounds 0` surfaced as Python exceptions from the workflow layer.
+- Continuous-mode invalid sleep settings surfaced as Python exceptions instead of user-facing command-line errors.
+- Missing paper files surfaced the default low-level `FileNotFoundError` message.
+
+### Planned Changes
+
+- Add CLI and input tests for invalid rounds, bad continuous sleep configuration, and missing files.
+- Validate CLI arguments before constructing workflow configs.
+- Convert file loading errors into argparse-style messages without tracebacks.
+
+### Changes Made
+
+- Added `tests/test_cli_io.py`.
+- Added explicit missing-file handling in `load_paper_text`.
+- Added CLI validation for `--rounds`, `--duration-hours`, `--sleep-seconds`, and `--max-rounds`.
+- Wrapped paper loading errors with `parser.error(...)`.
+
+### Verification After Changes
+
+- `python3 -m unittest discover -s tests` passed with 20 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter5 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter5_final` produced JSONL and DOCX outputs.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 0` exited with code 2 and printed `--rounds must be at least 1`.

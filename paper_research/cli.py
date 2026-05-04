@@ -73,7 +73,24 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    paper_text = load_paper_text(args.paper)
+    if args.rounds < 1:
+        parser.error("--rounds must be at least 1")
+    if args.duration_hours is not None and args.duration_hours < 0:
+        parser.error("--duration-hours cannot be negative")
+    if args.sleep_seconds < 0:
+        parser.error("--sleep-seconds cannot be negative")
+    if (
+        args.duration_hours is not None
+        and args.max_rounds is None
+        and args.sleep_seconds <= 0
+    ):
+        parser.error("--sleep-seconds must be positive unless --max-rounds is set")
+    if args.max_rounds is not None and args.max_rounds < 1:
+        parser.error("--max-rounds must be at least 1")
+    try:
+        paper_text = load_paper_text(args.paper)
+    except (FileNotFoundError, RuntimeError, ValueError) as exc:
+        parser.error(str(exc))
     config = WorkflowConfig(
         rounds=args.rounds,
         output_dir=args.output_dir,

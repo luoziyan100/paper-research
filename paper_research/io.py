@@ -9,6 +9,8 @@ def load_paper_text(path: Path) -> str:
     """Load paper text from txt/md files, with a helpful PDF message."""
 
     path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"Paper file does not exist: {path}")
     suffix = path.suffix.lower()
     if suffix in {".txt", ".md"}:
         return path.read_text(encoding="utf-8")
