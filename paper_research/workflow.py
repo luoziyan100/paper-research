@@ -695,8 +695,9 @@ def _benchmark_quality_summary(
             coverage.append("限制/可复现性")
         if not coverage:
             coverage.append("通用研究报告模式")
+        source_type_text = "、".join(source_types) if source_types else "无"
         return (
-            f"来源数量：{source_count}。来源类型：{'、'.join(source_types)}。"
+            f"来源数量：{source_count}。来源类型：{source_type_text}。"
             f"覆盖维度：{'、'.join(coverage)}。"
             "如果后续接入真实网页或本地 benchmark，应继续记录来源多样性和领域差异。"
         )
@@ -711,8 +712,9 @@ def _benchmark_quality_summary(
         coverage.append("limitations/reproducibility")
     if not coverage:
         coverage.append("general research-report pattern")
+    source_type_text = ", ".join(source_types) if source_types else "none"
     return (
-        f"Source count: {source_count}. Source types: {', '.join(source_types)}. "
+        f"Source count: {source_count}. Source types: {source_type_text}. "
         f"Coverage: {', '.join(coverage)}. Future web or local benchmarks should "
         "continue tracking source diversity and field differences."
     )

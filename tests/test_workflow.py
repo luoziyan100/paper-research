@@ -550,6 +550,22 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("来源类型：本地 benchmark、网页搜索", section)
         self.assertNotIn("本地 benchmark, 网页搜索", section)
 
+    def test_chinese_benchmark_quality_handles_empty_sources_readably(self):
+        report = ReportWriterAgent().write(
+            paper_text=CHINESE_PAPER_TEXT,
+            benchmark_reports=[],
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        section = report.sections["Benchmark 对照质量"]
+
+        self.assertIn("来源数量：0", section)
+        self.assertIn("来源类型：无", section)
+        self.assertNotIn("来源类型：。", section)
+
     def test_can_generate_chinese_report_and_docx(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

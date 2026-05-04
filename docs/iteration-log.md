@@ -1405,3 +1405,31 @@
 - `python3 -m unittest discover -s tests` passed with 55 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter47 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 48 - 2026-05-04 09:42 PDT
+
+### Current Problems
+
+- When `ReportWriterAgent` was called with no benchmark reports, Chinese benchmark quality rendered `来源类型：。`
+- That empty punctuation made externally constructed or recovered reports look broken.
+
+### Planned Changes
+
+- Add a Chinese regression test for empty benchmark quality summaries.
+- Render an explicit empty source-type placeholder.
+- Mirror the empty placeholder in English summaries.
+
+### Changes Made
+
+- Added `test_chinese_benchmark_quality_handles_empty_sources_readably`.
+- `_benchmark_quality_summary(...)` now uses `来源类型：无` when no Chinese source types exist.
+- English output now uses `Source types: none`.
+
+### Verification After Changes
+
+- Red test first failed because the section contained `来源类型：。`
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_handles_empty_sources_readably tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_uses_chinese_source_delimiter tests.test_workflow.ResearchWorkflowTest.test_chinese_report_records_benchmark_source_quality`
+- `python3 -m unittest discover -s tests` passed with 56 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter48 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
