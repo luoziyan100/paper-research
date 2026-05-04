@@ -255,3 +255,37 @@
   - JSONL benchmark rows include `source_type` and `search_note`.
   - DOCX `word/document.xml` includes `搜索说明`.
   - `paper_research/workflow.py` remains under the structure threshold at 1,042 lines.
+
+## Iteration 9 - 2026-05-04 07:58 PDT
+
+### Current Problems
+
+- Chinese evidence-ledger sections still copied an English experiment sentence directly into `证据：...`.
+- The Chinese rubric source note used mixed English punctuation and missing spacing: `基于benchmark 报告, 当前报告生成`.
+- These issues made the generated Chinese report feel partially templated even after earlier report-quality improvements.
+
+### Planned Changes
+
+- Add tests requiring Chinese evidence-ledger content to use Chinese evidence summaries instead of raw English sample sentences.
+- Add tests requiring readable Chinese punctuation in rubric source notes.
+- Keep the change scoped to report wording, without changing scoring behavior.
+
+### Changes Made
+
+- Changed Chinese `论文主张与证据账本` evidence lines to use the Chinese evidence summary helper.
+- Changed Chinese rubric source notes to use `基于 benchmark 报告、当前报告...生成`.
+- Preserved `baseline` in Chinese-paper evidence summaries where it is a meaningful technical term.
+
+### Verification After Changes
+
+- Red tests first failed on `Across three papers` appearing in the evidence ledger and the old `基于benchmark 报告, 当前报告生成` source note.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_chinese_rubric_source_notes_use_readable_punctuation`
+- `python3 -m unittest discover -s tests` passed with 24 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter9 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter9_final` produced JSONL and DOCX outputs.
+- Output inspection confirmed:
+  - JSONL evidence ledger now says `证据：在三篇论文上，迭代评分提高了假设、限制和可复现性细节的覆盖。`
+  - JSONL rubric notes now say `基于 benchmark 报告、当前报告生成`.
+  - DOCX `word/document.xml` includes the same Chinese evidence summary and no `Across three papers` match.
+  - `paper_research/workflow.py` remains at 1,042 lines.

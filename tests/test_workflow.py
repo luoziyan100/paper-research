@@ -242,10 +242,29 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("主张", sections["论文主张与证据账本"])
             self.assertIn("证据", sections["论文主张与证据账本"])
             self.assertIn("解释", sections["论文主张与证据账本"])
+            self.assertNotIn("Across three papers", sections["论文主张与证据账本"])
+            self.assertIn("在三篇论文上", sections["论文主张与证据账本"])
             self.assertNotIn(
                 "we study an agent workflow",
                 sections["执行摘要"].lower(),
             )
+
+    def test_chinese_rubric_source_notes_use_readable_punctuation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp), language="zh"),
+            )
+
+            first_notes = result.rounds[0].rubric.source_notes
+            second_notes = result.rounds[1].rubric.source_notes
+
+            self.assertIn("基于 benchmark 报告、当前报告生成", first_notes)
+            self.assertIn(
+                "基于 benchmark 报告、当前报告、上一轮报告、上一轮评分标准批评生成",
+                second_notes,
+            )
+            self.assertNotIn("基于benchmark 报告, 当前报告", first_notes)
 
     def test_second_round_chinese_rubric_evolves_from_critic_feedback(self):
         with tempfile.TemporaryDirectory() as tmp:
