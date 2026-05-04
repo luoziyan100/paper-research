@@ -97,6 +97,12 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--sleep-seconds must be positive unless --max-rounds is set")
     if args.max_rounds is not None and args.max_rounds < 1:
         parser.error("--max-rounds must be at least 1")
+    for option_name, filename in (
+        ("--jsonl-filename", args.jsonl_filename),
+        ("--docx-filename", args.docx_filename),
+    ):
+        if Path(filename).name != filename:
+            parser.error(f"{option_name} must be a filename, not a path")
     try:
         paper_text = load_paper_text(args.paper)
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

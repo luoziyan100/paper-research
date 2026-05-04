@@ -671,3 +671,33 @@
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter21 python3 -m compileall -q paper_research` passed.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter21_final --jsonl-filename custom-rounds.jsonl --docx-filename custom-report.docx` wrote both custom output files.
 - `git diff --check` passed.
+
+## Iteration 22 - 2026-05-04 08:43 PDT
+
+### Current Problems
+
+- The new CLI filename options accepted path segments such as `../outside.jsonl`.
+- That allowed output files to escape `--output-dir`.
+- The red test confirmed the issue by creating `research_output/../outside.jsonl`.
+
+### Planned Changes
+
+- Add a CLI test that rejects path segments in output filename options.
+- Validate both `--jsonl-filename` and `--docx-filename` as filenames, not paths.
+- Remove the test-generated `outside.jsonl` pollution.
+
+### Changes Made
+
+- Added validation for `Path(filename).name != filename`.
+- Added a no-traceback CLI error for unsafe JSONL filenames.
+- Removed the red-test generated `outside.jsonl` file.
+
+### Verification After Changes
+
+- Red test first failed because no `SystemExit` was raised and `outside.jsonl` was written.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_rejects_output_filenames_with_path_segments tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- `python3 -m unittest discover -s tests` passed with 32 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter22 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
+- `git status --short --branch` confirmed no `outside.jsonl` remained.

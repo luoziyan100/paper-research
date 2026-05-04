@@ -80,6 +80,26 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("custom-rounds.jsonl", stdout.getvalue())
             self.assertIn("custom-report.docx", stdout.getvalue())
 
+    def test_cli_rejects_output_filenames_with_path_segments(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "paper.txt"
+            paper.write_text("Title: T\n\nAbstract\ncontent", encoding="utf-8")
+            stderr = io.StringIO()
+
+            with contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    main(
+                        [
+                            str(paper),
+                            "--jsonl-filename",
+                            "../outside.jsonl",
+                        ]
+                    )
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("--jsonl-filename must be a filename", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
