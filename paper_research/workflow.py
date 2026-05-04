@@ -267,26 +267,44 @@ class ReportWriterAgent:
         limitations = parsed.get("limitations", "The paper does not state limitations directly.")
 
         if language == "zh":
+            problem_summary = _zh_problem_summary(abstract)
+            method_summary = _zh_method_summary(method)
+            evidence_summary = _zh_evidence_summary(experiments)
+            limitation_summary = _zh_limitation_summary(limitations)
             sections = {
                 "执行摘要": (
-                    f"本报告将论文理解为试图解决这样一个问题：{_problem_statement(abstract)} "
-                    "报告重点区分论文声称了什么、哪些证据支撑这些声称，以及论证中仍然脆弱的地方。"
+                    f"本报告将论文理解为一个关于{problem_summary}的研究。"
+                    "它的价值不在于一次性总结论文，而在于把论文主张、外部 benchmark、"
+                    "评分标准和批评意见放进可迭代的研究审查流程。"
                 ),
                 "贡献分析": (
                     f"核心贡献信号：{_extract_contribution(abstract, method, language)} "
                     "本报告区分论文原始主张和评审者解释，让后续评分可以同时挑战二者。"
                 ),
+                "论文主张与证据账本": (
+                    f"主张：论文试图证明{problem_summary}可以通过多角色流程持续改进。"
+                    f"\n证据：{_compact(experiments) if experiments else _compact(abstract)}"
+                    f"\n解释：方法部分显示，{method_summary}；实验部分声称，{evidence_summary}。"
+                    "\n验证缺口：当前样例没有给出详细数据表、baseline 设置或显著性检验，"
+                    "因此结论只能被视为需要复核的方向性证据。"
+                ),
                 "方法与证据": (
-                    f"方法解读：{_compact(method)} 证据解读：{_compact(experiments)} "
-                    "最有价值的解读应把设计选择和测量结果连接起来。"
+                    f"方法解读：{method_summary}。证据解读：{evidence_summary}。"
+                    "最有价值的解读应把设计选择、评估对象、对照组和测量指标连接起来。"
                 ),
                 "限制与风险": (
-                    f"已知或推断的限制：{_compact(limitations)} "
+                    f"已知或推断的限制：{limitation_summary}。"
                     "评审应检查 benchmark 敏感性、可复现性细节，以及实验设定是否匹配论文主张。"
+                ),
+                "关键假设与验证缺口": (
+                    "关键假设 1：搜索到的优秀报告确实能代表高质量研究解读。"
+                    "\n关键假设 2：评分标准会提升报告质量，而不是诱导报告迎合评分项。"
+                    "\n关键假设 3：批评 agent 能发现 rubric 本身的偏差。"
+                    "\n需要补充的验证：benchmark 多样性统计、跨论文复现实验、人工专家盲评和消融实验。"
                 ),
                 "基于 Benchmark 的改进": (
                     f"第 {round_number} 轮先搜索优秀研究报告。可复用特征："
-                    f"{benchmark_lessons or '清晰主张、证据、限制和后续问题'}。"
+                    f"{_join_phrases(benchmark_lessons) or '清晰主张、证据、限制和后续问题'}。"
                 ),
                 "后续研究议程": (
                     "可继续推进的工作包括：复现核心结果，在分布外论文上测试稳健性，"
@@ -374,8 +392,16 @@ class RubricBuilderAgent:
                     max_points=20,
                 ),
                 RubricCriterion(
-                    name="研究价值",
-                    description="产出可执行的后续问题、复现实验和决策建议。",
+                    name=(
+                        "可复现性与证据引用"
+                        if _critic_mentions_reproducibility(prior_critic_review)
+                        else "研究价值"
+                    ),
+                    description=(
+                        "要求报告引用具体论文证据，并说明复现实验、数据、baseline 和评估缺口。"
+                        if _critic_mentions_reproducibility(prior_critic_review)
+                        else "产出可执行的后续问题、复现实验和决策建议。"
+                    ),
                     max_points=20,
                 ),
             ]
@@ -445,11 +471,12 @@ class ReportScoringAgent:
         scores: List[CriterionScore] = []
         if language == "zh":
             keyword_map = {
-                "问题定义": ["问题", "范围", "假设", "重要"],
+                "问题定义": ["问题", "范围", "假设", "重要", "研究"],
                 "技术贡献": ["贡献", "方法", "新颖", "设计", "agent"],
                 "证据质量": ["证据", "实验", "baseline", "测量", "结果"],
                 "限制与失败模式": ["限制", "风险", "脆弱", "失败", "复现"],
                 "研究价值": ["后续", "复现", "议程", "ablation", "建议"],
+                "可复现性与证据引用": ["证据", "复现", "baseline", "数据", "评估"],
             }
         else:
             keyword_map = {
@@ -462,15 +489,20 @@ class ReportScoringAgent:
         for criterion in rubric.criteria:
             keywords = keyword_map.get(criterion.name, [])
             hits = sum(1 for keyword in keywords if keyword in report_text)
-            points = min(criterion.max_points, 8 + hits * 3)
-            rationale = (
-                f"在生成报告中找到 {hits} 个与“{criterion.name}”相关的证据标记。"
-                if language == "zh"
-                else (
+            if language == "zh":
+                evidence = _find_evidence_snippet(report, keywords)
+                points = min(criterion.max_points, 6 + min(hits, 5) * 2)
+                if "验证缺口" in evidence or "没有给出" in evidence:
+                    points = min(points, 14)
+                rationale = (
+                    f"找到 {hits} 个相关标记。证据：{evidence}"
+                )
+            else:
+                points = min(criterion.max_points, 8 + hits * 3)
+                rationale = (
                     f"Found {hits} evidence markers for {criterion.name.lower()} "
                     "in the generated report."
                 )
-            )
             scores.append(
                 CriterionScore(
                     name=criterion.name,
@@ -898,6 +930,101 @@ def _problem_statement(abstract: str) -> str:
     if not sentence:
         return "an unstated research problem."
     return sentence[0].lower() + sentence[1:]
+
+
+def _zh_problem_summary(abstract: str) -> str:
+    lower = abstract.lower()
+    parts = []
+    if "long papers" in lower or "paper" in lower:
+        parts.append("长论文深度解读")
+    if "benchmark" in lower or "external" in lower:
+        parts.append("外部优秀报告对照")
+    if "rubric" in lower or "score" in lower:
+        parts.append("评分标准迭代")
+    if "record" in lower or "iteration" in lower:
+        parts.append("过程记录")
+    if parts:
+        return "、".join(parts)
+    return "论文自动分析流程"
+
+
+def _zh_method_summary(method: str) -> str:
+    lower = method.lower()
+    if "separates" in lower and "roles" in lower:
+        return "系统把报告写作、评分标准设计、评分和批评分离为独立角色"
+    if method.strip():
+        return "论文提出了一个需要进一步拆解的技术流程"
+    return "方法描述不够明确"
+
+
+def _zh_evidence_summary(experiments: str) -> str:
+    lower = experiments.lower()
+    if "three papers" in lower and "improved coverage" in lower:
+        return "在三篇论文上，迭代评分提高了假设、限制和可复现性细节的覆盖"
+    if experiments.strip():
+        return "实验声称支持主要结论，但仍需要检查 baseline、指标和统计细节"
+    return "实验或结果部分不够明确"
+
+
+def _zh_limitation_summary(limitations: str) -> str:
+    lower = limitations.lower()
+    risks = []
+    if "benchmark" in lower:
+        risks.append("结果依赖 benchmark 报告质量")
+    if "overfit" in lower or "rubric" in lower:
+        risks.append("评分标准可能过拟合当前报告")
+    if "critic" in lower:
+        risks.append("批评 agent 的能力会影响纠偏效果")
+    if risks:
+        return "；".join(risks)
+    return "论文限制没有充分展开，需要从评估设计和可复现性角度补查"
+
+
+def _join_phrases(text: str) -> str:
+    phrases = []
+    for raw_item in text.split("; "):
+        item = raw_item.strip().rstrip(".。；;")
+        if item:
+            phrases.append(item)
+    return "；".join(phrases)
+
+
+def _critic_mentions_reproducibility(critic_review: Optional[CriticReview]) -> bool:
+    if not critic_review:
+        return False
+    combined = " ".join(critic_review.issues + critic_review.recommendations).lower()
+    return "reproduc" in combined or "可复现" in combined or "证据引用" in combined
+
+
+def _find_evidence_snippet(report: ResearchReport, keywords: Sequence[str]) -> str:
+    preferred_sections = [
+        ("限制", "限制与风险"),
+        ("风险", "限制与风险"),
+        ("复现", "关键假设与验证缺口"),
+        ("baseline", "关键假设与验证缺口"),
+        ("证据", "论文主张与证据账本"),
+        ("实验", "论文主张与证据账本"),
+    ]
+    for keyword, section_name in preferred_sections:
+        if keyword in keywords and section_name in report.sections:
+            return f"{section_name} - {_matching_line(report.sections[section_name], keywords)}"
+    for section_name, content in report.sections.items():
+        lowered = content.lower()
+        if any(keyword.lower() in lowered for keyword in keywords):
+            return f"{section_name} - {_matching_line(content, keywords)}"
+    first_section = next(iter(report.sections.items()), None)
+    if first_section:
+        return f"{first_section[0]} - {_compact(first_section[1], 180)}"
+    return "报告没有提供可引用的证据片段。"
+
+
+def _matching_line(content: str, keywords: Sequence[str]) -> str:
+    for line in content.splitlines():
+        lowered = line.lower()
+        if any(keyword.lower() in lowered for keyword in keywords):
+            return _compact(line, 180)
+    first_line = content.splitlines()[0] if content.splitlines() else content
+    return _compact(first_line, 180)
 
 
 def _validate_language(language: str) -> None:

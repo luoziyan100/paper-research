@@ -162,6 +162,70 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("评分标准", document_xml)
             self.assertIn("评分标准批评", document_xml)
 
+    def test_chinese_report_uses_evidence_ledger_sections(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            sections = result.rounds[0].report.sections
+
+            self.assertIn("论文主张与证据账本", sections)
+            self.assertIn("关键假设与验证缺口", sections)
+            self.assertIn("主张", sections["论文主张与证据账本"])
+            self.assertIn("证据", sections["论文主张与证据账本"])
+            self.assertIn("解释", sections["论文主张与证据账本"])
+            self.assertNotIn(
+                "we study an agent workflow",
+                sections["执行摘要"].lower(),
+            )
+
+    def test_second_round_chinese_rubric_evolves_from_critic_feedback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp), language="zh"),
+            )
+
+            second_criteria = [criterion.name for criterion in result.rounds[1].rubric.criteria]
+
+            self.assertIn("可复现性与证据引用", second_criteria)
+            self.assertNotIn("研究价值", second_criteria)
+            self.assertIn("上一轮评分标准批评", result.rounds[1].rubric.source_notes)
+
+    def test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            scorecard = result.rounds[0].scorecard
+
+            self.assertLessEqual(scorecard.total_score, 82)
+            self.assertTrue(
+                all("证据：" in score.rationale for score in scorecard.scores),
+                [score.rationale for score in scorecard.scores],
+            )
+
+            limitation_score = next(
+                score for score in scorecard.scores if score.name == "限制与失败模式"
+            )
+            self.assertIn("限制与风险", limitation_score.rationale)
+
+    def test_chinese_benchmark_improvement_has_clean_punctuation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            benchmark_section = result.rounds[0].report.sections["基于 Benchmark 的改进"]
+
+            self.assertNotIn("。。", benchmark_section)
+            self.assertNotIn(".。", benchmark_section)
+
     def test_continuous_runner_resumes_and_keeps_appending_rounds(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)
