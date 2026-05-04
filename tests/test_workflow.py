@@ -353,6 +353,19 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("评分标准", results[0].search_note)
             self.assertIn("把论文主张连接到实验证据。", results[0].strengths)
 
+    def test_chinese_local_benchmark_extracts_method_audit_strength(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "method_audit.md").write_text(
+                "优秀论文审查报告应关注评分标准、baseline、数据、消融实验和可复现性。",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir, language="zh")
+
+            results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertIn("检查 baseline、数据和消融实验是否充分。", results[0].strengths)
+
     def test_local_benchmark_search_scores_more_than_first_five_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)

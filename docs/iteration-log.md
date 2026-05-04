@@ -1377,3 +1377,31 @@
 - `python3 -m unittest discover -s tests` passed with 54 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter46 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 47 - 2026-05-04 09:40 PDT
+
+### Current Problems
+
+- Local benchmark strength inference recognized evidence and limitations, but not method-audit signals.
+- Reports discussing `baseline`、`数据`、`消融实验` did not feed that quality trait into later rubric/report generation.
+
+### Planned Changes
+
+- Add a Chinese local benchmark test for method-audit strength extraction.
+- Add baseline/data/ablation keyword detection to benchmark strength inference.
+- Preserve existing evidence and limitations strengths.
+
+### Changes Made
+
+- Added `test_chinese_local_benchmark_extracts_method_audit_strength`.
+- `_infer_report_strengths(...)` now emits `检查 baseline、数据和消融实验是否充分。` in Chinese mode.
+- English mode gets the parallel strength `Audits baselines, data, and ablation evidence.`
+
+### Verification After Changes
+
+- Red test first failed because strengths only contained `把论文主张连接到实验证据。`
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_extracts_method_audit_strength tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_chinese_report_records_benchmark_source_quality`
+- `python3 -m unittest discover -s tests` passed with 55 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter47 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

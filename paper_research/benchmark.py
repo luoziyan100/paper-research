@@ -291,6 +291,18 @@ def _infer_report_strengths(content: str, language: str = "en") -> List[str]:
             if language == "zh"
             else "Connects claims to experimental evidence."
         )
+    if (
+        "baseline" in lower
+        or "ablation" in lower
+        or "data" in lower
+        or "消融" in content
+        or "数据" in content
+    ):
+        strengths.append(
+            "检查 baseline、数据和消融实验是否充分。"
+            if language == "zh"
+            else "Audits baselines, data, and ablation evidence."
+        )
     if "future" in lower or "follow" in lower or "未来" in content or "后续" in content:
         strengths.append(
             "把论文解读转化为后续研究问题。"
