@@ -9,6 +9,8 @@ class DocumentationTest(unittest.TestCase):
         self.assertIn("source_type", readme)
         self.assertIn("search_note", readme)
         self.assertIn("from paper_research import BenchmarkSearchAgent", readme)
+        self.assertIn("--jsonl-filename", readme)
+        self.assertIn("--docx-filename", readme)
 
 
 if __name__ == "__main__":

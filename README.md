@@ -49,6 +49,19 @@ python3 -m paper_research examples/sample_paper.txt \
   --output-dir research_output
 ```
 
+Use custom output filenames inside the output directory:
+
+```bash
+python3 -m paper_research examples/sample_paper.txt \
+  --rounds 1 \
+  --output-dir research_output \
+  --jsonl-filename custom-rounds.jsonl \
+  --docx-filename custom-report.docx
+```
+
+Output filename options must be plain filenames, not paths; JSONL filenames must
+end with `.jsonl`, and DOCX filenames must end with `.docx`.
+
 With your own benchmark report folder:
 
 ```bash

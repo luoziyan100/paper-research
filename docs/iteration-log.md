@@ -729,3 +729,31 @@
 - `python3 -m unittest discover -s tests` passed with 33 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter23 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 24 - 2026-05-04 08:48 PDT
+
+### Current Problems
+
+- README did not mention the new `--jsonl-filename` and `--docx-filename` CLI options.
+- Users could miss the feature added in Iteration 21 or misunderstand the filename restrictions added in Iterations 22 and 23.
+
+### Planned Changes
+
+- Extend the README documentation regression test.
+- Add a custom-output-filename CLI example.
+- Document filename/path and extension constraints.
+
+### Changes Made
+
+- README now includes a custom output filename command example.
+- README now states output filename options must be plain filenames.
+- README now states JSONL filenames must end with `.jsonl` and DOCX filenames must end with `.docx`.
+
+### Verification After Changes
+
+- Red docs test first failed because README did not include `--jsonl-filename`.
+- Target test passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import`
+- `python3 -m unittest discover -s tests` passed with 33 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter24 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
