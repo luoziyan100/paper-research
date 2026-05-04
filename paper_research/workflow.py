@@ -788,12 +788,21 @@ def _validate_language(language: str) -> None:
 
 def _extract_contribution(abstract: str, method: str, language: str = "en") -> str:
     combined = f"{abstract} {method}"
-    markers = ["agent", "workflow", "rubric", "search", "evidence", "experiments", "reproducibility"]
-    found = [marker for marker in markers if marker in combined.lower()]
+    marker_labels = [
+        ("agent", "智能体"),
+        ("workflow", "工作流"),
+        ("rubric", "评分标准"),
+        ("search", "检索"),
+        ("evidence", "证据"),
+        ("experiments", "实验"),
+        ("reproducibility", "可复现性"),
+    ]
+    lower_combined = combined.lower()
+    found = [(marker, zh_label) for marker, zh_label in marker_labels if marker in lower_combined]
     if found:
         if language == "zh":
-            return "论文强调 " + "、".join(found[:5]) + "。"
-        return "the paper emphasizes " + ", ".join(found[:5]) + "."
+            return "论文强调 " + "、".join(label for _, label in found[:5]) + "。"
+        return "the paper emphasizes " + ", ".join(marker for marker, _ in found[:5]) + "."
     if language == "zh":
         return _first_sentences(combined, count=1) or "论文贡献没有明确表述。"
     return _first_sentences(combined, count=1) or "the contribution is not explicit."

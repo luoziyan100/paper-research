@@ -1128,3 +1128,31 @@
 - `python3 -m unittest discover -s tests` passed with 46 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter37 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 38 - 2026-05-04 09:24 PDT
+
+### Current Problems
+
+- Chinese contribution analysis rendered internal English markers such as `agent、workflow、rubric`.
+- This weakened the Chinese report voice even when the user requested `--language zh`.
+
+### Planned Changes
+
+- Add a regression test for localized contribution marker terms.
+- Keep English keyword matching for papers written in English.
+- Render Chinese labels in Chinese reports.
+
+### Changes Made
+
+- Added `test_chinese_contribution_analysis_localizes_marker_terms`.
+- `_extract_contribution(...)` now keeps marker/label pairs.
+- Chinese reports now use labels such as `智能体`、`工作流`、`评分标准`、`检索`、`证据`。
+
+### Verification After Changes
+
+- Red test first failed because the contribution section contained `论文强调 agent、workflow、rubric、search`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_contribution_analysis_localizes_marker_terms tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 47 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter38 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

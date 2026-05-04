@@ -472,6 +472,20 @@ class ResearchWorkflowTest(unittest.TestCase):
                 sections["执行摘要"].lower(),
             )
 
+    def test_chinese_contribution_analysis_localizes_marker_terms(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            contribution = result.rounds[0].report.sections["贡献分析"]
+
+            self.assertIn("智能体", contribution)
+            self.assertIn("工作流", contribution)
+            self.assertIn("评分标准", contribution)
+            self.assertNotIn("agent、workflow、rubric", contribution)
+
     def test_chinese_rubric_source_notes_use_readable_punctuation(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
