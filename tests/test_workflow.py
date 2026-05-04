@@ -8,10 +8,12 @@ from urllib.parse import unquote_plus
 from paper_research.workflow import (
     BenchmarkSearchAgent,
     ContinuousRunConfig,
+    ReportWriterAgent,
     WorkflowConfig,
     run_continuous_workflow,
     run_research_workflow,
 )
+from paper_research.models import BenchmarkReport
 
 
 PAPER_TEXT = """
@@ -367,6 +369,39 @@ class ResearchWorkflowTest(unittest.TestCase):
                 document_xml = archive.read("word/document.xml").decode("utf-8")
             self.assertIn("Benchmark 对照质量", document_xml)
             self.assertIn("搜索说明", document_xml)
+
+    def test_chinese_benchmark_quality_uses_chinese_source_delimiter(self):
+        benchmarks = [
+            BenchmarkReport(
+                title="Local report",
+                source="/tmp/local.md",
+                summary="local",
+                strengths=["把论文主张连接到实验证据。"],
+                source_type="local",
+                search_note="local",
+            ),
+            BenchmarkReport(
+                title="Web report",
+                source="https://example.com/report",
+                summary="web",
+                strengths=["关注限制与可复现性。"],
+                source_type="web",
+                search_note="web",
+            ),
+        ]
+        report = ReportWriterAgent().write(
+            paper_text=PAPER_TEXT,
+            benchmark_reports=benchmarks,
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        section = report.sections["Benchmark 对照质量"]
+
+        self.assertIn("来源类型：本地 benchmark、网页搜索", section)
+        self.assertNotIn("本地 benchmark, 网页搜索", section)
 
     def test_can_generate_chinese_report_and_docx(self):
         with tempfile.TemporaryDirectory() as tmp:

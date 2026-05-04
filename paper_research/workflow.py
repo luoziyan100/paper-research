@@ -693,7 +693,7 @@ def _benchmark_quality_summary(
         if not coverage:
             coverage.append("通用研究报告模式")
         return (
-            f"来源数量：{source_count}。来源类型：{', '.join(source_types)}。"
+            f"来源数量：{source_count}。来源类型：{'、'.join(source_types)}。"
             f"覆盖维度：{'、'.join(coverage)}。"
             "如果后续接入真实网页或本地 benchmark，应继续记录来源多样性和领域差异。"
         )

@@ -989,3 +989,30 @@
 - `python3 -m unittest discover -s tests` passed with 41 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter32 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 33 - 2026-05-04 09:14 PDT
+
+### Current Problems
+
+- Chinese `Benchmark 对照质量` used an English comma when listing multiple benchmark source types.
+- Mixed punctuation made generated Chinese reports and DOCX output less polished.
+
+### Planned Changes
+
+- Add a regression test with mixed local and web benchmark source types.
+- Require the Chinese quality section to join source types with `、`.
+- Preserve English comma-separated source-type formatting.
+
+### Changes Made
+
+- Added `test_chinese_benchmark_quality_uses_chinese_source_delimiter`.
+- `ReportWriterAgent` benchmark quality summaries now render Chinese source types with `、`.
+
+### Verification After Changes
+
+- Red test first failed because the section contained `本地 benchmark, 网页搜索`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_uses_chinese_source_delimiter tests.test_workflow.ResearchWorkflowTest.test_chinese_report_records_benchmark_source_quality`
+- `python3 -m unittest discover -s tests` passed with 42 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter33 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
