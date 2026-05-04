@@ -1156,3 +1156,32 @@
 - `python3 -m unittest discover -s tests` passed with 47 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter38 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 39 - 2026-05-04 09:26 PDT
+
+### Current Problems
+
+- Chinese papers did not use structured contribution marker extraction.
+- The report fell back to long sentence excerpts instead of concise signals such as `多智能体`、`评分标准`、`检索`。
+
+### Planned Changes
+
+- Add a regression test for Chinese marker extraction from Chinese paper text.
+- Extend contribution marker matching with Chinese aliases.
+- Avoid letting generic `智能体` duplicate and crowd out the more specific `多智能体`.
+
+### Changes Made
+
+- Added `test_chinese_contribution_analysis_extracts_chinese_markers`.
+- `_extract_contribution(...)` now supports Chinese aliases such as `多智能体`、`评分标准`、`检索`、`实验`、`可复现性`。
+- The extractor now skips generic `智能体` when `多智能体` is already present.
+
+### Verification After Changes
+
+- Red test first failed because the contribution section was a sentence fallback, not `论文强调 ...`.
+- During green work, an over-specific test assertion for `证据` was corrected because the fixture text did not contain that signal.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_contribution_analysis_extracts_chinese_markers tests.test_workflow.ResearchWorkflowTest.test_chinese_contribution_analysis_localizes_marker_terms tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 48 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter39 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

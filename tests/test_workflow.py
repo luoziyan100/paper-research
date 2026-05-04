@@ -486,6 +486,20 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("评分标准", contribution)
             self.assertNotIn("agent、workflow、rubric", contribution)
 
+    def test_chinese_contribution_analysis_extracts_chinese_markers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            contribution = result.rounds[0].report.sections["贡献分析"]
+
+            self.assertIn("论文强调 多智能体", contribution)
+            self.assertIn("评分标准", contribution)
+            self.assertIn("检索", contribution)
+            self.assertNotIn("论文贡献没有明确表述", contribution)
+
     def test_chinese_rubric_source_notes_use_readable_punctuation(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

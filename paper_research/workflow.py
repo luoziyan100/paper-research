@@ -789,16 +789,22 @@ def _validate_language(language: str) -> None:
 def _extract_contribution(abstract: str, method: str, language: str = "en") -> str:
     combined = f"{abstract} {method}"
     marker_labels = [
-        ("agent", "智能体"),
-        ("workflow", "工作流"),
-        ("rubric", "评分标准"),
-        ("search", "检索"),
-        ("evidence", "证据"),
-        ("experiments", "实验"),
-        ("reproducibility", "可复现性"),
+        ("multi-agent", "多智能体", ["multi-agent", "multi agent", "多智能体"]),
+        ("agent", "智能体", ["agent", "智能体"]),
+        ("workflow", "工作流", ["workflow", "流程", "工作流"]),
+        ("rubric", "评分标准", ["rubric", "评分标准"]),
+        ("search", "检索", ["search", "retrieval", "检索"]),
+        ("evidence", "证据", ["evidence", "证据"]),
+        ("experiments", "实验", ["experiment", "experiments", "实验"]),
+        ("reproducibility", "可复现性", ["reproducibility", "可复现性", "复现"]),
     ]
     lower_combined = combined.lower()
-    found = [(marker, zh_label) for marker, zh_label in marker_labels if marker in lower_combined]
+    found = []
+    for marker, zh_label, aliases in marker_labels:
+        if any(alias in lower_combined for alias in aliases):
+            if zh_label == "智能体" and any(label == "多智能体" for _, label in found):
+                continue
+            found.append((marker, zh_label))
     if found:
         if language == "zh":
             return "论文强调 " + "、".join(label for _, label in found[:5]) + "。"
