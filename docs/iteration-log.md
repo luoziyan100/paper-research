@@ -1324,3 +1324,30 @@
 - `python3 -m unittest discover -s tests` passed with 53 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter44 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 45 - 2026-05-04 09:37 PDT
+
+### Current Problems
+
+- Chinese web benchmark search still used the English title fallback `External benchmark report N` when a result lacked a title.
+- This could leak English headings into Chinese JSONL and DOCX benchmark sections.
+
+### Planned Changes
+
+- Add a Chinese web-search regression test with an empty result title.
+- Localize the missing-title fallback.
+- Preserve existing English web result titles.
+
+### Changes Made
+
+- Added `test_chinese_web_search_localizes_missing_title`.
+- `_search_web_benchmarks(...)` now uses `外部 benchmark 报告 N` in Chinese mode.
+
+### Verification After Changes
+
+- Red test first failed with `External benchmark report 1`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_localizes_missing_title tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_localizes_missing_snippet_summary tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 54 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter45 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

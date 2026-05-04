@@ -203,7 +203,11 @@ class BenchmarkSearchAgent:
             )
             reports.append(
                 BenchmarkReport(
-                    title=item["title"] or f"External benchmark report {index}",
+                    title=item["title"] or (
+                        f"外部 benchmark 报告 {index}"
+                        if self.language == "zh"
+                        else f"External benchmark report {index}"
+                    ),
                     source=item["url"] or f"web-search://round-{round_number}-{index}",
                     summary=summary,
                     strengths=_infer_report_strengths(f"{item['title']} {summary}", self.language),
