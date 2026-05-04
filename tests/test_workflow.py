@@ -320,6 +320,7 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("论文", decoded_query)
         self.assertIn("研究报告", decoded_query)
         self.assertNotIn("excellent research report", decoded_query)
+        self.assertIn("优秀 论文 研究报告", results[0].search_note)
         self.assertEqual(results[0].source_type, "web")
 
     def test_builtin_benchmark_fallback_returns_diverse_report_archetypes(self):

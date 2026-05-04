@@ -934,3 +934,30 @@
 - `python3 -m unittest discover -s tests` passed with 40 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter30 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 31 - 2026-05-04 09:08 PDT
+
+### Current Problems
+
+- Web benchmark `search_note` recorded the percent-encoded DuckDuckGo URL.
+- Chinese search provenance was technically present but hard to read in JSONL and DOCX.
+
+### Planned Changes
+
+- Extend the Chinese web-search test to require readable Chinese query terms in `search_note`.
+- Keep the actual request URL encoded.
+- Preserve existing English web-search behavior.
+
+### Changes Made
+
+- Web benchmark `search_note` now stores the raw query text instead of the encoded URL.
+- Chinese notes now include phrases such as `优秀 论文 研究报告`.
+
+### Verification After Changes
+
+- Red test first failed because `search_note` contained only the encoded URL.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_uses_chinese_query_terms tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 40 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter31 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
