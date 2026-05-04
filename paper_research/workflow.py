@@ -280,7 +280,7 @@ class ReportScoringAgent:
             keywords = keyword_map.get(criterion.name, [])
             hits = sum(1 for keyword in keywords if keyword in report_text)
             if language == "zh":
-                evidence = _find_evidence_snippet(report, keywords)
+                evidence = _find_evidence_snippet(report, keywords, language)
                 points = min(criterion.max_points, 6 + min(hits, 5) * 2)
                 if "验证缺口" in evidence or "没有给出" in evidence:
                     points = min(points, 14)
@@ -688,7 +688,12 @@ def _legacy_search_note(source: str) -> str:
     return f"Recovered from legacy JSONL without benchmark trace metadata: {source}."
 
 
-def _find_evidence_snippet(report: ResearchReport, keywords: Sequence[str]) -> str:
+def _find_evidence_snippet(
+    report: ResearchReport,
+    keywords: Sequence[str],
+    language: str,
+) -> str:
+    separator = "：" if language == "zh" else " - "
     preferred_sections = [
         ("限制", "限制与风险"),
         ("风险", "限制与风险"),
@@ -699,14 +704,14 @@ def _find_evidence_snippet(report: ResearchReport, keywords: Sequence[str]) -> s
     ]
     for keyword, section_name in preferred_sections:
         if keyword in keywords and section_name in report.sections:
-            return f"{section_name} - {_matching_line(report.sections[section_name], keywords)}"
+            return f"{section_name}{separator}{_matching_line(report.sections[section_name], keywords)}"
     for section_name, content in report.sections.items():
         lowered = content.lower()
         if any(keyword.lower() in lowered for keyword in keywords):
-            return f"{section_name} - {_matching_line(content, keywords)}"
+            return f"{section_name}{separator}{_matching_line(content, keywords)}"
     first_section = next(iter(report.sections.items()), None)
     if first_section:
-        return f"{first_section[0]} - {_compact(first_section[1], 180)}"
+        return f"{first_section[0]}{separator}{_compact(first_section[1], 180)}"
     return "报告没有提供可引用的证据片段。"
 
 

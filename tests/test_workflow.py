@@ -318,6 +318,10 @@ class ResearchWorkflowTest(unittest.TestCase):
                 all("证据：" in score.rationale for score in scorecard.scores),
                 [score.rationale for score in scorecard.scores],
             )
+            self.assertTrue(
+                all(" - " not in score.rationale for score in scorecard.scores),
+                [score.rationale for score in scorecard.scores],
+            )
 
             limitation_score = next(
                 score for score in scorecard.scores if score.name == "限制与失败模式"

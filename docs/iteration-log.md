@@ -425,3 +425,35 @@
 - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter13_final` produced JSONL and DOCX outputs.
 - `git diff --check` passed after removing a trailing blank line.
 - `paper_research/workflow.py` is now 737 lines; `paper_research/benchmark.py` is 339 lines.
+
+## Iteration 14 - 2026-05-04 08:11 PDT
+
+### Current Problems
+
+- Chinese score rationales still used an English separator between section names and evidence snippets, such as `证据：执行摘要 - ...`.
+- This formatting leaked into both JSONL scorecards and DOCX score bullets.
+
+### Planned Changes
+
+- Add a regression test requiring Chinese score rationales to avoid the English ` - ` separator.
+- Keep English score rationales unchanged.
+- Update the evidence-snippet helper to choose separators by output language.
+
+### Changes Made
+
+- `_find_evidence_snippet(...)` now receives `language`.
+- Chinese evidence snippets now use `章节：内容`.
+- English evidence snippets continue to use `Section - content`.
+
+### Verification After Changes
+
+- Red test first failed with rationales such as `证据：执行摘要 - 本报告...`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score`
+- `python3 -m unittest discover -s tests` passed with 27 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter14 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter14_final` produced JSONL and DOCX outputs.
+- Output inspection confirmed:
+  - JSONL rationales now include `证据：执行摘要：...`.
+  - DOCX score bullets now include `问题定义：12/20。找到 3 个相关标记。证据：执行摘要：...`.
+  - No match for `证据：执行摘要 -`.
