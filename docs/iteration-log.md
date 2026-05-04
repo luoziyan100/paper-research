@@ -757,3 +757,36 @@
 - `python3 -m unittest discover -s tests` passed with 33 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter24 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 25 - 2026-05-04 08:50 PDT
+
+### Current Problems
+
+- English reports lacked the explicit claim-evidence ledger already present in Chinese reports.
+- English reports also lacked a dedicated assumptions and verification-gaps section.
+- This made English report structure less audit-friendly and less symmetric with the Chinese report.
+
+### Planned Changes
+
+- Add a test requiring English reports to include `Claim-Evidence Ledger`.
+- Add a test requiring English reports to include `Key Assumptions and Verification Gaps`.
+- Ensure DOCX export includes the new sections through normal report rendering.
+
+### Changes Made
+
+- Added an English `Claim-Evidence Ledger` section with `Claim`, `Evidence`, `Interpretation`, and `Verification gap`.
+- Added an English `Key Assumptions and Verification Gaps` section.
+- Added regression coverage for the new sections.
+
+### Verification After Changes
+
+- Red test first failed because English report sections did not contain `Claim-Evidence Ledger`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_report_uses_claim_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 34 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter25 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 1 --output-dir /tmp/paper_research_iter25_final` produced JSONL and DOCX outputs.
+- Output inspection confirmed:
+  - JSONL report sections include `Claim-Evidence Ledger` and `Key Assumptions and Verification Gaps`.
+  - DOCX `word/document.xml` includes both section headings.
+  - `workflow.py` remains under the 950-line threshold at 792 lines.

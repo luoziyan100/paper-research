@@ -143,6 +143,21 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("MMLU", report.sections["Method and Evidence"])
             self.assertNotIn("method section was not explicit", report.sections["Method and Evidence"].lower())
 
+    def test_english_report_uses_claim_evidence_ledger_sections(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            sections = result.rounds[0].report.sections
+
+            self.assertIn("Claim-Evidence Ledger", sections)
+            self.assertIn("Key Assumptions and Verification Gaps", sections)
+            self.assertIn("Claim:", sections["Claim-Evidence Ledger"])
+            self.assertIn("Evidence:", sections["Claim-Evidence Ledger"])
+            self.assertIn("Verification gap:", sections["Claim-Evidence Ledger"])
+
     def test_second_round_report_uses_prior_low_score_items(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

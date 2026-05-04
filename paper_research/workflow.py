@@ -116,6 +116,14 @@ class ReportWriterAgent:
                 "The report distinguishes the paper's own claims from the evaluator's "
                 "judgment so later scoring can challenge both."
             ),
+            "Claim-Evidence Ledger": (
+                f"Claim: the paper argues that {_problem_statement(abstract)} can be "
+                "improved through the proposed workflow or method.\n"
+                f"Evidence: {_compact(experiments) if experiments else _compact(abstract)}\n"
+                f"Interpretation: method evidence shows {_compact(method)}\n"
+                "Verification gap: the report should still inspect baseline settings, "
+                "measurement design, statistical support, and reproducibility details."
+            ),
             "Method and Evidence": (
                 f"Method reading: {_compact(method)} Evidence reading: {_compact(experiments)} "
                 "The strongest interpretation connects design choices to measured outcomes."
@@ -130,6 +138,13 @@ class ReportWriterAgent:
                 f"{benchmark_lessons or 'clear claims, evidence, limitations, and next steps'}."
             ),
             "Benchmark Quality": _benchmark_quality_summary(benchmark_reports, language),
+            "Key Assumptions and Verification Gaps": (
+                "Assumption 1: retrieved benchmark reports represent high-quality analysis. "
+                "Assumption 2: the rubric improves analysis depth instead of rewarding rubric gaming. "
+                "Assumption 3: the critic can detect weaknesses in the rubric itself. "
+                "Needed validation: benchmark diversity checks, cross-paper replication, expert blind review, "
+                "and ablations over agent roles."
+            ),
             "Research Agenda": (
                 "Useful follow-up work: reproduce the central result, test robustness on "
                 "out-of-distribution papers, compare against simpler baselines, and run an "
