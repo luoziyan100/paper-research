@@ -103,6 +103,10 @@ def main(argv: list[str] | None = None) -> int:
     ):
         if Path(filename).name != filename:
             parser.error(f"{option_name} must be a filename, not a path")
+    if not args.jsonl_filename.endswith(".jsonl"):
+        parser.error("--jsonl-filename must end with .jsonl")
+    if not args.docx_filename.endswith(".docx"):
+        parser.error("--docx-filename must end with .docx")
     try:
         paper_text = load_paper_text(args.paper)
     except (FileNotFoundError, RuntimeError, ValueError) as exc:

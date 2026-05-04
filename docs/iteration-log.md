@@ -701,3 +701,31 @@
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter22 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
 - `git status --short --branch` confirmed no `outside.jsonl` remained.
+
+## Iteration 23 - 2026-05-04 08:45 PDT
+
+### Current Problems
+
+- CLI output filename options accepted misleading extensions such as `rounds.txt` and `report.txt`.
+- This could produce JSONL or DOCX content under the wrong file extension.
+
+### Planned Changes
+
+- Add a CLI test that rejects wrong output filename extensions.
+- Require JSONL filenames to end in `.jsonl`.
+- Require DOCX filenames to end in `.docx`.
+
+### Changes Made
+
+- Added extension validation for `--jsonl-filename`.
+- Added extension validation for `--docx-filename`.
+- Added a no-traceback CLI regression test.
+
+### Verification After Changes
+
+- Red test first failed because the CLI wrote `research_output/rounds.txt` and `research_output/report.txt`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_rejects_output_filenames_with_wrong_extensions tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- `python3 -m unittest discover -s tests` passed with 33 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter23 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
