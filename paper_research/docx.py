@@ -44,6 +44,8 @@ class DocxDocument:
         with ZipFile(path, "w", ZIP_DEFLATED) as archive:
             archive.writestr("[Content_Types].xml", _content_types_xml())
             archive.writestr("_rels/.rels", _root_relationships_xml())
+            archive.writestr("docProps/core.xml", _core_properties_xml())
+            archive.writestr("docProps/app.xml", _app_properties_xml())
             archive.writestr("word/styles.xml", _styles_xml())
             archive.writestr("word/document.xml", _document_xml(self._paragraphs))
 
@@ -66,8 +68,18 @@ def _paragraph_xml(item: DocxParagraph) -> str:
     style = ""
     if item.style != "Normal":
         style = f"<w:pPr><w:pStyle w:val=\"{escape(item.style)}\"/></w:pPr>"
-    text = escape(item.text)
-    return f"""    <w:p>{style}<w:r><w:t xml:space="preserve">{text}</w:t></w:r></w:p>"""
+    runs = _text_runs_xml(item.text)
+    return f"""    <w:p>{style}<w:r>{runs}</w:r></w:p>"""
+
+
+def _text_runs_xml(text: str) -> str:
+    lines = text.split("\n")
+    parts = []
+    for index, line in enumerate(lines):
+        if index:
+            parts.append("<w:br/>")
+        parts.append(f'<w:t xml:space="preserve">{escape(line)}</w:t>')
+    return "".join(parts)
 
 
 def _content_types_xml() -> str:
@@ -77,6 +89,8 @@ def _content_types_xml() -> str:
   <Default Extension="xml" ContentType="application/xml"/>
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
   <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
 </Types>"""
 
 
@@ -84,7 +98,31 @@ def _root_relationships_xml() -> str:
     return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+  <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
 </Relationships>"""
+
+
+def _core_properties_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties
+  xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:dcterms="http://purl.org/dc/terms/"
+  xmlns:dcmitype="http://purl.org/dc/dcmitype/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dc:title>Iterative Paper Research Report</dc:title>
+  <dc:creator>paper-research</dc:creator>
+  <cp:lastModifiedBy>paper-research</cp:lastModifiedBy>
+</cp:coreProperties>"""
+
+
+def _app_properties_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
+  xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Application>paper-research</Application>
+</Properties>"""
 
 
 def _styles_xml() -> str:

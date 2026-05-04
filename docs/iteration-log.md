@@ -76,3 +76,32 @@
   - Each round now records 3 built-in benchmark archetypes.
   - `Benchmark 对照质量` reports `来源数量：3` and `来源类型：内置 fallback`.
   - DOCX `word/document.xml` grew to 24,620 bytes and includes the new section.
+
+## Iteration 3 - 2026-05-04 07:35 PDT
+
+### Current Problems
+
+- Evidence-ledger sections contain multiple lines, but the DOCX writer stored embedded newline characters inside one text node rather than using Word line breaks.
+- DOCX packages lacked `docProps/core.xml` and `docProps/app.xml`, making generated documents less complete for real Word processors and document indexing.
+
+### Planned Changes
+
+- Add tests for Word-compatible line break preservation.
+- Add tests for basic DOCX metadata parts.
+- Update the dependency-free DOCX writer without changing the public report workflow.
+
+### Changes Made
+
+- Converted multiline paragraph text into repeated `<w:t>` runs separated by `<w:br/>`.
+- Added `docProps/core.xml` and `docProps/app.xml`.
+- Added package relationships and content types for the metadata parts.
+
+### Verification After Changes
+
+- `python3 -m unittest discover -s tests` passed with 15 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter3 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter3_final` produced JSONL and DOCX outputs.
+- DOCX inspection showed:
+  - `docProps/core.xml` exists.
+  - `docProps/app.xml` exists.
+  - `word/document.xml` contains 12 `<w:br/>` line breaks.
