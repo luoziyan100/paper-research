@@ -1044,3 +1044,31 @@
 - `python3 -m unittest discover -s tests` passed with 43 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter34 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 35 - 2026-05-04 09:19 PDT
+
+### Current Problems
+
+- DOCX export could render a `Benchmark 搜索结果` section with no body when a round had no benchmark reports.
+- That made recovered or externally constructed reports look structurally incomplete.
+
+### Planned Changes
+
+- Add a DOCX regression test for empty Chinese benchmark results.
+- Render a clear empty-state paragraph in DOCX when no benchmark reports are present.
+- Preserve normal benchmark rendering for rounds with results.
+
+### Changes Made
+
+- Added `test_chinese_export_explains_empty_benchmark_results`.
+- `write_docx(...)` now adds `未记录可用的 benchmark 搜索结果。` for empty Chinese benchmark sections.
+- English DOCX export now gets the parallel empty state: `No usable benchmark search results were recorded.`
+
+### Verification After Changes
+
+- Red test first failed because the DOCX moved directly from `Benchmark 搜索结果` to the report title.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_chinese_export_explains_empty_benchmark_results tests.test_docx.DocxWriterTest.test_export_uses_language_specific_core_title tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 44 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter35 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

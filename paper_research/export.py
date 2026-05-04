@@ -34,6 +34,13 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
         else:
             document.add(heading(f"Round {round_result.round_number}", level=1))
             document.add(heading("Benchmark Search Results", level=2))
+        if not round_result.benchmark_reports:
+            empty_text = (
+                "未记录可用的 benchmark 搜索结果。"
+                if language == "zh"
+                else "No usable benchmark search results were recorded."
+            )
+            document.add(paragraph(empty_text))
         for benchmark in round_result.benchmark_reports:
             document.add(bullet(f"{benchmark.title} ({benchmark.source})"))
             if benchmark.search_note:

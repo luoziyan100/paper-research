@@ -146,6 +146,25 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("迭代式论文研究报告", core_xml)
             self.assertNotIn("Iterative Paper Research Report", core_xml)
 
+    def test_chinese_export_explains_empty_benchmark_results(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            round_result = RoundResult(
+                round_number=1,
+                benchmark_reports=[],
+                report=ResearchReport(title="深度研究报告 - 示例", sections={"执行摘要": "内容"}),
+                rubric=Rubric(title="评分标准", criteria=[], source_notes="说明"),
+                scorecard=Scorecard(total_score=0, scores=[], summary="总结"),
+                critic_review=CriticReview(issues=[], recommendations=[]),
+            )
+
+            write_docx(path, [round_result], language="zh")
+
+            with zipfile.ZipFile(path) as archive:
+                document_xml = archive.read("word/document.xml").decode("utf-8")
+
+            self.assertIn("未记录可用的 benchmark 搜索结果。", document_xml)
+
 
 if __name__ == "__main__":
     unittest.main()
