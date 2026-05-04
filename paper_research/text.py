@@ -13,6 +13,13 @@ def parse_sections(text: str) -> Dict[str, str]:
         line = raw_line.strip()
         if not line:
             continue
+        inline_heading = split_inline_heading(line)
+        if inline_heading:
+            current, content = inline_heading
+            sections.setdefault(current, [])
+            if content:
+                sections[current].append(content)
+            continue
         chinese_heading = normalize_chinese_heading(line)
         if chinese_heading:
             current = chinese_heading
@@ -26,6 +33,23 @@ def parse_sections(text: str) -> Dict[str, str]:
             continue
         sections.setdefault(current, []).append(line)
     return {name: " ".join(lines) for name, lines in sections.items() if lines}
+
+
+def split_inline_heading(line: str) -> tuple[str, str] | None:
+    if "：" in line:
+        heading_text, content = line.split("：", 1)
+    elif ":" in line:
+        heading_text, content = line.split(":", 1)
+    else:
+        return None
+    chinese_heading = normalize_chinese_heading(heading_text)
+    if chinese_heading:
+        return chinese_heading, content.strip()
+    normalized = re.sub(r"[^a-zA-Z ]", "", heading_text).strip().lower()
+    english_heading = normalize_english_heading(normalized)
+    if english_heading:
+        return english_heading, content.strip()
+    return None
 
 
 def paper_title(text: str) -> str:

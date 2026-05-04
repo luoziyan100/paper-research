@@ -1185,3 +1185,31 @@
 - `python3 -m unittest discover -s tests` passed with 48 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter39 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 40 - 2026-05-04 09:28 PDT
+
+### Current Problems
+
+- Chinese section parsing only recognized headings placed on their own line.
+- Common inline headings such as `摘要：...` and `方法：...` were treated as body text, causing method and experiment evidence to fall back to generic summaries.
+
+### Planned Changes
+
+- Add a Chinese fixture with inline headings.
+- Parse valid `heading：content` and `heading: content` lines before normal heading detection.
+- Preserve existing numbered and parenthesized heading support.
+
+### Changes Made
+
+- Added `INLINE_CHINESE_PAPER_TEXT`.
+- Added `test_inline_chinese_headings_are_parsed`.
+- Added `split_inline_heading(...)` and wired it into `parse_sections(...)`.
+
+### Verification After Changes
+
+- Red test first failed because `方法与证据` did not include `多角色流程`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_inline_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_parenthesized_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 49 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter40 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
