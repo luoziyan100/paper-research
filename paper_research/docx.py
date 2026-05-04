@@ -30,7 +30,8 @@ def bullet(text: str) -> DocxParagraph:
 class DocxDocument:
     """Build a simple DOCX document from paragraphs and headings."""
 
-    def __init__(self) -> None:
+    def __init__(self, title: str = "Iterative Paper Research Report") -> None:
+        self._title = title
         self._paragraphs: List[DocxParagraph] = []
 
     def add(self, item: DocxParagraph) -> None:
@@ -44,7 +45,7 @@ class DocxDocument:
         with ZipFile(path, "w", ZIP_DEFLATED) as archive:
             archive.writestr("[Content_Types].xml", _content_types_xml())
             archive.writestr("_rels/.rels", _root_relationships_xml())
-            archive.writestr("docProps/core.xml", _core_properties_xml())
+            archive.writestr("docProps/core.xml", _core_properties_xml(self._title))
             archive.writestr("docProps/app.xml", _app_properties_xml())
             archive.writestr("word/styles.xml", _styles_xml())
             archive.writestr("word/document.xml", _document_xml(self._paragraphs))
@@ -103,15 +104,16 @@ def _root_relationships_xml() -> str:
 </Relationships>"""
 
 
-def _core_properties_xml() -> str:
-    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+def _core_properties_xml(title: str) -> str:
+    escaped_title = escape(title)
+    return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cp:coreProperties
   xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
   xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:dcterms="http://purl.org/dc/terms/"
   xmlns:dcmitype="http://purl.org/dc/dcmitype/"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <dc:title>Iterative Paper Research Report</dc:title>
+  <dc:title>{escaped_title}</dc:title>
   <dc:creator>paper-research</dc:creator>
   <cp:lastModifiedBy>paper-research</cp:lastModifiedBy>
 </cp:coreProperties>"""

@@ -10,9 +10,10 @@ from paper_research.models import RoundResult
 
 
 def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") -> None:
-    document = DocxDocument()
+    title = "迭代式论文研究报告" if language == "zh" else "Iterative Paper Research Report"
+    document = DocxDocument(title=title)
     if language == "zh":
-        document.add(heading("迭代式论文研究报告", level=1))
+        document.add(heading(title, level=1))
         document.add(
             paragraph(
                 "本文档记录每一轮研究报告、benchmark 搜索、评分标准、评分结果和评分标准批评。"

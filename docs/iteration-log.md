@@ -819,3 +819,33 @@
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter26 python3 -m compileall -q paper_research` passed.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 1 --output-dir /tmp/paper_research_iter26_final` produced JSONL and DOCX outputs.
 - Output inspection confirmed the English benchmark-improvement section ends cleanly with a single period and no `.;`.
+
+## Iteration 27 - 2026-05-04 08:58 PDT
+
+### Current Problems
+
+- DOCX core metadata title was always `Iterative Paper Research Report`.
+- Chinese DOCX files had Chinese body text but English `docProps/core.xml` title metadata.
+
+### Planned Changes
+
+- Add a DOCX writer test for custom core metadata titles.
+- Add a workflow export test for Chinese DOCX core title.
+- Let `write_docx(...)` pass language-specific document titles to the DOCX writer.
+
+### Changes Made
+
+- `DocxDocument` now accepts a `title` argument.
+- `docProps/core.xml` escapes and writes the provided title.
+- `write_docx(...)` now uses `迭代式论文研究报告` for Chinese output and keeps `Iterative Paper Research Report` for English output.
+
+### Verification After Changes
+
+- Red test first failed because `DocxDocument(title=...)` was not accepted.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_export_uses_language_specific_core_title tests.test_docx.DocxWriterTest.test_writes_custom_docx_core_title`
+- `python3 -m unittest discover -s tests` passed with 37 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter27 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter27_final` produced JSONL and DOCX outputs.
+- DOCX inspection confirmed `docProps/core.xml` contains `<dc:title>迭代式论文研究报告</dc:title>`.
+- `git diff --check` passed.

@@ -48,6 +48,20 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("docProps/core.xml", names)
             self.assertIn("docProps/app.xml", names)
 
+    def test_writes_custom_docx_core_title(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            document = DocxDocument(title="迭代式论文研究报告")
+            document.add(paragraph("content"))
+
+            document.save(path)
+
+            with zipfile.ZipFile(path) as archive:
+                core_xml = archive.read("docProps/core.xml").decode("utf-8")
+
+            self.assertIn("迭代式论文研究报告", core_xml)
+            self.assertNotIn("Iterative Paper Research Report", core_xml)
+
     def test_export_uses_nested_heading_levels_for_report_sections(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"
@@ -111,6 +125,26 @@ class DocxWriterTest(unittest.TestCase):
                 document_xml,
             )
             self.assertIn('w:styleId="Heading3"', styles_xml)
+
+    def test_export_uses_language_specific_core_title(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            round_result = RoundResult(
+                round_number=1,
+                benchmark_reports=[],
+                report=ResearchReport(title="深度研究报告 - 示例", sections={"执行摘要": "内容"}),
+                rubric=Rubric(title="评分标准", criteria=[], source_notes="说明"),
+                scorecard=Scorecard(total_score=0, scores=[], summary="总结"),
+                critic_review=CriticReview(issues=[], recommendations=[]),
+            )
+
+            write_docx(path, [round_result], language="zh")
+
+            with zipfile.ZipFile(path) as archive:
+                core_xml = archive.read("docProps/core.xml").decode("utf-8")
+
+            self.assertIn("迭代式论文研究报告", core_xml)
+            self.assertNotIn("Iterative Paper Research Report", core_xml)
 
 
 if __name__ == "__main__":
