@@ -19,18 +19,9 @@ def parse_sections(text: str) -> Dict[str, str]:
             sections.setdefault(current, [])
             continue
         normalized = re.sub(r"[^a-zA-Z ]", "", line).strip().lower()
-        if normalized in {
-            "abstract",
-            "introduction",
-            "method",
-            "methods",
-            "experiments",
-            "results",
-            "discussion",
-            "limitations",
-            "conclusion",
-        }:
-            current = normalized
+        english_heading = normalize_english_heading(normalized)
+        if english_heading:
+            current = english_heading
             sections.setdefault(current, [])
             continue
         sections.setdefault(current, []).append(line)
@@ -69,6 +60,31 @@ def normalize_chinese_heading(line: str) -> str:
         "结论": "conclusion",
     }
     return heading_map.get(normalized, "")
+
+
+def normalize_english_heading(normalized_line: str) -> str:
+    heading_map = {
+        "abstract": "abstract",
+        "introduction": "introduction",
+        "background": "introduction",
+        "method": "method",
+        "methods": "method",
+        "methodology": "method",
+        "approach": "method",
+        "system design": "method",
+        "experiments": "experiments",
+        "experiment": "experiments",
+        "evaluation": "experiments",
+        "empirical evaluation": "experiments",
+        "experiments and results": "experiments",
+        "results": "results",
+        "findings": "results",
+        "discussion": "discussion",
+        "limitations": "limitations",
+        "limitation": "limitations",
+        "conclusion": "conclusion",
+    }
+    return heading_map.get(normalized_line, "")
 
 
 def first_sentences(text: str, count: int = 2) -> str:

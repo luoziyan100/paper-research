@@ -51,6 +51,26 @@ CHINESE_PAPER_TEXT = """
 系统依赖 benchmark 报告质量，也可能让评分标准过拟合当前报告。
 """
 
+APPROACH_EVALUATION_PAPER_TEXT = """
+Title: Contrastive Pretraining for Reliable Reasoning
+
+Abstract
+We introduce a contrastive pretraining system for reliable reasoning over
+multi-hop questions.
+
+Approach
+The model combines contrastive pretraining, retrieval filtering, and verifier
+reranking to reduce unsupported intermediate claims.
+
+Evaluation
+On MMLU and HotpotQA, the system improves factual consistency and calibration
+over retrieval-only baselines.
+
+Limitations
+The approach depends on curated negative examples and has not been tested on
+low-resource domains.
+"""
+
 
 class ResearchWorkflowTest(unittest.TestCase):
     def test_runs_iterative_agents_and_records_every_round(self):
@@ -109,6 +129,19 @@ class ResearchWorkflowTest(unittest.TestCase):
                 "previous report",
                 second_round.rubric.source_notes.lower(),
             )
+
+    def test_parses_approach_and_evaluation_headings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=APPROACH_EVALUATION_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertIn("contrastive pretraining", report.sections["Method and Evidence"])
+            self.assertIn("MMLU", report.sections["Method and Evidence"])
+            self.assertNotIn("method section was not explicit", report.sections["Method and Evidence"].lower())
 
     def test_second_round_report_uses_prior_low_score_items(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -521,3 +521,34 @@
   - Round 2 summary: `本轮报告总分 70/100。质量等级：良好。主要风险：问题定义。低分项应在下一轮优先修订。`
   - DOCX `word/document.xml` includes the same summary text.
   - `workflow.py` remains under the 950-line threshold at 777 lines.
+
+## Iteration 17 - 2026-05-04 08:24 PDT
+
+### Current Problems
+
+- English paper parsing recognized `Method` and `Experiments`, but not common alternatives such as `Approach` and `Evaluation`.
+- Papers using those headings produced reports that said the method and experiment sections were not explicit.
+- This reduced report quality for common ML/NLP paper structures.
+
+### Planned Changes
+
+- Add a test paper using `Approach` and `Evaluation` headings.
+- Normalize common English heading aliases into the existing canonical section names.
+- Preserve existing parsing for `Method`, `Experiments`, Chinese headings, and the sample paper.
+
+### Changes Made
+
+- Added `normalize_english_heading(...)`.
+- Mapped `Approach`, `Methodology`, and `System Design` to `method`.
+- Mapped `Evaluation`, `Empirical Evaluation`, and `Experiments and Results` to `experiments`.
+- Mapped `Background`, `Findings`, and singular limitation/experiment variants.
+
+### Verification After Changes
+
+- Red test first failed because `Method and Evidence` said `The method section was not explicit`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_parses_approach_and_evaluation_headings tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 29 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter17 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter17_final` produced JSONL and DOCX outputs.
+- Sample output inspection confirmed the original Chinese `方法与证据` section still uses the expected method/evidence summaries.
