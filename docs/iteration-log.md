@@ -1241,3 +1241,31 @@
 - `python3 -m unittest discover -s tests` passed with 50 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter41 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 42 - 2026-05-04 09:31 PDT
+
+### Current Problems
+
+- Markdown inputs with a top-level `# Title` produced report titles containing the literal `#`.
+- This made DOCX and JSONL output titles look unpolished for `.md` papers.
+
+### Planned Changes
+
+- Add a Markdown-title fixture and regression test.
+- Teach title extraction to recognize Markdown H1-H6 headings.
+- Preserve existing `Title:` and Chinese `标题：` handling.
+
+### Changes Made
+
+- Added `MARKDOWN_TITLE_PAPER_TEXT`.
+- Added `test_markdown_title_heading_is_cleaned`.
+- `paper_title(...)` now strips leading Markdown heading markers.
+
+### Verification After Changes
+
+- Red test first failed with `Deep Research Report - # Markdown Research Paper`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_markdown_title_heading_is_cleaned tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 51 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter42 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -61,6 +61,9 @@ def paper_title(text: str) -> str:
             return line.split("：", 1)[1].strip()
         if line.startswith("标题:") or line.startswith("题目:"):
             return line.split(":", 1)[1].strip()
+        markdown_heading = re.match(r"^#{1,6}\s+(.+)$", line)
+        if markdown_heading:
+            return markdown_heading.group(1).strip()
     for line in text.splitlines():
         line = line.strip()
         if line:

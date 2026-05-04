@@ -131,6 +131,22 @@ The approach depends on curated negative examples and has not been tested on
 low-resource domains.
 """
 
+MARKDOWN_TITLE_PAPER_TEXT = """
+# Markdown Research Paper
+
+Abstract
+We study markdown parsing for research reports.
+
+Method
+The system reads markdown headings without leaking markup into titles.
+
+Experiments
+The parser keeps report titles clean.
+
+Limitations
+The sample is small.
+"""
+
 
 class ResearchWorkflowTest(unittest.TestCase):
     def test_runs_iterative_agents_and_records_every_round(self):
@@ -202,6 +218,18 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("contrastive pretraining", report.sections["Method and Evidence"])
             self.assertIn("MMLU", report.sections["Method and Evidence"])
             self.assertNotIn("method section was not explicit", report.sections["Method and Evidence"].lower())
+
+    def test_markdown_title_heading_is_cleaned(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=MARKDOWN_TITLE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertEqual(report.title, "Deep Research Report - Markdown Research Paper")
+            self.assertNotIn("#", report.title)
 
     def test_english_report_uses_claim_evidence_ledger_sections(self):
         with tempfile.TemporaryDirectory() as tmp:
