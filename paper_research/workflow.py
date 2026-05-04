@@ -306,14 +306,20 @@ class ReportScoringAgent:
             return Scorecard(
                 total_score=total,
                 scores=scores,
-                summary=f"本轮报告总分 {total}/100。低分项应在下一轮优先修订。",
+                summary=(
+                    f"本轮报告总分 {total}/100。质量等级：{_quality_band(total, language)}。"
+                    f"主要风险：{_score_risk_summary(scores, language)}。"
+                    "低分项应在下一轮优先修订。"
+                ),
             )
         return Scorecard(
             total_score=total,
             scores=scores,
             summary=(
-                f"The report scores {total}/100. Strong areas are the criteria with "
-                "explicit evidence markers; weaker areas should be revised in the next round."
+                f"The report scores {total}/100. Quality band: {_quality_band(total, language)}. "
+                f"Main risks: {_score_risk_summary(scores, language)}. Strong areas are "
+                "the criteria with explicit evidence markers; weaker areas should be revised "
+                "in the next round."
             ),
         )
 
@@ -362,6 +368,35 @@ class RubricCriticAgent:
         if not benchmark_reports:
             recommendations.append("Do not score a round unless benchmark search returns at least one result.")
         return CriticReview(issues=issues, recommendations=recommendations)
+
+
+def _quality_band(total: int, language: str) -> str:
+    if language == "zh":
+        if total >= 85:
+            return "高"
+        if total >= 70:
+            return "良好"
+        if total >= 55:
+            return "中等"
+        return "偏低"
+    if total >= 85:
+        return "high"
+    if total >= 70:
+        return "good"
+    if total >= 55:
+        return "moderate"
+    return "low"
+
+
+def _score_risk_summary(scores: Sequence[CriterionScore], language: str) -> str:
+    weak_scores = [
+        score.name
+        for score in scores
+        if score.points <= max(12, int(score.max_points * 0.6))
+    ]
+    if weak_scores:
+        return "、".join(weak_scores[:3]) if language == "zh" else ", ".join(weak_scores[:3])
+    return "暂无明显低分项" if language == "zh" else "no obvious low-score criteria"
 
 
 def run_research_workflow(paper_text: str, config: WorkflowConfig) -> WorkflowResult:

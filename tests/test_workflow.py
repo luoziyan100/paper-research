@@ -332,6 +332,8 @@ class ResearchWorkflowTest(unittest.TestCase):
             scorecard = result.rounds[0].scorecard
 
             self.assertLessEqual(scorecard.total_score, 82)
+            self.assertIn("质量等级：", scorecard.summary)
+            self.assertIn("主要风险：", scorecard.summary)
             self.assertTrue(
                 all("证据：" in score.rationale for score in scorecard.scores),
                 [score.rationale for score in scorecard.scores],

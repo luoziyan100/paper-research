@@ -485,3 +485,39 @@
 - `python3 -m unittest discover -s tests` passed with 28 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter15 python3 -m compileall -q paper_research` passed.
 - Structure check remains within thresholds: `workflow.py` 742 lines and `benchmark.py` 339 lines.
+
+## Iteration 16 - 2026-05-04 08:20 PDT
+
+### Current Problems
+
+- Scorecard summaries only reported a total score and a generic low-score warning.
+- Readers had to inspect individual criterion scores to infer whether the report quality was high, moderate, or risky.
+- The summary did not name the most important weak criteria.
+
+### Planned Changes
+
+- Add a test requiring Chinese scorecard summaries to include `质量等级` and `主要风险`.
+- Derive quality bands from total score.
+- Derive main risks from low-scoring criteria.
+- Keep score calculations unchanged.
+
+### Changes Made
+
+- Added `_quality_band(...)`.
+- Added `_score_risk_summary(...)`.
+- Chinese summaries now include total score, quality band, and main weak criteria.
+- English summaries now include equivalent quality band and main-risk text.
+
+### Verification After Changes
+
+- Red test first failed because the summary was only `本轮报告总分 68/100。低分项应在下一轮优先修订。`
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score`
+- `python3 -m unittest discover -s tests` passed with 28 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter16 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter16_final` produced JSONL and DOCX outputs.
+- Output inspection confirmed:
+  - Round 1 summary: `本轮报告总分 68/100。质量等级：中等。主要风险：问题定义、限制与失败模式。低分项应在下一轮优先修订。`
+  - Round 2 summary: `本轮报告总分 70/100。质量等级：良好。主要风险：问题定义。低分项应在下一轮优先修订。`
+  - DOCX `word/document.xml` includes the same summary text.
+  - `workflow.py` remains under the 950-line threshold at 777 lines.
