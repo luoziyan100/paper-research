@@ -1,0 +1,112 @@
+"""Tiny DOCX writer used to keep the project dependency-free."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable, List
+from xml.sax.saxutils import escape
+from zipfile import ZIP_DEFLATED, ZipFile
+
+
+@dataclass(frozen=True)
+class DocxParagraph:
+    text: str
+    style: str = "Normal"
+
+
+def heading(text: str, level: int = 1) -> DocxParagraph:
+    return DocxParagraph(text=text, style=f"Heading{level}")
+
+
+def paragraph(text: str = "") -> DocxParagraph:
+    return DocxParagraph(text=text)
+
+
+def bullet(text: str) -> DocxParagraph:
+    return DocxParagraph(text=text, style="ListBullet")
+
+
+class DocxDocument:
+    """Build a simple DOCX document from paragraphs and headings."""
+
+    def __init__(self) -> None:
+        self._paragraphs: List[DocxParagraph] = []
+
+    def add(self, item: DocxParagraph) -> None:
+        self._paragraphs.append(item)
+
+    def extend(self, items: Iterable[DocxParagraph]) -> None:
+        self._paragraphs.extend(items)
+
+    def save(self, path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with ZipFile(path, "w", ZIP_DEFLATED) as archive:
+            archive.writestr("[Content_Types].xml", _content_types_xml())
+            archive.writestr("_rels/.rels", _root_relationships_xml())
+            archive.writestr("word/styles.xml", _styles_xml())
+            archive.writestr("word/document.xml", _document_xml(self._paragraphs))
+
+
+def _document_xml(paragraphs: List[DocxParagraph]) -> str:
+    body = "\n".join(_paragraph_xml(item) for item in paragraphs)
+    return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+{body}
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/>
+    </w:sectPr>
+  </w:body>
+</w:document>"""
+
+
+def _paragraph_xml(item: DocxParagraph) -> str:
+    style = ""
+    if item.style != "Normal":
+        style = f"<w:pPr><w:pStyle w:val=\"{escape(item.style)}\"/></w:pPr>"
+    text = escape(item.text)
+    return f"""    <w:p>{style}<w:r><w:t xml:space="preserve">{text}</w:t></w:r></w:p>"""
+
+
+def _content_types_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+</Types>"""
+
+
+def _root_relationships_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>"""
+
+
+def _styles_xml() -> str:
+    return """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:style w:type="paragraph" w:default="1" w:styleId="Normal">
+    <w:name w:val="Normal"/>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading1">
+    <w:name w:val="heading 1"/>
+    <w:basedOn w:val="Normal"/>
+    <w:pPr><w:spacing w:before="240" w:after="120"/></w:pPr>
+    <w:rPr><w:b/><w:sz w:val="32"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading2">
+    <w:name w:val="heading 2"/>
+    <w:basedOn w:val="Normal"/>
+    <w:pPr><w:spacing w:before="200" w:after="80"/></w:pPr>
+    <w:rPr><w:b/><w:sz w:val="26"/></w:rPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="ListBullet">
+    <w:name w:val="List Bullet"/>
+    <w:basedOn w:val="Normal"/>
+  </w:style>
+</w:styles>"""

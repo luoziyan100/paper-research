@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paper-research"
+version = "0.1.0"
+description = "Iterative multi-agent workflow for deep paper research reports."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "paper-research contributors" }]
+dependencies = []
+
+[project.scripts]
+paper-research = "paper_research.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["paper_research*"]

@@ -1,0 +1,19 @@
+Title: Retrieval Augmented Agents for Scientific Analysis
+
+Abstract
+We study an agent workflow that reads long papers, compares the current
+analysis with external benchmark reports, updates a scoring rubric, and records
+every iteration.
+
+Method
+The system separates report writing, rubric design, scoring, and rubric critique
+into independent roles. Each round starts by searching for high quality public
+research reports and extracting reusable evaluation traits.
+
+Experiments
+Across three papers, iterative scoring improved coverage of assumptions,
+limitations, and reproducibility details.
+
+Limitations
+The workflow depends on the quality of retrieved benchmark reports and can
+overfit the rubric if a critic does not challenge the criteria.
