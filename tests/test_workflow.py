@@ -170,6 +170,24 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("多智能体", results[0].search_note)
             self.assertIn("评分标准", results[0].search_note)
 
+    def test_local_benchmark_search_scores_more_than_first_five_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            for index in range(5):
+                (benchmark_dir / f"aaa_irrelevant_{index}.md").write_text(
+                    "这是一份关于天气和城市交通的普通说明。",
+                    encoding="utf-8",
+                )
+            (benchmark_dir / "zzz_relevant.md").write_text(
+                "优秀论文审查报告应关注多智能体流程、评分标准、可复现性和证据引用。",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir, language="zh")
+
+            results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertIn("zzz_relevant.md", results[0].source)
+
     def test_web_search_agent_extracts_external_report_results(self):
         html = """
         <a class="result__a" href="https://example.com/excellent-report">

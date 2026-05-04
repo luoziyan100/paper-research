@@ -151,7 +151,7 @@ class BenchmarkSearchAgent:
         )
         scored_reports = []
         terms = _keywords(paper_text, limit=8)
-        for path in files[:5]:
+        for path in files:
             content = path.read_text(encoding="utf-8", errors="ignore")
             lowered_content = content.lower()
             matched_terms = [term for term in terms if term.lower() in lowered_content]

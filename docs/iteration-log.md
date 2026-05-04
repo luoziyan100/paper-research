@@ -457,3 +457,31 @@
   - JSONL rationales now include `证据：执行摘要：...`.
   - DOCX score bullets now include `问题定义：12/20。找到 3 个相关标记。证据：执行摘要：...`.
   - No match for `证据：执行摘要 -`.
+
+## Iteration 15 - 2026-05-04 08:13 PDT
+
+### Current Problems
+
+- Local benchmark search only scored the first five `.txt`/`.md` files after filename sorting.
+- A relevant benchmark file placed sixth or later could be missed entirely, even if it had strong Chinese keyword matches.
+
+### Planned Changes
+
+- Add a regression test with five irrelevant files before a relevant Chinese benchmark file.
+- Score all local benchmark candidates before taking the top results.
+- Keep the returned result cap at five after ranking so output size remains controlled.
+
+### Changes Made
+
+- Local benchmark search now iterates over all candidate local files.
+- Existing ranking still returns the top five matched reports after scoring.
+- Added test coverage for relevant files beyond the first five sorted filenames.
+
+### Verification After Changes
+
+- Red test first failed because `aaa_irrelevant_0.md` ranked first while `zzz_relevant.md` was never scored.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_scores_more_than_first_five_files tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches`
+- `python3 -m unittest discover -s tests` passed with 28 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter15 python3 -m compileall -q paper_research` passed.
+- Structure check remains within thresholds: `workflow.py` 742 lines and `benchmark.py` 339 lines.
