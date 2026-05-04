@@ -264,19 +264,19 @@ def _keywords(text: str, limit: int = 10) -> List[str]:
 def _infer_report_strengths(content: str, language: str = "en") -> List[str]:
     lower = content.lower()
     strengths = []
-    if "limitation" in lower or "risk" in lower:
+    if "limitation" in lower or "risk" in lower or "限制" in content or "风险" in content or "局限" in content:
         strengths.append(
             "明确讨论限制和风险。"
             if language == "zh"
             else "Explicitly discusses limitations and risks."
         )
-    if "experiment" in lower or "evidence" in lower:
+    if "experiment" in lower or "evidence" in lower or "实验" in content or "证据" in content:
         strengths.append(
             "把论文主张连接到实验证据。"
             if language == "zh"
             else "Connects claims to experimental evidence."
         )
-    if "future" in lower or "follow" in lower:
+    if "future" in lower or "follow" in lower or "未来" in content or "后续" in content:
         strengths.append(
             "把论文解读转化为后续研究问题。"
             if language == "zh"

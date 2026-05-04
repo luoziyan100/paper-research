@@ -613,3 +613,32 @@
 - `python3 -m unittest discover -s tests` passed with 30 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter19 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 20 - 2026-05-04 08:32 PDT
+
+### Current Problems
+
+- Chinese local benchmark files containing terms such as `证据引用` and `可复现性` still received only the generic strength `提供可复用的外部对照样例。`
+- Benchmark-informed report writing therefore lost useful information from Chinese benchmark reports.
+
+### Planned Changes
+
+- Extend existing Chinese local benchmark test to require evidence-related strengths.
+- Teach benchmark strength inference to recognize Chinese keywords.
+- Preserve English strength inference behavior.
+
+### Changes Made
+
+- `_infer_report_strengths(...)` now recognizes Chinese `限制`/`风险`/`局限`.
+- It now recognizes Chinese `实验`/`证据`.
+- It now recognizes Chinese `未来`/`后续`.
+- Added a regression assertion that Chinese benchmark content with `证据引用` produces `把论文主张连接到实验证据。`.
+
+### Verification After Changes
+
+- Red test first failed because the relevant Chinese local benchmark returned only `提供可复用的外部对照样例。`
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_searches_local_benchmark_reports_when_provided`
+- `python3 -m unittest discover -s tests` passed with 30 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter20 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

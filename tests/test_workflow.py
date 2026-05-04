@@ -202,6 +202,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("zzz_relevant.md", results[0].source)
             self.assertIn("多智能体", results[0].search_note)
             self.assertIn("评分标准", results[0].search_note)
+            self.assertIn("把论文主张连接到实验证据。", results[0].strengths)
 
     def test_local_benchmark_search_scores_more_than_first_five_files(self):
         with tempfile.TemporaryDirectory() as tmp:
