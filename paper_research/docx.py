@@ -143,6 +143,12 @@ def _styles_xml() -> str:
     <w:pPr><w:spacing w:before="200" w:after="80"/></w:pPr>
     <w:rPr><w:b/><w:sz w:val="26"/></w:rPr>
   </w:style>
+  <w:style w:type="paragraph" w:styleId="Heading3">
+    <w:name w:val="heading 3"/>
+    <w:basedOn w:val="Normal"/>
+    <w:pPr><w:spacing w:before="160" w:after="60"/></w:pPr>
+    <w:rPr><w:b/><w:sz w:val="22"/></w:rPr>
+  </w:style>
   <w:style w:type="paragraph" w:styleId="ListBullet">
     <w:name w:val="List Bullet"/>
     <w:basedOn w:val="Normal"/>

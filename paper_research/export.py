@@ -45,7 +45,7 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
 
         document.add(heading(round_result.report.title, level=2))
         for name, content in round_result.report.sections.items():
-            document.add(heading(name, level=2))
+            document.add(heading(name, level=3))
             document.add(paragraph(content))
 
         document.add(heading("评分标准" if language == "zh" else "Scoring Rubric", level=2))

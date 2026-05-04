@@ -289,3 +289,37 @@
   - JSONL rubric notes now say `基于 benchmark 报告、当前报告生成`.
   - DOCX `word/document.xml` includes the same Chinese evidence summary and no `Across three papers` match.
   - `paper_research/workflow.py` remains at 1,042 lines.
+
+## Iteration 10 - 2026-05-04 08:00 PDT
+
+### Current Problems
+
+- DOCX export used `Heading2` for both the report title and every report section.
+- Word outline/navigation would show `执行摘要`, `贡献分析`, and other report sections as siblings of `评分标准`, instead of nested under the report title.
+- The DOCX style sheet did not define `Heading3`, so simply changing style IDs would not be enough for reliable rendering.
+
+### Planned Changes
+
+- Add a DOCX export test that requires report titles to remain `Heading2` while report sections become `Heading3`.
+- Add a `Heading3` style definition to the dependency-free DOCX writer.
+- Keep top-level round sections, benchmark blocks, scoring rubric, scorecard, and critic review at their existing levels.
+
+### Changes Made
+
+- Report section headings in `write_docx(...)` now use `heading(..., level=3)`.
+- Added a `Heading3` paragraph style with smaller bold text and tighter spacing.
+- Added a focused DOCX export test using a constructed `RoundResult`.
+
+### Verification After Changes
+
+- Red test first failed because `Executive Thesis` was exported as `Heading2`.
+- Target test passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_export_uses_nested_heading_levels_for_report_sections`
+- `python3 -m unittest discover -s tests` passed with 25 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter10 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter10_final` produced JSONL and DOCX outputs.
+- DOCX inspection confirmed:
+  - `深度研究报告 - Retrieval Augmented Agents for Scientific Analysis` is `Heading2`.
+  - `执行摘要` is `Heading3`.
+  - `评分标准` and `评分标准批评` remain `Heading2`.
+  - `word/styles.xml` defines `Heading3`.
