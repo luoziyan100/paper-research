@@ -153,23 +153,31 @@ class BenchmarkSearchAgent:
             for path in self.benchmark_dir.rglob("*")
             if path.suffix.lower() in {".txt", ".md"}
         )
-        results: List[BenchmarkReport] = []
+        scored_reports = []
         terms = _keywords(paper_text, limit=8)
         for path in files[:5]:
             content = path.read_text(encoding="utf-8", errors="ignore")
-            matched_terms = [term for term in terms if term in content.lower()]
+            lowered_content = content.lower()
+            matched_terms = [term for term in terms if term.lower() in lowered_content]
             score = len(matched_terms)
-            if score or len(results) < 2:
-                results.append(
-                    BenchmarkReport(
-                        title=path.stem.replace("_", " ").title(),
-                        source=str(path),
-                        summary=_first_sentences(content, count=3),
-                        strengths=_infer_report_strengths(content, self.language),
-                        source_type="local",
-                        search_note=_local_search_note(path, matched_terms, self.language),
-                    )
+            scored_reports.append((score, path, content, matched_terms))
+        matched_reports = [item for item in scored_reports if item[0] > 0]
+        selected_reports = matched_reports or scored_reports[:2]
+        results: List[BenchmarkReport] = []
+        for _, path, content, matched_terms in sorted(
+            selected_reports,
+            key=lambda item: (-item[0], item[1].name),
+        )[:5]:
+            results.append(
+                BenchmarkReport(
+                    title=path.stem.replace("_", " ").title(),
+                    source=str(path),
+                    summary=_first_sentences(content, count=3),
+                    strengths=_infer_report_strengths(content, self.language),
+                    source_type="local",
+                    search_note=_local_search_note(path, matched_terms, self.language),
                 )
+            )
         return results
 
     def _search_web_benchmarks(
@@ -940,6 +948,20 @@ def _extract_contribution(abstract: str, method: str, language: str = "en") -> s
 
 
 def _keywords(text: str, limit: int = 10) -> List[str]:
+    chinese_terms = [
+        "多智能体",
+        "论文审查",
+        "评分标准",
+        "可复现性",
+        "证据引用",
+        "证据",
+        "限制",
+        "局限",
+        "方法",
+        "实验",
+        "报告",
+    ]
+    found_chinese_terms = [term for term in chinese_terms if term in text]
     words = re.findall(r"[a-zA-Z][a-zA-Z-]{3,}", text.lower())
     stopwords = {
         "that",
@@ -958,10 +980,11 @@ def _keywords(text: str, limit: int = 10) -> List[str]:
     for word in words:
         if word not in stopwords:
             counts[word] = counts.get(word, 0) + 1
-    return [
+    english_terms = [
         word
         for word, _ in sorted(counts.items(), key=lambda item: (-item[1], item[0]))[:limit]
     ]
+    return (found_chinese_terms + english_terms)[:limit]
 
 
 def _infer_report_strengths(content: str, language: str = "en") -> List[str]:

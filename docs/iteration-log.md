@@ -360,3 +360,34 @@
   - `问题定义（20 分）：解释研究问题...`
   - `问题定义：12/20。找到 3 个相关标记...`
   - No matches for `20 pts`, `搜索说明:`, or `搜索说明： `.
+
+## Iteration 12 - 2026-05-04 08:05 PDT
+
+### Current Problems
+
+- Local benchmark search mainly extracted English keywords.
+- For Chinese papers, a relevant Chinese benchmark file could be ranked behind an irrelevant file just because of filename order.
+- Search notes could not show useful Chinese keyword hits when the paper and benchmark were both Chinese.
+
+### Planned Changes
+
+- Add a test with one irrelevant Chinese benchmark file and one relevant Chinese benchmark file.
+- Extract common Chinese research-review terms from paper text.
+- Sort local benchmark candidates by keyword hit count before filename order.
+- Preserve fallback behavior when no local file matches any keyword.
+
+### Changes Made
+
+- `_keywords(...)` now includes Chinese terms such as `多智能体`, `论文审查`, `评分标准`, `可复现性`, and `证据引用` when present.
+- Local benchmark search now scores files first and sorts matched files by descending score.
+- Search notes now include Chinese matched terms when relevant.
+- Added regression coverage requiring the Chinese relevant benchmark file to rank first.
+
+### Verification After Changes
+
+- Red test first failed because `aaa_irrelevant.md` ranked ahead of `zzz_relevant.md`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_searches_local_benchmark_reports_when_provided`
+- `python3 -m unittest discover -s tests` passed with 26 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter12 python3 -m compileall -q paper_research` passed.
+- `paper_research/workflow.py` is 1,065 lines, still below the 1,100-line structure threshold.
