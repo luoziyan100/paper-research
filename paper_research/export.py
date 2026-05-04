@@ -35,6 +35,9 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
             document.add(heading("Benchmark Search Results", level=2))
         for benchmark in round_result.benchmark_reports:
             document.add(bullet(f"{benchmark.title} ({benchmark.source})"))
+            if benchmark.search_note:
+                label = "搜索说明" if language == "zh" else "Search note"
+                document.add(bullet(f"{label}: {benchmark.search_note}"))
             document.add(paragraph(benchmark.summary))
             for strength in benchmark.strengths:
                 prefix = "优点" if language == "zh" else "Strength"

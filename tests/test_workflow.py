@@ -83,6 +83,8 @@ class ResearchWorkflowTest(unittest.TestCase):
             persisted = [json.loads(line) for line in lines]
             self.assertEqual(persisted[0]["round_number"], 1)
             self.assertIn("benchmark_reports", persisted[0])
+            self.assertIn("source_type", persisted[0]["benchmark_reports"][0])
+            self.assertIn("search_note", persisted[0]["benchmark_reports"][0])
             self.assertIn("rubric", persisted[0])
             self.assertIn("scorecard", persisted[0])
             self.assertIn("critic_review", persisted[0])
@@ -146,6 +148,8 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("excellent_report.md", source)
             strengths = result.rounds[0].benchmark_reports[0].strengths
             self.assertIn("Connects claims to experimental evidence.", strengths)
+            self.assertEqual(result.rounds[0].benchmark_reports[0].source_type, "local")
+            self.assertIn("keyword", result.rounds[0].benchmark_reports[0].search_note)
 
     def test_web_search_agent_extracts_external_report_results(self):
         html = """
@@ -166,6 +170,8 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source, "https://example.com/excellent-report")
         self.assertIn("Excellent Paper Research Report", results[0].title)
         self.assertIn("Connects claims to experimental evidence.", results[0].strengths)
+        self.assertEqual(results[0].source_type, "web")
+        self.assertIn("DuckDuckGo query", results[0].search_note)
 
     def test_builtin_benchmark_fallback_returns_diverse_report_archetypes(self):
         agent = BenchmarkSearchAgent(language="zh")
@@ -177,6 +183,8 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("built-in://claim-evidence-round-1", sources)
         self.assertIn("built-in://methodology-round-1", sources)
         self.assertIn("built-in://limitations-round-1", sources)
+        self.assertEqual(results[0].source_type, "built-in")
+        self.assertIn("fallback", results[0].search_note)
 
     def test_chinese_report_records_benchmark_source_quality(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -194,6 +202,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             with zipfile.ZipFile(result.docx_path) as archive:
                 document_xml = archive.read("word/document.xml").decode("utf-8")
             self.assertIn("Benchmark 对照质量", document_xml)
+            self.assertIn("搜索说明", document_xml)
 
     def test_can_generate_chinese_report_and_docx(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -332,6 +341,68 @@ class ResearchWorkflowTest(unittest.TestCase):
             with zipfile.ZipFile(output_dir / "research_report.docx") as archive:
                 document_xml = archive.read("word/document.xml").decode("utf-8")
             self.assertIn("Round 3", document_xml)
+
+    def test_resume_hydrates_legacy_benchmark_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+            legacy_round = {
+                "round_number": 1,
+                "benchmark_reports": [
+                    {
+                        "title": "Legacy fallback",
+                        "source": "built-in://legacy",
+                        "summary": "A legacy benchmark report without trace metadata.",
+                        "strengths": ["Separates paper claims from evaluator interpretation."],
+                    }
+                ],
+                "report": {"title": "Legacy report", "sections": {"Summary": "Old output"}},
+                "rubric": {
+                    "title": "Legacy rubric",
+                    "criteria": [
+                        {
+                            "name": "Problem Framing",
+                            "description": "Frames the problem.",
+                            "max_points": 20,
+                        }
+                    ],
+                    "source_notes": "Legacy notes",
+                },
+                "scorecard": {
+                    "total_score": 12,
+                    "scores": [
+                        {
+                            "name": "Problem Framing",
+                            "points": 12,
+                            "max_points": 20,
+                            "rationale": "Legacy rationale",
+                        }
+                    ],
+                    "summary": "Legacy score",
+                },
+                "critic_review": {
+                    "issues": ["Legacy issue"],
+                    "recommendations": ["Legacy recommendation"],
+                },
+            }
+            (output_dir / "research_rounds.jsonl").write_text(
+                json.dumps(legacy_round) + "\n",
+                encoding="utf-8",
+            )
+
+            result = run_continuous_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=output_dir),
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=0,
+                    sleep_seconds=0,
+                    max_rounds=1,
+                    resume=True,
+                ),
+            )
+
+            legacy_benchmark = result.rounds[0].benchmark_reports[0]
+            self.assertEqual(legacy_benchmark.source_type, "built-in")
+            self.assertIn("legacy JSONL", legacy_benchmark.search_note)
 
     def test_continuous_runner_uses_duration_without_waiting_in_tests(self):
         class FakeClock:

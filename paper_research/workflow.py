@@ -70,6 +70,8 @@ class BenchmarkSearchAgent:
                         "区分论文原始主张和评审者解释。",
                         "使用方法与实验中的证据，而不只依赖摘要。",
                     ],
+                    source_type="built-in",
+                    search_note=_fallback_search_note(self.language),
                 ),
                 BenchmarkReport(
                     title=f"{theme} 的方法审计型优秀报告模式",
@@ -79,6 +81,8 @@ class BenchmarkSearchAgent:
                         "检查方法选择是否匹配论文目标。",
                         "追问 baseline、数据和消融实验是否充分。",
                     ],
+                    source_type="built-in",
+                    search_note=_fallback_search_note(self.language),
                 ),
                 BenchmarkReport(
                     title=f"{theme} 的限制与后续研究型优秀报告模式",
@@ -91,6 +95,8 @@ class BenchmarkSearchAgent:
                         "把限制和可复现性纳入评分，而不只评价新颖性。",
                         "将批评意见转化为下一轮可验证的研究问题。",
                     ],
+                    source_type="built-in",
+                    search_note=_fallback_search_note(self.language),
                 )
             ]
         return [
@@ -105,6 +111,8 @@ class BenchmarkSearchAgent:
                     "Separates paper claims from evaluator interpretation.",
                     "Uses evidence from methods and experiments, not only the abstract.",
                 ],
+                source_type="built-in",
+                search_note=_fallback_search_note(self.language),
             ),
             BenchmarkReport(
                 title=f"Methodology audit benchmark report pattern for {theme}",
@@ -117,6 +125,8 @@ class BenchmarkSearchAgent:
                     "Checks whether method choices match the paper's goals.",
                     "Questions whether baselines, data, and ablations are sufficient.",
                 ],
+                source_type="built-in",
+                search_note=_fallback_search_note(self.language),
             ),
             BenchmarkReport(
                 title=f"Limitations benchmark report pattern for {theme}",
@@ -130,6 +140,8 @@ class BenchmarkSearchAgent:
                     "Scores limitations and reproducibility instead of only novelty.",
                     "Turns critique into testable next-round research questions.",
                 ],
+                source_type="built-in",
+                search_note=_fallback_search_note(self.language),
             )
         ]
 
@@ -145,7 +157,8 @@ class BenchmarkSearchAgent:
         terms = _keywords(paper_text, limit=8)
         for path in files[:5]:
             content = path.read_text(encoding="utf-8", errors="ignore")
-            score = sum(1 for term in terms if term in content.lower())
+            matched_terms = [term for term in terms if term in content.lower()]
+            score = len(matched_terms)
             if score or len(results) < 2:
                 results.append(
                     BenchmarkReport(
@@ -153,6 +166,8 @@ class BenchmarkSearchAgent:
                         source=str(path),
                         summary=_first_sentences(content, count=3),
                         strengths=_infer_report_strengths(content, self.language),
+                        source_type="local",
+                        search_note=_local_search_note(path, matched_terms, self.language),
                     )
                 )
         return results
@@ -182,6 +197,8 @@ class BenchmarkSearchAgent:
                     source=item["url"] or f"web-search://round-{round_number}-{index}",
                     summary=summary,
                     strengths=_infer_report_strengths(f"{item['title']} {summary}", self.language),
+                    source_type="web",
+                    search_note=f"DuckDuckGo query: {url}",
                 )
             )
         return reports
@@ -731,6 +748,18 @@ def _round_from_dict(data: Dict[str, object]) -> RoundResult:
             source=str(item["source"]),
             summary=str(item["summary"]),
             strengths=list(item["strengths"]),
+            source_type=str(
+                item.get(  # type: ignore[union-attr]
+                    "source_type",
+                    _infer_benchmark_source_type(str(item["source"])),
+                )
+            ),
+            search_note=str(
+                item.get(  # type: ignore[union-attr]
+                    "search_note",
+                    _legacy_search_note(str(item["source"])),
+                )
+            ),
         )
         for item in data["benchmark_reports"]  # type: ignore[index]
     ]
@@ -786,7 +815,7 @@ def _benchmark_quality_summary(
     language: str,
 ) -> str:
     source_count = len(benchmark_reports)
-    source_types = sorted({_benchmark_source_type(report.source, language) for report in benchmark_reports})
+    source_types = sorted({_benchmark_source_type(report, language) for report in benchmark_reports})
     strength_text = " ".join(
         strength
         for report in benchmark_reports
@@ -825,12 +854,40 @@ def _benchmark_quality_summary(
     )
 
 
-def _benchmark_source_type(source: str, language: str) -> str:
-    if source.startswith("built-in://"):
+def _benchmark_source_type(report: BenchmarkReport, language: str) -> str:
+    source_type = report.source_type or _infer_benchmark_source_type(report.source)
+    if source_type == "built-in":
         return "内置 fallback" if language == "zh" else "built-in fallback"
-    if source.startswith("http://") or source.startswith("https://"):
+    if source_type == "web":
         return "网页搜索" if language == "zh" else "web search"
-    return "本地 benchmark" if language == "zh" else "local benchmark"
+    if source_type == "local":
+        return "本地 benchmark" if language == "zh" else "local benchmark"
+    return "未知来源" if language == "zh" else "unknown source"
+
+
+def _infer_benchmark_source_type(source: str) -> str:
+    if source.startswith("built-in://"):
+        return "built-in"
+    if source.startswith(("http://", "https://", "web-search://")):
+        return "web"
+    return "local"
+
+
+def _fallback_search_note(language: str) -> str:
+    if language == "zh":
+        return "内置 fallback：未找到可用的本地或网页 benchmark，使用内置优秀报告模式。"
+    return "built-in fallback: no usable local or web benchmark reports were found."
+
+
+def _local_search_note(path: Path, matched_terms: Sequence[str], language: str) -> str:
+    terms = ", ".join(matched_terms[:5]) if matched_terms else "no direct keyword overlap"
+    if language == "zh":
+        return f"本地 benchmark 文件：{path.name}；keyword 命中：{terms}。"
+    return f"Local benchmark file: {path.name}; keyword matches: {terms}."
+
+
+def _legacy_search_note(source: str) -> str:
+    return f"Recovered from legacy JSONL without benchmark trace metadata: {source}."
 
 
 def _find_evidence_snippet(report: ResearchReport, keywords: Sequence[str]) -> str:

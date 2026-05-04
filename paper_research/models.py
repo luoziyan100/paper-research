@@ -32,6 +32,8 @@ class BenchmarkReport:
     source: str
     summary: str
     strengths: List[str]
+    source_type: str = "unknown"
+    search_note: str = ""
 
 
 @dataclass(frozen=True)
