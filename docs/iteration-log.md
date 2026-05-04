@@ -1269,3 +1269,31 @@
 - `python3 -m unittest discover -s tests` passed with 51 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter42 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 43 - 2026-05-04 09:33 PDT
+
+### Current Problems
+
+- Chinese Markdown titles like `# 标题：Markdown 中文论文` were cleaned only partially.
+- Generated report titles still included the label `标题：`.
+
+### Planned Changes
+
+- Add a Chinese Markdown-title regression test.
+- Centralize title-label cleanup so Markdown headings reuse the same logic as plain title lines.
+- Preserve English Markdown title cleanup.
+
+### Changes Made
+
+- Added `MARKDOWN_CHINESE_TITLE_PAPER_TEXT`.
+- Added `test_markdown_chinese_title_label_is_cleaned`.
+- Added `clean_title_text(...)` and reused it across `paper_title(...)`.
+
+### Verification After Changes
+
+- Red test first failed with `深度研究报告 - 标题：Markdown 中文论文`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_markdown_chinese_title_label_is_cleaned tests.test_workflow.ResearchWorkflowTest.test_markdown_title_heading_is_cleaned tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 52 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter43 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

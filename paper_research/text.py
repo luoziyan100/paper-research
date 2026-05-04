@@ -56,19 +56,30 @@ def paper_title(text: str) -> str:
     for line in text.splitlines():
         line = line.strip()
         if line.lower().startswith("title:"):
-            return line.split(":", 1)[1].strip()
+            return clean_title_text(line)
         if line.startswith("标题：") or line.startswith("题目："):
-            return line.split("：", 1)[1].strip()
+            return clean_title_text(line)
         if line.startswith("标题:") or line.startswith("题目:"):
-            return line.split(":", 1)[1].strip()
+            return clean_title_text(line)
         markdown_heading = re.match(r"^#{1,6}\s+(.+)$", line)
         if markdown_heading:
-            return markdown_heading.group(1).strip()
+            return clean_title_text(markdown_heading.group(1))
     for line in text.splitlines():
         line = line.strip()
         if line:
             return line[:120]
     return ""
+
+
+def clean_title_text(text: str) -> str:
+    title = text.strip()
+    if title.lower().startswith("title:"):
+        return title.split(":", 1)[1].strip()
+    if title.startswith("标题：") or title.startswith("题目："):
+        return title.split("：", 1)[1].strip()
+    if title.startswith("标题:") or title.startswith("题目:"):
+        return title.split(":", 1)[1].strip()
+    return title
 
 
 def normalize_chinese_heading(line: str) -> str:

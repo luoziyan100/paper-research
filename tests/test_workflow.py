@@ -147,6 +147,22 @@ Limitations
 The sample is small.
 """
 
+MARKDOWN_CHINESE_TITLE_PAPER_TEXT = """
+# 标题：Markdown 中文论文
+
+摘要
+本文研究一个多智能体系统，用于生成中文论文研究报告。
+
+方法
+系统把报告写作、评分标准生成和证据审查拆分为多角色流程。
+
+实验
+实验显示该系统提高了 baseline、限制和可复现性细节覆盖。
+
+局限
+系统仍依赖 benchmark 报告质量。
+"""
+
 
 class ResearchWorkflowTest(unittest.TestCase):
     def test_runs_iterative_agents_and_records_every_round(self):
@@ -230,6 +246,18 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "Deep Research Report - Markdown Research Paper")
             self.assertNotIn("#", report.title)
+
+    def test_markdown_chinese_title_label_is_cleaned(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=MARKDOWN_CHINESE_TITLE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertEqual(report.title, "深度研究报告 - Markdown 中文论文")
+            self.assertNotIn("标题：", report.title)
 
     def test_english_report_uses_claim_evidence_ledger_sections(self):
         with tempfile.TemporaryDirectory() as tmp:
