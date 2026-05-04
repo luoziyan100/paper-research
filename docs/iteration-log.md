@@ -581,3 +581,35 @@
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter18 python3 -m compileall -q paper_research` passed.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter18_final` produced JSONL and DOCX outputs.
 - `git diff --check` passed.
+
+## Iteration 19 - 2026-05-04 08:29 PDT
+
+### Current Problems
+
+- README did not document benchmark traceability fields added in earlier iterations.
+- README did not show the new top-level `BenchmarkSearchAgent` import path.
+- Users would have to inspect JSONL or source code to learn about `source_type`, `search_note`, and library usage.
+
+### Planned Changes
+
+- Add a README regression test for benchmark traceability and library import examples.
+- Document JSONL benchmark fields.
+- Add a short Python library usage example.
+
+### Changes Made
+
+- Added `tests/test_docs.py`.
+- Documented `source_type` and `search_note`.
+- Added a `Library Use` section showing:
+  - `from paper_research import BenchmarkSearchAgent, WorkflowConfig, run_research_workflow`
+  - direct workflow execution from Python
+  - direct benchmark search from Python
+
+### Verification After Changes
+
+- Red test first failed because README did not include `source_type`.
+- Target test passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import`
+- `python3 -m unittest discover -s tests` passed with 30 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter19 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

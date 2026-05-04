@@ -26,6 +26,12 @@ The workflow writes:
 - `research_report.docx`: readable DOCX containing benchmark results, reports,
   rubrics, scorecards, and rubric critiques for every round.
 
+Benchmark entries in `research_rounds.jsonl` include traceability metadata:
+
+- `source_type`: `local`, `web`, or `built-in`.
+- `search_note`: why the benchmark was selected, such as local keyword matches,
+  a DuckDuckGo query, or built-in fallback usage.
+
 ## Usage
 
 Run from the repository root:
@@ -83,6 +89,23 @@ python3 -m paper_research examples/sample_paper.txt \
 
 Text and Markdown inputs work without extra dependencies. PDF input is supported
 when the optional `pypdf` package is installed.
+
+## Library Use
+
+The workflow can also be used from Python:
+
+```python
+from pathlib import Path
+
+from paper_research import BenchmarkSearchAgent, WorkflowConfig, run_research_workflow
+
+paper_text = Path("examples/sample_paper.txt").read_text(encoding="utf-8")
+config = WorkflowConfig(rounds=2, language="zh", output_dir=Path("research_output"))
+result = run_research_workflow(paper_text, config)
+
+search_agent = BenchmarkSearchAgent(benchmark_dir=Path("benchmarks"), language="zh")
+benchmarks = search_agent.search(paper_text, round_number=1, previous_report=None)
+```
 
 ## Development
 
