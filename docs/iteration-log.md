@@ -849,3 +849,32 @@
 - `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter27_final` produced JSONL and DOCX outputs.
 - DOCX inspection confirmed `docProps/core.xml` contains `<dc:title>迭代式论文研究报告</dc:title>`.
 - `git diff --check` passed.
+
+## Iteration 28 - 2026-05-04 09:00 PDT
+
+### Current Problems
+
+- Chinese section parsing recognized `摘要`, `方法`, `实验`, and `局限`, but not numbered headings such as `一、摘要` and `二、方法`.
+- Numbered Chinese papers therefore fell back to generic method/evidence summaries.
+
+### Planned Changes
+
+- Add a Chinese fixture with numbered headings.
+- Normalize Chinese numeral prefixes and Arabic numeric prefixes before heading lookup.
+- Preserve existing non-numbered Chinese heading parsing.
+
+### Changes Made
+
+- Added `NUMBERED_CHINESE_PAPER_TEXT`.
+- `normalize_chinese_heading(...)` now strips prefixes like `一、` and `1.`.
+- Added regression coverage for numbered Chinese headings.
+
+### Verification After Changes
+
+- Red test first failed because `方法与证据` did not include `多角色流程`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 38 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter28 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter28_final` produced JSONL and DOCX outputs.
+- `git diff --check` passed.

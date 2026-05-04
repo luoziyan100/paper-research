@@ -51,6 +51,22 @@ CHINESE_PAPER_TEXT = """
 系统依赖 benchmark 报告质量，也可能让评分标准过拟合当前报告。
 """
 
+NUMBERED_CHINESE_PAPER_TEXT = """
+标题：编号标题论文审查系统
+
+一、摘要
+本文研究一个多智能体系统，用于生成中文论文研究报告。
+
+二、方法
+系统把报告写作、评分标准生成和证据审查拆分为多角色流程。
+
+三、实验
+实验显示该系统提高了 baseline、限制和可复现性细节覆盖。
+
+四、局限
+系统仍依赖 benchmark 报告质量。
+"""
+
 APPROACH_EVALUATION_PAPER_TEXT = """
 Title: Contrastive Pretraining for Reliable Reasoning
 
@@ -434,6 +450,20 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("多角色流程", report.sections["方法与证据"])
             self.assertIn("baseline", report.sections["论文主张与证据账本"])
             self.assertNotIn("实验部分声称，实验声称", report.sections["论文主张与证据账本"])
+            self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
+
+    def test_numbered_chinese_headings_are_parsed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=NUMBERED_CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertEqual(report.title, "深度研究报告 - 编号标题论文审查系统")
+            self.assertIn("多角色流程", report.sections["方法与证据"])
+            self.assertIn("baseline", report.sections["论文主张与证据账本"])
             self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
 
     def test_continuous_runner_resumes_and_keeps_appending_rounds(self):
