@@ -227,6 +227,12 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("第 1 轮", document_xml)
             self.assertIn("评分标准", document_xml)
             self.assertIn("评分标准批评", document_xml)
+            self.assertIn("问题定义（20 分）：", document_xml)
+            self.assertIn("问题定义：12/20。", document_xml)
+            self.assertIn("搜索说明：", document_xml)
+            self.assertNotIn("20 pts", document_xml)
+            self.assertNotIn("搜索说明:", document_xml)
+            self.assertNotIn("搜索说明： ", document_xml)
 
     def test_chinese_report_uses_evidence_ledger_sections(self):
         with tempfile.TemporaryDirectory() as tmp:

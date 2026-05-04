@@ -323,3 +323,40 @@
   - `执行摘要` is `Heading3`.
   - `评分标准` and `评分标准批评` remain `Heading2`.
   - `word/styles.xml` defines `Heading3`.
+
+## Iteration 11 - 2026-05-04 08:03 PDT
+
+### Current Problems
+
+- Chinese DOCX rubric entries still used English units and punctuation, such as `(20 pts):`.
+- Chinese score bullets used English-style colon and period, such as `问题定义: 12/20.`.
+- Benchmark trace bullets used `搜索说明:` and then, after the first fix, still left a space after the Chinese colon.
+- Critic issue/recommendation bullets also used English colon spacing.
+
+### Planned Changes
+
+- Add a Chinese DOCX regression test for score units, score punctuation, and benchmark search-note punctuation.
+- Keep English DOCX punctuation unchanged.
+- Update only export formatting; avoid changing JSONL semantics or score calculations.
+
+### Changes Made
+
+- Chinese rubric bullets now use `问题定义（20 分）：...`.
+- Chinese score bullets now use `问题定义：12/20。...`.
+- Chinese benchmark, strength, issue, and recommendation bullets now use full-width colons without an extra space.
+- Added test assertions that Chinese DOCX output does not contain `20 pts`, `搜索说明:`, or `搜索说明： `.
+
+### Verification After Changes
+
+- Red tests first failed on `问题定义（20 分）：` missing and then on `搜索说明： ` still appearing.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+- `python3 -m unittest discover -s tests` passed with 25 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter11_final python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter11_final2` produced JSONL and DOCX outputs.
+- DOCX inspection confirmed:
+  - `搜索说明：内置 fallback...`
+  - `优点：区分论文原始主张和评审者解释。`
+  - `问题定义（20 分）：解释研究问题...`
+  - `问题定义：12/20。找到 3 个相关标记...`
+  - No matches for `20 pts`, `搜索说明:`, or `搜索说明： `.

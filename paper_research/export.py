@@ -37,11 +37,15 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
             document.add(bullet(f"{benchmark.title} ({benchmark.source})"))
             if benchmark.search_note:
                 label = "搜索说明" if language == "zh" else "Search note"
-                document.add(bullet(f"{label}: {benchmark.search_note}"))
+                separator = "：" if language == "zh" else ":"
+                spacer = "" if language == "zh" else " "
+                document.add(bullet(f"{label}{separator}{spacer}{benchmark.search_note}"))
             document.add(paragraph(benchmark.summary))
             for strength in benchmark.strengths:
                 prefix = "优点" if language == "zh" else "Strength"
-                document.add(bullet(f"{prefix}: {strength}"))
+                separator = "：" if language == "zh" else ":"
+                spacer = "" if language == "zh" else " "
+                document.add(bullet(f"{prefix}{separator}{spacer}{strength}"))
 
         document.add(heading(round_result.report.title, level=2))
         for name, content in round_result.report.sections.items():
@@ -51,23 +55,30 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
         document.add(heading("评分标准" if language == "zh" else "Scoring Rubric", level=2))
         document.add(paragraph(round_result.rubric.source_notes))
         for criterion in round_result.rubric.criteria:
-            document.add(
-                bullet(f"{criterion.name} ({criterion.max_points} pts): {criterion.description}")
-            )
+            if language == "zh":
+                text = f"{criterion.name}（{criterion.max_points} 分）：{criterion.description}"
+            else:
+                text = f"{criterion.name} ({criterion.max_points} pts): {criterion.description}"
+            document.add(bullet(text))
 
         document.add(heading("评分结果" if language == "zh" else "Scorecard", level=2))
         document.add(paragraph(round_result.scorecard.summary))
         for score in round_result.scorecard.scores:
-            document.add(
-                bullet(
-                    f"{score.name}: {score.points}/{score.max_points}. {score.rationale}"
-                )
-            )
+            if language == "zh":
+                text = f"{score.name}：{score.points}/{score.max_points}。{score.rationale}"
+            else:
+                text = f"{score.name}: {score.points}/{score.max_points}. {score.rationale}"
+            document.add(bullet(text))
 
         document.add(heading("评分标准批评" if language == "zh" else "Rubric Critic Review", level=2))
         for issue in round_result.critic_review.issues:
-            document.add(bullet(f"{'问题' if language == 'zh' else 'Issue'}: {issue}"))
+            prefix = "问题" if language == "zh" else "Issue"
+            separator = "：" if language == "zh" else ":"
+            spacer = "" if language == "zh" else " "
+            document.add(bullet(f"{prefix}{separator}{spacer}{issue}"))
         for recommendation in round_result.critic_review.recommendations:
             prefix = "建议" if language == "zh" else "Recommendation"
-            document.add(bullet(f"{prefix}: {recommendation}"))
+            separator = "：" if language == "zh" else ":"
+            spacer = "" if language == "zh" else " "
+            document.add(bullet(f"{prefix}{separator}{spacer}{recommendation}"))
     document.save(path)
