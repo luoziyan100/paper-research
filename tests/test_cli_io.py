@@ -29,6 +29,20 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("--rounds must be at least 1", stderr.getvalue())
             self.assertNotIn("Traceback", stderr.getvalue())
 
+    def test_cli_rejects_empty_paper_without_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "paper.txt"
+            paper.write_text("   \n", encoding="utf-8")
+            stderr = io.StringIO()
+
+            with contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    main([str(paper)])
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("Paper file is empty", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
+
     def test_cli_rejects_bad_continuous_sleep_without_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:
             paper = Path(tmp) / "paper.txt"

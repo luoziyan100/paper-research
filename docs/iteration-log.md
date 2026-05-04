@@ -1433,3 +1433,30 @@
 - `python3 -m unittest discover -s tests` passed with 56 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter48 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 49 - 2026-05-04 09:44 PDT
+
+### Current Problems
+
+- Empty `.txt` or `.md` paper files were loaded successfully.
+- The workflow then raised `ValueError("paper_text cannot be empty.")` outside the CLI input-error handling path, causing a traceback.
+
+### Planned Changes
+
+- Add a CLI regression test for empty paper files.
+- Reject empty text inputs inside `load_paper_text(...)`.
+- Preserve existing missing-file and valid-input behavior.
+
+### Changes Made
+
+- Added `test_cli_rejects_empty_paper_without_traceback`.
+- `load_paper_text(...)` now raises `ValueError("Paper file is empty: ...")` for whitespace-only text/Markdown files.
+
+### Verification After Changes
+
+- Red test first errored with an uncaught traceback from `run_research_workflow(...)`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_rejects_empty_paper_without_traceback tests.test_cli_io.InputAndCliTest.test_load_paper_text_reports_missing_file_clearly tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- `python3 -m unittest discover -s tests` passed with 57 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter49 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
