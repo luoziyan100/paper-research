@@ -105,3 +105,30 @@
   - `docProps/core.xml` exists.
   - `docProps/app.xml` exists.
   - `word/document.xml` contains 12 `<w:br/>` line breaks.
+
+## Iteration 4 - 2026-05-04 07:37 PDT
+
+### Current Problems
+
+- `paper_research/workflow.py` had grown to 1,253 lines, mixing data models, agent logic, persistence, and DOCX export.
+- This size makes future 10-hour iteration risky because unrelated changes are more likely to conflict in one large file.
+
+### Planned Changes
+
+- Add a structure test that keeps `workflow.py` below a maintainability threshold.
+- Move dataclass models to `paper_research/models.py`.
+- Move DOCX workflow export code to `paper_research/export.py`.
+- Keep public imports compatible through `paper_research.workflow` and `paper_research.__init__`.
+
+### Changes Made
+
+- Added `paper_research/models.py` for workflow configuration, result, report, rubric, scorecard, and critic dataclasses.
+- Added `paper_research/export.py` for `write_docx`.
+- Reduced `paper_research/workflow.py` from 1,253 lines to 1,094 lines.
+- Added `tests/test_structure.py` to enforce the module size threshold and public import compatibility.
+
+### Verification After Changes
+
+- `python3 -m unittest discover -s tests` passed with 17 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter4 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter4_final` produced JSONL and DOCX outputs.

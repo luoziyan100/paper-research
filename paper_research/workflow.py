@@ -5,105 +5,15 @@ from __future__ import annotations
 import json
 import re
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict
 from html import unescape
 from pathlib import Path
-from typing import Callable, Dict, Iterable, List, Optional, Sequence
+from typing import Callable, Dict, List, Optional, Sequence
 from urllib.parse import parse_qs, quote_plus, unquote, urlparse
 from urllib.request import Request, urlopen
 
-from paper_research.docx import DocxDocument, bullet, heading, paragraph
-
-
-@dataclass(frozen=True)
-class WorkflowConfig:
-    rounds: int = 3
-    output_dir: Path = Path("research_output")
-    benchmark_dir: Optional[Path] = None
-    web_search: bool = False
-    language: str = "en"
-    jsonl_filename: str = "research_rounds.jsonl"
-    docx_filename: str = "research_report.docx"
-
-
-@dataclass(frozen=True)
-class ContinuousRunConfig:
-    duration_seconds: float
-    sleep_seconds: float = 300
-    max_rounds: Optional[int] = None
-    resume: bool = True
-
-
-@dataclass(frozen=True)
-class BenchmarkReport:
-    title: str
-    source: str
-    summary: str
-    strengths: List[str]
-
-
-@dataclass(frozen=True)
-class ResearchReport:
-    title: str
-    sections: Dict[str, str]
-
-    def as_text(self) -> str:
-        lines = [self.title]
-        for name, content in self.sections.items():
-            lines.append(f"{name}\n{content}")
-        return "\n\n".join(lines)
-
-
-@dataclass(frozen=True)
-class RubricCriterion:
-    name: str
-    description: str
-    max_points: int
-
-
-@dataclass(frozen=True)
-class Rubric:
-    title: str
-    criteria: List[RubricCriterion]
-    source_notes: str
-
-
-@dataclass(frozen=True)
-class CriterionScore:
-    name: str
-    points: int
-    max_points: int
-    rationale: str
-
-
-@dataclass(frozen=True)
-class Scorecard:
-    total_score: int
-    scores: List[CriterionScore]
-    summary: str
-
-
-@dataclass(frozen=True)
-class CriticReview:
-    issues: List[str]
-    recommendations: List[str]
-
-
-@dataclass(frozen=True)
-class RoundResult:
-    round_number: int
-    benchmark_reports: List[BenchmarkReport]
-    report: ResearchReport
-    rubric: Rubric
-    scorecard: Scorecard
-    critic_review: CriticReview
-
-
-@dataclass(frozen=True)
-class WorkflowResult:
-    rounds: List[RoundResult]
-    jsonl_path: Path
-    docx_path: Path
+from paper_research.export import write_docx
+from paper_research.models import BenchmarkReport, ContinuousRunConfig, CriterionScore, CriticReview, ResearchReport, RoundResult, Rubric, RubricCriterion, Scorecard, WorkflowConfig, WorkflowResult
 
 
 class BenchmarkSearchAgent:
@@ -682,7 +592,7 @@ def run_research_workflow(paper_text: str, config: WorkflowConfig) -> WorkflowRe
         previous_report = report
         prior_critic_review = critic_review
 
-    _write_docx(docx_path, rounds, config.language)
+    write_docx(docx_path, rounds, config.language)
     return WorkflowResult(rounds=rounds, jsonl_path=jsonl_path, docx_path=docx_path)
 
 
@@ -772,7 +682,7 @@ def run_continuous_workflow(
         )
         rounds.append(round_result)
         _append_jsonl(jsonl_path, round_result)
-        _write_docx(docx_path, rounds, config.language)
+        write_docx(docx_path, rounds, config.language)
         previous_report = report
         prior_critic_review = critic_review
         new_rounds += 1
@@ -782,7 +692,7 @@ def run_continuous_workflow(
         sleeper(continuous_config.sleep_seconds)
 
     if not docx_path.exists():
-        _write_docx(docx_path, rounds, config.language)
+        write_docx(docx_path, rounds, config.language)
     return WorkflowResult(rounds=rounds, jsonl_path=jsonl_path, docx_path=docx_path)
 
 
@@ -856,67 +766,6 @@ def _round_from_dict(data: Dict[str, object]) -> RoundResult:
         scorecard=scorecard,
         critic_review=critic_review,
     )
-
-
-def _write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") -> None:
-    document = DocxDocument()
-    if language == "zh":
-        document.add(heading("迭代式论文研究报告", level=1))
-        document.add(
-            paragraph(
-                "本文档记录每一轮研究报告、benchmark 搜索、评分标准、评分结果和评分标准批评。"
-            )
-        )
-    else:
-        document.add(heading("Iterative Paper Research Report", level=1))
-        document.add(
-            paragraph(
-                "This document records every research-report round, benchmark search, "
-                "scoring rubric, scorecard, and rubric critic review."
-            )
-        )
-    for round_result in rounds:
-        if language == "zh":
-            document.add(heading(f"第 {round_result.round_number} 轮", level=1))
-            document.add(heading("Benchmark 搜索结果", level=2))
-        else:
-            document.add(heading(f"Round {round_result.round_number}", level=1))
-            document.add(heading("Benchmark Search Results", level=2))
-        for benchmark in round_result.benchmark_reports:
-            document.add(bullet(f"{benchmark.title} ({benchmark.source})"))
-            document.add(paragraph(benchmark.summary))
-            for strength in benchmark.strengths:
-                prefix = "优点" if language == "zh" else "Strength"
-                document.add(bullet(f"{prefix}: {strength}"))
-
-        document.add(heading(round_result.report.title, level=2))
-        for name, content in round_result.report.sections.items():
-            document.add(heading(name, level=2))
-            document.add(paragraph(content))
-
-        document.add(heading("评分标准" if language == "zh" else "Scoring Rubric", level=2))
-        document.add(paragraph(round_result.rubric.source_notes))
-        for criterion in round_result.rubric.criteria:
-            document.add(
-                bullet(f"{criterion.name} ({criterion.max_points} pts): {criterion.description}")
-            )
-
-        document.add(heading("评分结果" if language == "zh" else "Scorecard", level=2))
-        document.add(paragraph(round_result.scorecard.summary))
-        for score in round_result.scorecard.scores:
-            document.add(
-                bullet(
-                    f"{score.name}: {score.points}/{score.max_points}. {score.rationale}"
-                )
-            )
-
-        document.add(heading("评分标准批评" if language == "zh" else "Rubric Critic Review", level=2))
-        for issue in round_result.critic_review.issues:
-            document.add(bullet(f"{'问题' if language == 'zh' else 'Issue'}: {issue}"))
-        for recommendation in round_result.critic_review.recommendations:
-            prefix = "建议" if language == "zh" else "Recommendation"
-            document.add(bullet(f"{prefix}: {recommendation}"))
-    document.save(path)
 
 
 def _parse_sections(text: str) -> Dict[str, str]:
@@ -1131,15 +980,7 @@ def _validate_language(language: str) -> None:
 
 def _extract_contribution(abstract: str, method: str, language: str = "en") -> str:
     combined = f"{abstract} {method}"
-    markers = [
-        "agent",
-        "workflow",
-        "rubric",
-        "search",
-        "evidence",
-        "experiments",
-        "reproducibility",
-    ]
+    markers = ["agent", "workflow", "rubric", "search", "evidence", "experiments", "reproducibility"]
     found = [marker for marker in markers if marker in combined.lower()]
     if found:
         if language == "zh":
