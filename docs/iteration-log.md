@@ -188,3 +188,32 @@
 - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter6_final` produced JSONL and DOCX outputs.
 - Final output inspected from `/tmp/paper_research_iter6_final/research_rounds.jsonl`.
 - Round 2 `本轮改进` now includes `上一轮低分项：问题定义 12/20；限制与失败模式 12/20`.
+
+## Iteration 7 - 2026-05-04 07:49 PDT
+
+### Current Problems
+
+- Chinese paper inputs using headings such as `标题：`, `摘要`, `方法`, `实验`, and `局限` were not parsed as structured paper sections.
+- Chinese titles were included with the `标题：` prefix in generated report titles.
+- Adding Chinese parsing directly to `workflow.py` would have pushed the module back over the maintainability threshold.
+
+### Planned Changes
+
+- Add a Chinese-paper fixture test.
+- Parse common Chinese headings and Chinese title prefixes.
+- Extract text parsing and summary helpers into `paper_research/text.py`.
+- Keep `workflow.py` under the 1,100-line threshold.
+
+### Changes Made
+
+- Added `CHINESE_PAPER_TEXT` fixture coverage in `tests/test_workflow.py`.
+- Added `paper_research/text.py` for section parsing, title extraction, compacting, and Chinese summary helpers.
+- Updated Chinese evidence summary wording to avoid duplicated phrasing such as `实验部分声称，实验声称`.
+- Reduced `paper_research/workflow.py` to 985 lines.
+
+### Verification After Changes
+
+- `python3 -m unittest discover -s tests` passed with 22 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter7 python3 -m compileall -q paper_research` passed.
+- A Chinese input smoke run produced title `深度研究报告 - 多智能体论文审查系统`.
+- The generated Chinese report included method evidence with `多角色流程`, evidence text with `baseline`, and limitation text with `benchmark 报告质量`.

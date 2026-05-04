@@ -35,6 +35,22 @@ The workflow depends on the quality of retrieved benchmark reports and can
 overfit the rubric if a critic does not challenge the criteria.
 """
 
+CHINESE_PAPER_TEXT = """
+标题：多智能体论文审查系统
+
+摘要
+本文研究一个多智能体系统，用于阅读长论文、检索优秀研究报告、生成评分标准并记录每轮审查。
+
+方法
+系统把报告写作、评分标准生成、报告评分和评分标准批评拆分为多角色流程。每轮先检索外部优秀报告，再结合当前报告更新评分标准。
+
+实验
+在三篇论文上，迭代审查提高了对假设、限制、baseline 和可复现性细节的覆盖。
+
+局限
+系统依赖 benchmark 报告质量，也可能让评分标准过拟合当前报告。
+"""
+
 
 class ResearchWorkflowTest(unittest.TestCase):
     def test_runs_iterative_agents_and_records_every_round(self):
@@ -266,6 +282,21 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertNotIn("。。", benchmark_section)
             self.assertNotIn(".。", benchmark_section)
+
+    def test_chinese_paper_headings_and_title_are_parsed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertEqual(report.title, "深度研究报告 - 多智能体论文审查系统")
+            self.assertIn("多角色流程", report.sections["方法与证据"])
+            self.assertIn("baseline", report.sections["论文主张与证据账本"])
+            self.assertNotIn("实验部分声称，实验声称", report.sections["论文主张与证据账本"])
+            self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
 
     def test_continuous_runner_resumes_and_keeps_appending_rounds(self):
         with tempfile.TemporaryDirectory() as tmp:

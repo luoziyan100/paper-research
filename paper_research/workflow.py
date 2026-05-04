@@ -15,6 +15,7 @@ from urllib.request import Request, urlopen
 from paper_research.export import write_docx
 from paper_research.models import BenchmarkReport, ContinuousRunConfig, CriterionScore, CriticReview, ResearchReport, RoundResult, Rubric, RubricCriterion, Scorecard, WorkflowConfig, WorkflowResult
 from paper_research.scoring import critic_mentions_reproducibility, low_score_summary
+from paper_research.text import compact as _compact, first_sentences as _first_sentences, join_phrases as _join_phrases, paper_title as _paper_title, parse_sections as _parse_sections, problem_statement as _problem_statement, zh_evidence_summary as _zh_evidence_summary, zh_limitation_summary as _zh_limitation_summary, zh_method_summary as _zh_method_summary, zh_problem_summary as _zh_problem_summary
 
 
 class BenchmarkSearchAgent:
@@ -778,121 +779,6 @@ def _round_from_dict(data: Dict[str, object]) -> RoundResult:
         scorecard=scorecard,
         critic_review=critic_review,
     )
-
-
-def _parse_sections(text: str) -> Dict[str, str]:
-    sections: Dict[str, List[str]] = {}
-    current = "body"
-    for raw_line in text.splitlines():
-        line = raw_line.strip()
-        if not line:
-            continue
-        normalized = re.sub(r"[^a-zA-Z ]", "", line).strip().lower()
-        if normalized in {
-            "abstract",
-            "introduction",
-            "method",
-            "methods",
-            "experiments",
-            "results",
-            "discussion",
-            "limitations",
-            "conclusion",
-        }:
-            current = normalized
-            sections.setdefault(current, [])
-            continue
-        sections.setdefault(current, []).append(line)
-    return {name: " ".join(lines) for name, lines in sections.items() if lines}
-
-
-def _paper_title(text: str) -> str:
-    for line in text.splitlines():
-        line = line.strip()
-        if line.lower().startswith("title:"):
-            return line.split(":", 1)[1].strip()
-    for line in text.splitlines():
-        line = line.strip()
-        if line:
-            return line[:120]
-    return ""
-
-
-def _first_sentences(text: str, count: int = 2) -> str:
-    sentences = re.split(r"(?<=[.!?])\s+", " ".join(text.split()))
-    selected = [sentence for sentence in sentences if sentence][:count]
-    return " ".join(selected)[:900]
-
-
-def _compact(text: str, limit: int = 450) -> str:
-    compacted = " ".join(text.split())
-    if len(compacted) <= limit:
-        return compacted
-    return compacted[: limit - 3].rstrip() + "..."
-
-
-def _problem_statement(abstract: str) -> str:
-    sentence = _first_sentences(abstract, count=1)
-    if not sentence:
-        return "an unstated research problem."
-    return sentence[0].lower() + sentence[1:]
-
-
-def _zh_problem_summary(abstract: str) -> str:
-    lower = abstract.lower()
-    parts = []
-    if "long papers" in lower or "paper" in lower:
-        parts.append("长论文深度解读")
-    if "benchmark" in lower or "external" in lower:
-        parts.append("外部优秀报告对照")
-    if "rubric" in lower or "score" in lower:
-        parts.append("评分标准迭代")
-    if "record" in lower or "iteration" in lower:
-        parts.append("过程记录")
-    if parts:
-        return "、".join(parts)
-    return "论文自动分析流程"
-
-
-def _zh_method_summary(method: str) -> str:
-    lower = method.lower()
-    if "separates" in lower and "roles" in lower:
-        return "系统把报告写作、评分标准设计、评分和批评分离为独立角色"
-    if method.strip():
-        return "论文提出了一个需要进一步拆解的技术流程"
-    return "方法描述不够明确"
-
-
-def _zh_evidence_summary(experiments: str) -> str:
-    lower = experiments.lower()
-    if "three papers" in lower and "improved coverage" in lower:
-        return "在三篇论文上，迭代评分提高了假设、限制和可复现性细节的覆盖"
-    if experiments.strip():
-        return "实验声称支持主要结论，但仍需要检查 baseline、指标和统计细节"
-    return "实验或结果部分不够明确"
-
-
-def _zh_limitation_summary(limitations: str) -> str:
-    lower = limitations.lower()
-    risks = []
-    if "benchmark" in lower:
-        risks.append("结果依赖 benchmark 报告质量")
-    if "overfit" in lower or "rubric" in lower:
-        risks.append("评分标准可能过拟合当前报告")
-    if "critic" in lower:
-        risks.append("批评 agent 的能力会影响纠偏效果")
-    if risks:
-        return "；".join(risks)
-    return "论文限制没有充分展开，需要从评估设计和可复现性角度补查"
-
-
-def _join_phrases(text: str) -> str:
-    phrases = []
-    for raw_item in text.split("; "):
-        item = raw_item.strip().rstrip(".。；;")
-        if item:
-            phrases.append(item)
-    return "；".join(phrases)
 
 
 def _benchmark_quality_summary(
