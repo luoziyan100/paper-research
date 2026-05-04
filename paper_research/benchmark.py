@@ -219,9 +219,10 @@ def _fallback_search_note(language: str) -> str:
 
 
 def _local_search_note(path: Path, matched_terms: Sequence[str], language: str) -> str:
-    terms = ", ".join(matched_terms[:5]) if matched_terms else "no direct keyword overlap"
     if language == "zh":
+        terms = "、".join(matched_terms[:5]) if matched_terms else "无直接关键词命中"
         return f"本地 benchmark 文件：{path.name}；keyword 命中：{terms}。"
+    terms = ", ".join(matched_terms[:5]) if matched_terms else "no direct keyword overlap"
     return f"Local benchmark file: {path.name}; keyword matches: {terms}."
 
 

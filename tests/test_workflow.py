@@ -270,6 +270,20 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertIn("zzz_relevant.md", results[0].source)
 
+    def test_chinese_local_benchmark_note_localizes_no_keyword_overlap(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "unmatched.md").write_text(
+                "这是一份关于天气和城市交通的普通说明。",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir, language="zh")
+
+            results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertIn("无直接关键词命中", results[0].search_note)
+            self.assertNotIn("no direct keyword overlap", results[0].search_note)
+
     def test_web_search_agent_extracts_external_report_results(self):
         html = """
         <a class="result__a" href="https://example.com/excellent-report">

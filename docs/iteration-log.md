@@ -961,3 +961,31 @@
 - `python3 -m unittest discover -s tests` passed with 40 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter31 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 32 - 2026-05-04 09:12 PDT
+
+### Current Problems
+
+- Chinese local benchmark provenance still used the English fallback phrase `no direct keyword overlap` when no local keyword matched.
+- This made Chinese JSONL and DOCX benchmark notes look partially untranslated.
+
+### Planned Changes
+
+- Add a regression test for the no-keyword-overlap local benchmark path in Chinese mode.
+- Localize the unmatched-keyword phrase while preserving English behavior.
+- Keep existing matched-keyword ordering and search scoring unchanged.
+
+### Changes Made
+
+- Added coverage for unmatched Chinese local benchmark notes.
+- `_local_search_note(...)` now renders unmatched Chinese notes as `无直接关键词命中`.
+- Chinese matched keywords are joined with `、` for more natural report text.
+
+### Verification After Changes
+
+- Red test first failed because the note contained `no direct keyword overlap`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_note_localizes_no_keyword_overlap tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches`
+- `python3 -m unittest discover -s tests` passed with 41 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter32 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
