@@ -878,3 +878,31 @@
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter28 python3 -m compileall -q paper_research` passed.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter28_final` produced JSONL and DOCX outputs.
 - `git diff --check` passed.
+
+## Iteration 29 - 2026-05-04 09:03 PDT
+
+### Current Problems
+
+- Chinese heading parsing handled `一、摘要`, but not parenthesized numbering such as `（一）摘要` or `(三) 实验`.
+- This is a common Chinese document structure and caused method/evidence fallback summaries.
+
+### Planned Changes
+
+- Add a fixture using full-width and half-width parenthesized Chinese numbering.
+- Strip parenthesized Chinese or Arabic numeric prefixes before heading lookup.
+- Preserve the numbered-heading support added in Iteration 28.
+
+### Changes Made
+
+- Added `PAREN_NUMBERED_CHINESE_PAPER_TEXT`.
+- `normalize_chinese_heading(...)` now strips prefixes like `（一）` and `(3)`.
+- Added regression coverage for the parenthesized form.
+
+### Verification After Changes
+
+- Red test first failed because `方法与证据` did not include `多角色流程`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_parenthesized_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_numbered_chinese_headings_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 39 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter29 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

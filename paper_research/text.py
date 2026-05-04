@@ -46,6 +46,7 @@ def paper_title(text: str) -> str:
 
 def normalize_chinese_heading(line: str) -> str:
     normalized = line.strip().rstrip("：:")
+    normalized = re.sub(r"^[（(][一二三四五六七八九十\d]+[）)]\s*", "", normalized)
     normalized = re.sub(r"^[一二三四五六七八九十]+[、.．]\s*", "", normalized)
     normalized = re.sub(r"^\d+[、.．]\s*", "", normalized)
     heading_map = {
