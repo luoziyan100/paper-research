@@ -552,3 +552,32 @@
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter17 python3 -m compileall -q paper_research` passed.
 - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter17_final` produced JSONL and DOCX outputs.
 - Sample output inspection confirmed the original Chinese `方法与证据` section still uses the expected method/evidence summaries.
+
+## Iteration 18 - 2026-05-04 08:26 PDT
+
+### Current Problems
+
+- After extracting benchmark search into `paper_research.benchmark`, users still could not import `BenchmarkSearchAgent` from the top-level `paper_research` package.
+- This made the new public search module harder to discover and reuse.
+
+### Planned Changes
+
+- Add a public API test for top-level `BenchmarkSearchAgent` import.
+- Export `BenchmarkSearchAgent` from `paper_research/__init__.py`.
+- Verify the package still has no import-cycle issue.
+
+### Changes Made
+
+- Added `BenchmarkSearchAgent` to the package-level imports.
+- Added it to `__all__`.
+- Extended the public API structure test.
+
+### Verification After Changes
+
+- Red test first failed with `ImportError: cannot import name 'BenchmarkSearchAgent' from 'paper_research'`.
+- Target test passed:
+  - `python3 -m unittest tests.test_structure.CodeStructureTest.test_public_api_and_models_remain_importable`
+- `python3 -m unittest discover -s tests` passed with 29 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter18 python3 -m compileall -q paper_research` passed.
+- `python3 -m paper_research examples/sample_paper.txt --rounds 1 --language zh --output-dir /tmp/paper_research_iter18_final` produced JSONL and DOCX outputs.
+- `git diff --check` passed.
