@@ -1487,3 +1487,30 @@
 - `python3 -m unittest discover -s tests` passed with 58 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter50 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 51 - 2026-05-04 18:42 PDT
+
+### Current Problems
+
+- `--benchmark-dir` silently fell back to built-in benchmark patterns when the supplied directory did not exist.
+- In long runs this could make users believe their own benchmark corpus was being used when it was not.
+
+### Planned Changes
+
+- Add a CLI regression test for a missing benchmark directory.
+- Reject missing benchmark directories before reading the paper or writing outputs.
+- Preserve successful runs with valid arguments.
+
+### Changes Made
+
+- Added `test_cli_rejects_missing_benchmark_dir_without_traceback`.
+- `main(...)` now emits `--benchmark-dir does not exist: ...` through `argparse` when the directory is missing.
+
+### Verification After Changes
+
+- Red test first failed because no `SystemExit` was raised and the CLI wrote default outputs.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_rejects_missing_benchmark_dir_without_traceback tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- `python3 -m unittest discover -s tests` passed with 59 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter51 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

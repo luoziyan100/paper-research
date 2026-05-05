@@ -73,6 +73,22 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("--sleep-seconds must be positive", stderr.getvalue())
             self.assertNotIn("Traceback", stderr.getvalue())
 
+    def test_cli_rejects_missing_benchmark_dir_without_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "paper.txt"
+            missing_benchmarks = root / "missing-benchmarks"
+            paper.write_text("Title: T\n\nAbstract\ncontent", encoding="utf-8")
+            stderr = io.StringIO()
+
+            with contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    main([str(paper), "--benchmark-dir", str(missing_benchmarks)])
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("--benchmark-dir does not exist", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
+
     def test_cli_accepts_custom_output_filenames(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

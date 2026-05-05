@@ -107,6 +107,8 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--jsonl-filename must end with .jsonl")
     if not args.docx_filename.endswith(".docx"):
         parser.error("--docx-filename must end with .docx")
+    if args.benchmark_dir is not None and not args.benchmark_dir.exists():
+        parser.error(f"--benchmark-dir does not exist: {args.benchmark_dir}")
     try:
         paper_text = load_paper_text(args.paper)
     except (FileNotFoundError, RuntimeError, ValueError) as exc:
