@@ -675,8 +675,9 @@ def _benchmark_quality_summary(
     return (
         f"Source count: {source_count}. External source count: {external_count}. "
         f"Source types: {source_type_text}. "
-        f"Coverage: {', '.join(coverage)}. Future web or local benchmarks should "
+        f"Coverage: {', '.join(coverage)}. "
         f"{built_in_only_note}"
+        "Future web or local benchmarks should "
         "continue tracking source diversity and field differences."
     )
 

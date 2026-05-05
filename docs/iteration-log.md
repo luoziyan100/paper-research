@@ -4837,3 +4837,31 @@
 - `python3 -m unittest discover -s tests` passed with 150 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter168 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 169 - 2026-05-05 03:29 PDT
+
+### Current Problems
+
+- English `Benchmark Quality` text could produce the broken sentence fragment `Future web or local benchmarks should Only built-in...`.
+- The built-in-only risk note was inserted between `should` and `continue`, reducing report readability.
+
+### Planned Changes
+
+- Add a regression test for the malformed built-in fallback sentence.
+- Move the built-in-only risk note into its own sentence before the future benchmark guidance.
+- Verify Chinese benchmark quality output remains unaffected.
+
+### Changes Made
+
+- Added `test_english_benchmark_quality_avoids_broken_builtin_sentence`.
+- Reordered the English `_benchmark_quality_summary` sentence assembly.
+
+### Verification After Changes
+
+- Red target test first failed because `should Only built-in` appeared in the generated section.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_benchmark_quality_avoids_broken_builtin_sentence tests.test_workflow.ResearchWorkflowTest.test_english_report_records_external_benchmark_source_count`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_report_records_benchmark_source_quality tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_handles_empty_sources_readably`
+- `python3 -m unittest discover -s tests` passed with 151 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter169 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

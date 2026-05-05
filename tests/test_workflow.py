@@ -379,6 +379,25 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("built-in fallback", section)
             self.assertIn("Only built-in fallback patterns were used", section)
 
+    def test_english_benchmark_quality_avoids_broken_builtin_sentence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            section = result.rounds[0].report.sections["Benchmark Quality"]
+
+            self.assertNotIn("should Only built-in", section)
+            self.assertIn(
+                "Only built-in fallback patterns were used; this is not external literature evidence.",
+                section,
+            )
+            self.assertIn(
+                "Future web or local benchmarks should continue tracking source diversity",
+                section,
+            )
+
     def test_english_critic_flags_builtin_only_benchmark_sources(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
