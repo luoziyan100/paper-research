@@ -842,6 +842,23 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("多智能体", contribution_score.rationale)
             self.assertNotIn("agent", contribution_score.rationale.lower())
 
+    def test_chinese_scoring_counts_localized_ablation_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            usefulness_score = next(
+                score
+                for score in result.rounds[0].scorecard.scores
+                if score.name == "研究价值"
+            )
+
+            self.assertGreaterEqual(usefulness_score.points, 14)
+            self.assertIn("消融实验", usefulness_score.rationale)
+            self.assertNotIn("ablation", usefulness_score.rationale.lower())
+
     def test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

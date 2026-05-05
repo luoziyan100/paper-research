@@ -2315,3 +2315,31 @@
 - `python3 -m unittest discover -s tests` passed with 76 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter80 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 81 - 2026-05-04 20:01 PDT
+
+### Current Problems
+
+- Chinese research-usefulness scoring still used the English keyword `ablation`.
+- The generated Chinese agenda uses `消融实验`, so the scorer undercounted one relevant marker.
+
+### Planned Changes
+
+- Add a regression test requiring `研究价值` scoring to count `消融实验`.
+- Replace the Chinese scoring keyword `ablation` with `消融实验`.
+- Keep English scoring unchanged.
+
+### Changes Made
+
+- Added `test_chinese_scoring_counts_localized_ablation_marker`.
+- Chinese `研究价值` scoring now uses `消融实验`.
+- The test verifies the score reaches the expected band and the rationale does not contain `ablation`.
+
+### Verification After Changes
+
+- Red target test first failed because `研究价值` scored 12 instead of counting the localized ablation marker.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_ablation_marker`
+- `python3 -m unittest discover -s tests` passed with 77 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter81 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
