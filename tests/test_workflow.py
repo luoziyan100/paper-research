@@ -1302,10 +1302,12 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertIn("基于对照报告、当前报告生成", first_notes)
             self.assertIn("对照报告数量", first_notes)
+            self.assertIn("外部来源数量：0", first_notes)
             self.assertIn(
                 "基于对照报告、当前报告、上一轮报告、上一轮评分标准批评生成",
                 second_notes,
             )
+            self.assertIn("外部来源数量：0", second_notes)
             self.assertNotIn("benchmark", first_notes.lower())
             self.assertNotIn("基于benchmark 报告, 当前报告", first_notes)
 

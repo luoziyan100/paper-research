@@ -3602,3 +3602,30 @@
 - `python3 -m unittest discover -s tests` passed with 118 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter127 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 128 - 2026-05-04 23:03 PDT
+
+### Current Problems
+
+- Rubric `source_notes` counted benchmark reports but did not distinguish built-in fallback entries from real external sources.
+- This was less traceable than the benchmark quality section added earlier.
+
+### Planned Changes
+
+- Add regression assertions for external source counts in Chinese rubric source notes.
+- Compute external benchmark count inside `RubricBuilderAgent`.
+- Add the same count to English rubric source notes.
+
+### Changes Made
+
+- Updated `test_chinese_rubric_source_notes_use_readable_punctuation`.
+- Added external source count to Chinese and English rubric `source_notes`.
+
+### Verification After Changes
+
+- Red target test first failed because Chinese rubric notes had no `外部来源数量`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_rubric_source_notes_use_readable_punctuation tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round tests.test_workflow.ResearchWorkflowTest.test_english_report_records_external_benchmark_source_count`
+- `python3 -m unittest discover -s tests` passed with 118 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter128 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

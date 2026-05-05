@@ -174,6 +174,11 @@ class RubricBuilderAgent:
         prior_critic_review: Optional[CriticReview],
         language: str = "en",
     ) -> Rubric:
+        external_count = sum(
+            1
+            for report in benchmark_reports
+            if _raw_benchmark_source_type(report) != "built-in"
+        )
         if language == "zh":
             criteria = [
                 RubricCriterion(
@@ -220,7 +225,8 @@ class RubricBuilderAgent:
                 criteria=criteria,
                 source_notes=(
                     f"基于{'、'.join(sources)}生成。对照报告数量："
-                    f"{len(benchmark_reports)}。当前报告：{current_report.title}。"
+                    f"{len(benchmark_reports)}。外部来源数量：{external_count}。"
+                    f"当前报告：{current_report.title}。"
                     "每项封顶，总分保持 100。"
                 ),
             )
@@ -270,7 +276,8 @@ class RubricBuilderAgent:
             criteria=criteria,
             source_notes=(
                 f"Created from {', '.join(sources)}. Benchmark count: "
-                f"{len(benchmark_reports)}. Current report: {current_report.title}. "
+                f"{len(benchmark_reports)}. External source count: {external_count}. "
+                f"Current report: {current_report.title}. "
                 "Each criterion is capped to keep the total at 100."
             ),
         )
