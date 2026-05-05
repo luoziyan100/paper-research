@@ -5090,3 +5090,31 @@
 - `python3 -m unittest discover -s tests` passed with 158 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter177 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 178 - 2026-05-05 03:54 PDT
+
+### Current Problems
+
+- DOCX text writing allowed XML 1.0-invalid control characters into `word/document.xml`.
+- Paper text extracted from PDFs or copied sources can contain characters such as form feed/backspace, which can corrupt generated DOCX files.
+
+### Planned Changes
+
+- Add a DOCX writer regression test for invalid XML control characters.
+- Filter invalid XML text characters before escaping paragraph text.
+- Verify multiline paragraph rendering and DOCX exports still work.
+
+### Changes Made
+
+- Added `test_removes_invalid_xml_control_characters`.
+- Added `_clean_xml_text` and applied it before text splitting/escaping in `_text_runs_xml`.
+
+### Verification After Changes
+
+- Red target test first failed because `A\x0cB\x08C` was written directly into `document.xml`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_removes_invalid_xml_control_characters tests.test_docx.DocxWriterTest.test_preserves_multiline_paragraphs_with_word_breaks`
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_export_uses_nested_heading_levels_for_report_sections tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 159 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter178 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

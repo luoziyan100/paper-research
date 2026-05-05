@@ -34,6 +34,21 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("证据：B", document_xml)
             self.assertIn("验证缺口：C", document_xml)
 
+    def test_removes_invalid_xml_control_characters(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            document = DocxDocument()
+            document.add(paragraph("A\x0cB\x08C"))
+
+            document.save(path)
+
+            with zipfile.ZipFile(path) as archive:
+                document_xml = archive.read("word/document.xml").decode("utf-8")
+
+            self.assertIn("ABC", document_xml)
+            self.assertNotIn("\x0c", document_xml)
+            self.assertNotIn("\x08", document_xml)
+
     def test_writes_basic_docx_metadata_parts(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"

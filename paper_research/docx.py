@@ -82,13 +82,21 @@ def _paragraph_xml(item: DocxParagraph) -> str:
 
 
 def _text_runs_xml(text: str) -> str:
-    lines = text.split("\n")
+    lines = _clean_xml_text(text).split("\n")
     parts = []
     for index, line in enumerate(lines):
         if index:
             parts.append("<w:br/>")
         parts.append(f'<w:t xml:space="preserve">{escape(line)}</w:t>')
     return "".join(parts)
+
+
+def _clean_xml_text(text: str) -> str:
+    return "".join(
+        char
+        for char in text
+        if char in {"\t", "\n", "\r"} or ord(char) >= 0x20
+    )
 
 
 def _content_types_xml() -> str:
