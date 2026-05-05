@@ -3024,3 +3024,30 @@
 - `python3 -m unittest discover -s tests` passed with 99 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter106 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 107 - 2026-05-04 21:10 PDT
+
+### Current Problems
+
+- Chinese benchmark keyword extraction did not include `基线`, `数据`, or `消融`.
+- Local benchmark search could describe an experiment-audit match only as `方法、实验`, losing the more useful scoring dimensions.
+
+### Planned Changes
+
+- Add a regression test for Chinese baseline/data/ablation benchmark matching.
+- Extend the Chinese keyword list with experiment-audit terms.
+- Preserve existing Chinese keyword matching behavior for multi-agent and rubric reports.
+
+### Changes Made
+
+- Added `test_chinese_local_benchmark_matches_baseline_data_ablation_terms`.
+- Added `基线`, `数据`, and `消融` to `_keywords`.
+
+### Verification After Changes
+
+- Red target test first failed because the search note only listed `方法、实验`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_matches_baseline_data_ablation_terms tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches`
+- `python3 -m unittest discover -s tests` passed with 100 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter107 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

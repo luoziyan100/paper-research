@@ -429,6 +429,27 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("检查基线方法、数据和消融实验是否充分。", results[0].strengths)
             self.assertNotIn("检查 baseline、数据和消融实验是否充分。", results[0].strengths)
 
+    def test_chinese_local_benchmark_matches_baseline_data_ablation_terms(self):
+        paper_text = """
+标题：基线消融评估论文
+
+摘要
+本文研究基线方法、数据质量和消融实验对系统评估的影响。
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "method_audit.md").write_text(
+                "优秀报告会检查基线方法、数据质量和消融实验是否支撑主张。",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir, language="zh")
+
+            results = agent.search(paper_text, round_number=1, previous_report=None)
+
+            self.assertIn("基线", results[0].search_note)
+            self.assertIn("数据", results[0].search_note)
+            self.assertIn("消融", results[0].search_note)
+
     def test_local_benchmark_search_scores_more_than_first_five_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)
