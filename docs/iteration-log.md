@@ -2671,3 +2671,30 @@
 - `python3 -m unittest discover -s tests` passed with 86 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter93 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 94 - 2026-05-04 20:39 PDT
+
+### Current Problems
+
+- DuckDuckGo result parsing only recognized double-quoted HTML attributes.
+- Search pages using single quotes for `class` or `href` attributes fell back to built-in reports.
+
+### Planned Changes
+
+- Add a regression test for single-quoted web result attributes.
+- Extend result and snippet regexes to support both single and double quotes.
+- Verify existing double-quoted English and Chinese web tests still pass.
+
+### Changes Made
+
+- Added `test_web_search_agent_handles_single_quoted_result_attributes`.
+- `_extract_duckduckgo_results` now supports single-quoted and double-quoted attributes.
+
+### Verification After Changes
+
+- Red target test first failed because search fell back to `built-in://claim-evidence-round-1`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_single_quoted_result_attributes tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_uses_chinese_query_terms`
+- `python3 -m unittest discover -s tests` passed with 87 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter94 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -350,16 +350,16 @@ def _fetch_url(url: str) -> str:
 
 def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
     link_pattern = re.compile(
-        r'<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]+)"[^>]*>(.*?)</a>',
+        r"""<a[^>]*class=(["'])[^"']*result__a[^"']*\1[^>]*href=(["'])(.*?)\2[^>]*>(.*?)</a>""",
         re.IGNORECASE | re.DOTALL,
     )
     snippet_pattern = re.compile(
-        r'<a[^>]*class="[^"]*result__snippet[^"]*"[^>]*>(.*?)</a>',
+        r"""<a[^>]*class=(["'])[^"']*result__snippet[^"']*\1[^>]*>(.*?)</a>""",
         re.IGNORECASE | re.DOTALL,
     )
-    snippets = [_strip_html(match) for match in snippet_pattern.findall(raw_html)]
+    snippets = [_strip_html(match[1]) for match in snippet_pattern.findall(raw_html)]
     results: List[Dict[str, str]] = []
-    for index, (href, title_html) in enumerate(link_pattern.findall(raw_html)):
+    for index, (_, _, href, title_html) in enumerate(link_pattern.findall(raw_html)):
         title = _strip_html(title_html)
         source = _clean_result_url(href)
         snippet = snippets[index] if index < len(snippets) else ""

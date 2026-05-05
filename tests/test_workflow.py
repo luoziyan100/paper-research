@@ -529,6 +529,25 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source_type, "web")
         self.assertIn("DuckDuckGo query", results[0].search_note)
 
+    def test_web_search_agent_handles_single_quoted_result_attributes(self):
+        html = """
+        <a class='result__a' href='https://example.com/excellent-report'>
+          Excellent Paper Research Report
+        </a>
+        <a class='result__snippet'>
+          This report connects experiment evidence and limitations.
+        </a>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "https://example.com/excellent-report")
+        self.assertIn("Excellent Paper Research Report", results[0].title)
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """
