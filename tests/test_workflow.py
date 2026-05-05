@@ -452,6 +452,8 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("Evidence:", sections["Claim-Evidence Ledger"])
             self.assertIn("Verification gap:", sections["Claim-Evidence Ledger"])
             self.assertNotIn(". can be improved", sections["Claim-Evidence Ledger"])
+            self.assertNotIn("shows The", sections["Claim-Evidence Ledger"])
+            self.assertIn("the method section shows that", sections["Claim-Evidence Ledger"])
 
     def test_english_executive_thesis_states_question_scope_and_importance(self):
         with tempfile.TemporaryDirectory() as tmp:

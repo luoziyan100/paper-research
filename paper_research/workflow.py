@@ -124,7 +124,7 @@ class ReportWriterAgent:
                 f"Claim: the paper argues that {_problem_statement(abstract)} can be "
                 "improved through the proposed workflow or method.\n"
                 f"Evidence: {_compact(experiments) if experiments else _compact(abstract)}\n"
-                f"Interpretation: method evidence shows {_compact(method)}\n"
+                f"Interpretation: the method section shows that {_lower_initial(_compact(method))}\n"
                 "Verification gap: the report should still inspect baseline settings, "
                 "measurement design, statistical support, and reproducibility details."
             ),
@@ -748,3 +748,9 @@ def _extract_contribution(abstract: str, method: str, language: str = "en") -> s
     if language == "zh":
         return _first_sentences(combined, count=1) or "论文贡献没有明确表述。"
     return _first_sentences(combined, count=1) or "the contribution is not explicit."
+
+
+def _lower_initial(text: str) -> str:
+    if not text:
+        return text
+    return text[0].lower() + text[1:]

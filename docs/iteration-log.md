@@ -4140,3 +4140,34 @@
 - `python3 -m unittest discover -s tests` passed with 133 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter145 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 146 - 2026-05-05 00:11 PDT
+
+### Current Problems
+
+- The English claim-evidence ledger used the phrase `method evidence shows The system ...`.
+- The capitalized sentence splice made the interpretation read like a template join rather than a polished report sentence.
+
+### Planned Changes
+
+- Add regression assertions against `shows The`.
+- Rewrite the interpretation sentence as a natural clause.
+- Lowercase only the first character of the inserted method summary when embedding it inside that clause.
+
+### Changes Made
+
+- Extended `test_english_report_uses_claim_evidence_ledger_sections`.
+- Updated the English ledger interpretation to `the method section shows that ...`.
+- Added `_lower_initial` for clause embedding.
+
+### Verification After Changes
+
+- Red target test first failed because `shows The` was present.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_report_uses_claim_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_english_builtin_only_second_round_does_not_reach_high_band`
+- Manual English sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 2 --output-dir /tmp/paper_research_iter146_en_after`
+- Manual sample quality check: the ledger now reads `Interpretation: the method section shows that the system separates ...`.
+- `python3 -m unittest discover -s tests` passed with 133 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter146 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
