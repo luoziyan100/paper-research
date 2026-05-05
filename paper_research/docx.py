@@ -27,6 +27,10 @@ def bullet(text: str) -> DocxParagraph:
     return DocxParagraph(text=text, style="ListBullet")
 
 
+def page_break() -> DocxParagraph:
+    return DocxParagraph(text="", style="PageBreak")
+
+
 class DocxDocument:
     """Build a simple DOCX document from paragraphs and headings."""
 
@@ -68,6 +72,8 @@ def _document_xml(paragraphs: List[DocxParagraph]) -> str:
 
 
 def _paragraph_xml(item: DocxParagraph) -> str:
+    if item.style == "PageBreak":
+        return """    <w:p><w:r><w:br w:type="page"/></w:r></w:p>"""
     style = ""
     if item.style != "Normal":
         style = f"<w:pPr><w:pStyle w:val=\"{escape(item.style)}\"/></w:pPr>"

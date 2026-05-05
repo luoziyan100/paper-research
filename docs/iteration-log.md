@@ -3574,3 +3574,31 @@
 - `python3 -m unittest discover -s tests` passed with 117 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter126 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 127 - 2026-05-04 23:00 PDT
+
+### Current Problems
+
+- Multi-round DOCX exports placed every round back-to-back without page breaks.
+- Long continuous-run reports were harder to skim because each round did not start on a clean page.
+
+### Planned Changes
+
+- Add a DOCX export regression test for page breaks between rounds.
+- Add a page-break paragraph primitive to the lightweight DOCX writer.
+- Insert a page break before round 2 and later rounds.
+
+### Changes Made
+
+- Added `test_export_inserts_page_break_between_rounds`.
+- Added `page_break()` and `PageBreak` XML rendering in `docx.py`.
+- Updated `write_docx` to insert page breaks between rounds.
+
+### Verification After Changes
+
+- Red target test first failed because the document XML had no `<w:br w:type="page"/>`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_export_inserts_page_break_between_rounds tests.test_docx.DocxWriterTest.test_export_uses_nested_heading_levels_for_report_sections`
+- `python3 -m unittest discover -s tests` passed with 118 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter127 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

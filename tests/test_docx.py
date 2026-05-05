@@ -228,6 +228,34 @@ class DocxWriterTest(unittest.TestCase):
             self.assertNotIn("benchmark 搜索", document_xml)
             self.assertNotIn("Benchmark 搜索", document_xml)
 
+    def test_export_inserts_page_break_between_rounds(self):
+        def make_round(round_number: int) -> RoundResult:
+            return RoundResult(
+                round_number=round_number,
+                benchmark_reports=[],
+                report=ResearchReport(
+                    title=f"Deep Research Report - Round {round_number}",
+                    sections={"Executive Thesis": "Content"},
+                ),
+                rubric=Rubric(title="Rubric", criteria=[], source_notes="Notes"),
+                scorecard=Scorecard(total_score=0, scores=[], summary="Score"),
+                critic_review=CriticReview(issues=[], recommendations=[]),
+            )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+
+            write_docx(path, [make_round(1), make_round(2)])
+
+            with zipfile.ZipFile(path) as archive:
+                document_xml = archive.read("word/document.xml").decode("utf-8")
+
+            self.assertIn('<w:br w:type="page"/>', document_xml)
+            self.assertLess(
+                document_xml.index('<w:br w:type="page"/>'),
+                document_xml.index("Round 2"),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

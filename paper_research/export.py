@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable
 
-from paper_research.docx import DocxDocument, bullet, heading, paragraph
+from paper_research.docx import DocxDocument, bullet, heading, page_break, paragraph
 from paper_research.models import RoundResult
 
 
@@ -27,7 +27,9 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
                 "scoring rubric, scorecard, and rubric critic review."
             )
         )
-    for round_result in rounds:
+    for index, round_result in enumerate(rounds):
+        if index:
+            document.add(page_break())
         if language == "zh":
             document.add(heading(f"第 {round_result.round_number} 轮", level=1))
             document.add(heading("对照报告搜索结果", level=2))
