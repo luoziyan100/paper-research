@@ -640,6 +640,24 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         self.assertEqual(results[0].source, "/search?q=paper-analysis")
 
+    def test_web_search_agent_cleans_uppercase_scheme_redirect_urls(self):
+        html = """
+        <a class="result__a" href="/url?q=HTTPS%3A%2F%2Fexample.com%2Fcase-report">
+          Uppercase Scheme Redirect Report
+        </a>
+        <div class="result__snippet">
+          Redirect result connects evidence and limitations.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "HTTPS://example.com/case-report")
+
     def test_web_search_agent_requires_result_class_tokens(self):
         html = """
         <a class="not-result__a" href="https://example.com/false-positive">

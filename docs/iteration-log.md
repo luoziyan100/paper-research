@@ -2861,3 +2861,30 @@
 - `python3 -m unittest discover -s tests` passed with 93 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter100 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 101 - 2026-05-04 20:56 PDT
+
+### Current Problems
+
+- Redirect URL cleaning only accepted lowercase `http://` and `https://` schemes.
+- A valid `HTTPS://...` redirect stayed wrapped as `/url?q=...`, reducing source quality in benchmark results.
+
+### Planned Changes
+
+- Add a regression test for uppercase-scheme redirect URLs.
+- Make redirect candidate scheme validation case-insensitive.
+- Preserve the original decoded candidate text after validation.
+
+### Changes Made
+
+- Added `test_web_search_agent_cleans_uppercase_scheme_redirect_urls`.
+- `_clean_result_url` now checks redirect candidates with `candidate.lower().startswith(...)`.
+
+### Verification After Changes
+
+- Red target test first failed because the source stayed `/url?q=HTTPS...`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_uppercase_scheme_redirect_urls tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_q_redirect_urls tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_non_url_q_values_as_original_href`
+- `python3 -m unittest discover -s tests` passed with 94 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter101 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
