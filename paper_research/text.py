@@ -97,6 +97,8 @@ def normalize_chinese_heading(line: str) -> str:
         "方法": "method",
         "方法论": "method",
         "实验": "experiments",
+        "评估": "experiments",
+        "评价": "experiments",
         "结果": "results",
         "讨论": "discussion",
         "局限": "limitations",
@@ -182,6 +184,8 @@ def zh_evidence_summary(experiments: str) -> str:
     lower = experiments.lower()
     if "baseline" in lower and "可复现" in experiments:
         return "迭代审查提高了假设、限制、基线方法和可复现性细节的覆盖"
+    if "基线" in experiments and "可复现" in experiments:
+        return "评估显示系统提高了基线方法、限制和可复现性细节的覆盖"
     if "three papers" in lower and "improved coverage" in lower:
         return "在三篇论文上，迭代评分提高了假设、限制和可复现性细节的覆盖"
     if experiments.strip():

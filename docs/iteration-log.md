@@ -3410,3 +3410,31 @@
 - `python3 -m unittest discover -s tests` passed with 111 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter120 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 121 - 2026-05-04 21:52 PDT
+
+### Current Problems
+
+- Chinese papers using `评估` or `评价` headings were not mapped to experiment evidence.
+- Even when Chinese evidence mentioned `基线方法` and `可复现性`, the summary could fall back to a generic experiment statement.
+
+### Planned Changes
+
+- Add a regression test for a Chinese `评估` heading.
+- Map `评估` and `评价` to the experiments section.
+- Preserve Chinese baseline/reproducibility evidence in the generated evidence ledger.
+
+### Changes Made
+
+- Added `CHINESE_EVALUATION_HEADING_PAPER_TEXT`.
+- Added `test_chinese_evaluation_heading_is_parsed_as_experiments`.
+- Updated Chinese heading normalization and `zh_evidence_summary`.
+
+### Verification After Changes
+
+- Red target test first failed because the evidence ledger did not include `评估显示`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_evaluation_heading_is_parsed_as_experiments tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_baseline_marker`
+- `python3 -m unittest discover -s tests` passed with 112 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter121 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
