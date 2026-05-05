@@ -9,12 +9,13 @@ from paper_research.workflow import (
     BenchmarkSearchAgent,
     ContinuousRunConfig,
     ReportWriterAgent,
+    ReportScoringAgent,
     RubricCriticAgent,
     WorkflowConfig,
     run_continuous_workflow,
     run_research_workflow,
 )
-from paper_research.models import BenchmarkReport
+from paper_research.models import BenchmarkReport, ResearchReport, Rubric, RubricCriterion
 from paper_research.text import first_sentences
 
 
@@ -485,6 +486,28 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("Matched markers:", evidence_score.rationale)
             self.assertIn("evidence", evidence_score.rationale)
             self.assertIn("experiment", evidence_score.rationale)
+
+    def test_english_scoring_does_not_match_data_inside_metadata(self):
+        report = ResearchReport(
+            title="Metadata-only report",
+            sections={"Summary": "This metadata overview describes catalog fields only."},
+        )
+        rubric = Rubric(
+            title="Rubric",
+            criteria=[
+                RubricCriterion(
+                    name="Reproducibility and Evidence Citation",
+                    description="Checks evidence and data use.",
+                    max_points=20,
+                )
+            ],
+            source_notes="test",
+        )
+
+        scorecard = ReportScoringAgent().score(report, rubric)
+
+        self.assertIn("Matched markers: none", scorecard.scores[0].rationale)
+        self.assertNotIn("Matched markers: data", scorecard.scores[0].rationale)
 
     def test_english_scorecard_avoids_inflated_sample_score(self):
         with tempfile.TemporaryDirectory() as tmp:

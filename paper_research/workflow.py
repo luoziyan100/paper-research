@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -315,7 +316,9 @@ class ReportScoringAgent:
             }
         for criterion in rubric.criteria:
             keywords = keyword_map.get(criterion.name, [])
-            matched_keywords = [keyword for keyword in keywords if keyword in report_text]
+            matched_keywords = [
+                keyword for keyword in keywords if _contains_marker(report_text, keyword, language)
+            ]
             hits = len(matched_keywords)
             if language == "zh":
                 evidence = _find_evidence_snippet(report, keywords, language)
@@ -839,13 +842,19 @@ def _find_evidence_snippet(
         ("baseline", "关键假设与验证缺口"),
         ("证据", "论文主张与证据账本"),
         ("实验", "论文主张与证据账本"),
+        ("limitation", "Limitations and Risks"),
+        ("risk", "Limitations and Risks"),
+        ("reproduc", "Key Assumptions and Verification Gaps"),
+        ("evidence", "Claim-Evidence Ledger"),
+        ("experiment", "Claim-Evidence Ledger"),
+        ("baseline", "Claim-Evidence Ledger"),
     ]
     for keyword, section_name in preferred_sections:
         if keyword in keywords and section_name in report.sections:
             return f"{section_name}{separator}{_matching_line(report.sections[section_name], keywords)}"
     for section_name, content in report.sections.items():
         lowered = content.lower()
-        if any(keyword.lower() in lowered for keyword in keywords):
+        if any(_contains_marker(lowered, keyword, language) for keyword in keywords):
             return f"{section_name}{separator}{_matching_line(content, keywords)}"
     first_section = next(iter(report.sections.items()), None)
     if first_section:
@@ -858,10 +867,19 @@ def _find_evidence_snippet(
 def _matching_line(content: str, keywords: Sequence[str]) -> str:
     for line in content.splitlines():
         lowered = line.lower()
-        if any(keyword.lower() in lowered for keyword in keywords):
+        if any(_contains_marker(lowered, keyword, "en") for keyword in keywords):
             return _compact(line, 180)
     first_line = content.splitlines()[0] if content.splitlines() else content
     return _compact(first_line, 180)
+
+
+def _contains_marker(text: str, keyword: str, language: str) -> bool:
+    lowered_keyword = keyword.lower()
+    if language == "zh" or not re.fullmatch(r"[a-z-]+", lowered_keyword):
+        return lowered_keyword in text
+    if lowered_keyword in {"reproduc", "result", "experiment"}:
+        return lowered_keyword in text
+    return re.search(rf"(?<![a-z]){re.escape(lowered_keyword)}(?![a-z])", text) is not None
 
 
 def _validate_language(language: str) -> None:

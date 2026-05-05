@@ -3826,3 +3826,34 @@
 - `python3 -m unittest discover -s tests` passed with 125 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter135 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 136 - 2026-05-04 23:35 PDT
+
+### Current Problems
+
+- English scoring marker matching used raw substring checks.
+- `metadata` incorrectly matched the `data` rubric marker and inflated reproducibility/evidence scoring.
+
+### Planned Changes
+
+- Add a regression test for `data` inside `metadata`.
+- Use word-boundary matching for normal English markers.
+- Preserve intentional stem matching for markers like `reproduc`, `result`, and `experiment`.
+
+### Changes Made
+
+- Added `test_english_scoring_does_not_match_data_inside_metadata`.
+- Added `_contains_marker` and routed scoring/evidence lookup through it.
+- Imported `re` in `workflow.py`.
+
+### Verification After Changes
+
+- Red target test first failed because rationale reported `Matched markers: data`.
+- Initial implementation raised `NameError` until `re` was imported.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scoring_does_not_match_data_inside_metadata tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_lists_matched_markers tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_avoids_inflated_sample_score tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_baseline_marker`
+- Manual English sample score check now reports 72/100 with explicit matched marker lists.
+- First full-suite run exposed an evidence-snippet regression where English scoring selected `Executive Thesis` instead of `Claim-Evidence Ledger`; added English preferred-section mappings and retested the affected cases.
+- `python3 -m unittest discover -s tests` passed with 126 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter136 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
