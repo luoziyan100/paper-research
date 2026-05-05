@@ -380,6 +380,8 @@ class RubricCriticAgent:
             ]
             if not benchmark_reports:
                 recommendations.append("如果对照报告搜索没有返回结果，就不要进入评分环节。")
+            elif all(_raw_benchmark_source_type(report) == "built-in" for report in benchmark_reports):
+                recommendations.append("本轮仅使用内置回退模式，下一轮应优先接入真实外部对照报告。")
             return CriticReview(issues=issues, recommendations=recommendations)
 
         issues = [

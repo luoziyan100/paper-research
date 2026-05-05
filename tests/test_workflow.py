@@ -960,6 +960,18 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("对照报告搜索", critic_text)
             self.assertNotIn("benchmark", critic_text.lower())
 
+    def test_chinese_critic_flags_builtin_only_benchmark_sources(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            recommendations = " ".join(result.rounds[0].critic_review.recommendations)
+
+            self.assertIn("内置回退", recommendations)
+            self.assertIn("外部对照报告", recommendations)
+
     def test_chinese_report_uses_evidence_ledger_sections(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

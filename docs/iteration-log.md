@@ -3135,3 +3135,30 @@
 - `python3 -m unittest discover -s tests` passed with 102 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter110 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 111 - 2026-05-04 21:20 PDT
+
+### Current Problems
+
+- When benchmark search returned only built-in fallback archetypes, the Chinese critic did not recommend adding real external comparisons.
+- This left the benchmark quality warning isolated in the report instead of feeding into the improvement loop.
+
+### Planned Changes
+
+- Add a regression test for built-in-only benchmark critic recommendations.
+- Keep the existing empty-search warning separate from the built-in-only warning.
+- Localize the recommendation without using `benchmark` terminology.
+
+### Changes Made
+
+- Added `test_chinese_critic_flags_builtin_only_benchmark_sources`.
+- `RubricCriticAgent` now recommends real external comparison reports when all benchmark reports are built-in fallback entries.
+
+### Verification After Changes
+
+- Red target test first failed because critic recommendations did not mention `内置回退` or `外部对照报告`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_critic_flags_builtin_only_benchmark_sources tests.test_workflow.ResearchWorkflowTest.test_chinese_rubric_critic_localizes_benchmark_terms`
+- `python3 -m unittest discover -s tests` passed with 103 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter111 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
