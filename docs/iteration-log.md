@@ -4592,3 +4592,33 @@
 - `python3 -m unittest discover -s tests` passed with 141 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter160 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 161 - 2026-05-05 03:06 PDT
+
+### Current Problems
+
+- Web benchmark parsing rejected clearly unsafe schemes such as `javascript:` and `mailto:`.
+- Other absolute non-HTTP schemes such as `ftp://` and `file://` could still be treated as usable web benchmark sources.
+
+### Planned Changes
+
+- Add regression coverage for unsupported absolute result links.
+- Allow only `http`, `https`, and relative result links.
+- Preserve existing redirect cleanup and relative query behavior.
+
+### Changes Made
+
+- Added `test_web_search_agent_ignores_unsupported_absolute_result_links`.
+- Replaced scheme filtering with `_has_unsupported_scheme`, which rejects any non-empty scheme outside `http` and `https`.
+- Applied the same check to decoded redirect candidates.
+
+### Verification After Changes
+
+- Red target test first failed because an `ftp://` result was treated as a web benchmark.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsupported_absolute_result_links tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsafe_result_links tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_non_url_q_values_as_original_href tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_q_redirect_urls`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter161_en_after`
+- `python3 -m unittest discover -s tests` passed with 142 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter161 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

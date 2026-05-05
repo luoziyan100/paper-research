@@ -79,20 +79,20 @@ def _strip_html(value: str) -> str:
 
 def _clean_result_url(href: str) -> str:
     href = unescape(href)
-    if _is_unsafe_result_href(href):
+    if _has_unsupported_scheme(href):
         return ""
     parsed = urlparse(href)
     query = parse_qs(parsed.query)
     for redirect_param in ("uddg", "q"):
         if redirect_param in query and query[redirect_param]:
             candidate = unquote(query[redirect_param][0])
-            if _is_unsafe_result_href(candidate):
+            if _has_unsupported_scheme(candidate):
                 return ""
             if candidate.lower().startswith(("http://", "https://")):
                 return candidate
     return href
 
 
-def _is_unsafe_result_href(href: str) -> bool:
+def _has_unsupported_scheme(href: str) -> bool:
     scheme = urlparse(href).scheme.lower()
-    return scheme in {"javascript", "mailto", "data", "vbscript"}
+    return bool(scheme) and scheme not in {"http", "https"}

@@ -1067,6 +1067,29 @@ We analyze data quality.
         self.assertEqual(results[0].source_type, "built-in")
         self.assertNotIn("JavaScript Result", [result.title for result in results])
 
+    def test_web_search_agent_ignores_unsupported_absolute_result_links(self):
+        html = """
+        <a class="result__a" href="ftp://example.com/report">
+          FTP Result
+        </a>
+        <div class="result__snippet">
+          FTP snippet should not be used.
+        </div>
+        <a class="result__a" href="file:///tmp/report.html">
+          File Result
+        </a>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source_type, "built-in")
+        self.assertNotIn("FTP Result", [result.title for result in results])
+        self.assertNotIn("File Result", [result.title for result in results])
+
     def test_web_search_agent_ignores_unsafe_redirect_targets(self):
         html = """
         <a class="result__a" href="/url?q=javascript%3Aalert%281%29">
