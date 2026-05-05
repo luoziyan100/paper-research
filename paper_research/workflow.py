@@ -121,8 +121,7 @@ class ReportWriterAgent:
                 "judgment so later scoring can challenge both."
             ),
             "Claim-Evidence Ledger": (
-                f"Claim: the paper argues that {_problem_statement(abstract)} can be "
-                "improved through the proposed workflow or method.\n"
+                f"Claim: the paper argues that {_problem_statement(abstract)} is feasible or effective.\n"
                 f"Evidence: {_compact(experiments) if experiments else _compact(abstract)}\n"
                 f"Interpretation: the method section shows that {_lower_initial(_compact(method))}\n"
                 "Verification gap: the report should still inspect baseline settings, "

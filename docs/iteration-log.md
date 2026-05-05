@@ -4808,3 +4808,32 @@
 - `python3 -m unittest discover -s tests` passed with 149 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter167 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 168 - 2026-05-05 03:27 PDT
+
+### Current Problems
+
+- English abstracts beginning with `We introduce ...` produced awkward report text such as `evaluate we introduce`.
+- The English claim template still implied every paper's claim was about improving a workflow or method.
+
+### Planned Changes
+
+- Add a regression test for `We introduce ...` problem-statement cleanup.
+- Extend English lead-verb removal beyond study/present/propose.
+- Make the English claim/evidence ledger use a general feasibility/effectiveness claim.
+
+### Changes Made
+
+- Added `test_english_problem_statement_cleans_we_introduce`.
+- Updated `problem_statement` to strip `we introduce/develop/design` and matching `this paper ...` variants.
+- Reworded the English claim line to `is feasible or effective`.
+
+### Verification After Changes
+
+- Red target test first failed because the generated report contained `evaluate we introduce` and `argues that we introduce`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_problem_statement_cleans_we_introduce tests.test_workflow.ResearchWorkflowTest.test_english_report_uses_claim_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_english_executive_thesis_states_question_scope_and_importance`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_parses_approach_and_evaluation_headings tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_cites_report_evidence`
+- `python3 -m unittest discover -s tests` passed with 150 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter168 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

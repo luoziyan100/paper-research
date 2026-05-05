@@ -170,7 +170,11 @@ def problem_statement(abstract: str) -> str:
         return "an unstated research problem."
     statement = sentence[0].lower() + sentence[1:]
     cleaned = re.sub(
-        r"^(we study|we present|we propose|this paper studies|this paper presents|this paper proposes)\s+",
+        (
+            r"^(we study|we present|we propose|we introduce|we develop|we design|"
+            r"this paper studies|this paper presents|this paper proposes|"
+            r"this paper introduces|this paper develops|this paper designs)\s+"
+        ),
         "",
         statement,
         flags=re.IGNORECASE,

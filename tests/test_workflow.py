@@ -486,6 +486,19 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("evaluate we study", thesis.lower())
             self.assertNotIn("argues that we study", result.rounds[0].report.as_text().lower())
 
+    def test_english_problem_statement_cleans_we_introduce(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=APPROACH_EVALUATION_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            report_text = result.rounds[0].report.as_text().lower()
+
+            self.assertIn("contrastive pretraining", report_text)
+            self.assertNotIn("evaluate we introduce", report_text)
+            self.assertNotIn("argues that we introduce", report_text)
+
     def test_english_scorecard_cites_report_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
