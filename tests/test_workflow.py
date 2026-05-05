@@ -213,6 +213,13 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         self.assertEqual(summary, "The system uses e.g. retrieval filtering.")
 
+    def test_first_sentences_preserves_capitalized_english_abbreviations(self):
+        text = "E.g. retrieval filtering improves evidence coverage. It then scores the report."
+
+        summary = first_sentences(text, count=1)
+
+        self.assertEqual(summary, "E.g. retrieval filtering improves evidence coverage.")
+
     def test_runs_iterative_agents_and_records_every_round(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)

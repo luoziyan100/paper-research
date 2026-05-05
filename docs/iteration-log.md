@@ -3520,3 +3520,30 @@
 - `python3 -m unittest discover -s tests` passed with 115 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter124 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 125 - 2026-05-04 22:54 PDT
+
+### Current Problems
+
+- Iteration 124 protected lowercase `e.g.` and `i.e.` but not sentence-initial capitalized forms.
+- `E.g. retrieval filtering...` was truncated to `E.g.`.
+
+### Planned Changes
+
+- Add a regression test for capitalized English abbreviations.
+- Protect `E.g.` and `I.e.` alongside lowercase forms.
+- Preserve Chinese punctuation splitting.
+
+### Changes Made
+
+- Added `test_first_sentences_preserves_capitalized_english_abbreviations`.
+- Extended abbreviation protection in `first_sentences`.
+
+### Verification After Changes
+
+- Red target test first failed because the summary stopped at `E.g.`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_first_sentences_preserves_capitalized_english_abbreviations tests.test_workflow.ResearchWorkflowTest.test_first_sentences_preserves_english_abbreviations_without_space tests.test_workflow.ResearchWorkflowTest.test_first_sentences_splits_chinese_punctuation`
+- `python3 -m unittest discover -s tests` passed with 116 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter125 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
