@@ -433,10 +433,11 @@ def _quality_band(total: int, language: str) -> str:
 
 
 def _score_risk_summary(scores: Sequence[CriterionScore], language: str) -> str:
+    threshold = 12 if language == "zh" else 14
     weak_scores = [
         score.name
         for score in scores
-        if score.points <= max(12, int(score.max_points * 0.6))
+        if score.points <= max(threshold, int(score.max_points * 0.6))
     ]
     if weak_scores:
         return "、".join(weak_scores[:3]) if language == "zh" else ", ".join(weak_scores[:3])

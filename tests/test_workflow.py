@@ -396,6 +396,19 @@ class ResearchWorkflowTest(unittest.TestCase):
                 [score.rationale for score in scorecard.scores],
             )
 
+    def test_english_scorecard_summary_matches_low_score_threshold(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp)),
+            )
+
+            first_summary = result.rounds[0].scorecard.summary
+            second_refinement = result.rounds[1].report.sections["Round Refinement"]
+
+            self.assertIn("Research Usefulness", second_refinement)
+            self.assertIn("Research Usefulness", first_summary)
+
     def test_second_round_report_uses_prior_low_score_items(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

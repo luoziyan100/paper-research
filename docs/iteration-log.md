@@ -3660,3 +3660,30 @@
 - `python3 -m unittest discover -s tests` passed with 119 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter129 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 130 - 2026-05-04 23:12 PDT
+
+### Current Problems
+
+- English scorecard summaries used a lower risk threshold than the second-round low-score refinement logic.
+- A 14/20 `Research Usefulness` score appeared in the next round's low-score list but not in the first round's `Main risks`.
+
+### Planned Changes
+
+- Add a regression test that compares first-round summary risks with second-round low-score refinement.
+- Use the same 14-point threshold for English risk summaries.
+- Preserve the Chinese 12-point threshold.
+
+### Changes Made
+
+- Added `test_english_scorecard_summary_matches_low_score_threshold`.
+- Updated `_score_risk_summary` to use language-specific thresholds.
+
+### Verification After Changes
+
+- Red target test first failed because the first-round summary omitted `Research Usefulness`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_summary_matches_low_score_threshold tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_avoids_inflated_sample_score tests.test_workflow.ResearchWorkflowTest.test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score`
+- `python3 -m unittest discover -s tests` passed with 120 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter130 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
