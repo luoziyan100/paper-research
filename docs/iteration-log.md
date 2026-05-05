@@ -2397,3 +2397,31 @@
 - `python3 -m unittest discover -s tests` passed with 78 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter83 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 84 - 2026-05-04 20:10 PDT
+
+### Current Problems
+
+- The Chinese evidence ledger repeated the same evidence summary in both `证据` and `解释`.
+- This reduced information density in a core report section.
+
+### Planned Changes
+
+- Add a regression test requiring the core evidence sentence to appear only once.
+- Rewrite the explanation line to connect method and experiment interpretation without repeating the full evidence sentence.
+- Preserve the evidence line itself for scoring and citation.
+
+### Changes Made
+
+- Added `test_chinese_evidence_ledger_avoids_repeating_evidence_summary`.
+- The explanation line now says `实验部分提供了覆盖提升的方向性证据`.
+- The evidence summary remains in the `证据` line, so scoring still has a concrete snippet to cite.
+
+### Verification After Changes
+
+- Red target test first failed because the evidence sentence appeared twice.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_evidence_ledger_avoids_repeating_evidence_summary`
+- `python3 -m unittest discover -s tests` passed with 79 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter84 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

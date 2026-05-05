@@ -676,6 +676,21 @@ class ResearchWorkflowTest(unittest.TestCase):
                 sections["执行摘要"].lower(),
             )
 
+    def test_chinese_evidence_ledger_avoids_repeating_evidence_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            ledger = result.rounds[0].report.sections["论文主张与证据账本"]
+
+            self.assertEqual(
+                ledger.count("迭代审查提高了假设、限制、基线方法和可复现性细节的覆盖"),
+                1,
+            )
+            self.assertIn("实验部分提供了覆盖提升的方向性证据", ledger)
+
     def test_chinese_executive_summary_localizes_benchmark_term(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

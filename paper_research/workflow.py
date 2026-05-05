@@ -65,7 +65,7 @@ class ReportWriterAgent:
                 "论文主张与证据账本": (
                     f"主张：论文试图证明{problem_summary}可以通过多角色流程持续改进。"
                     f"\n证据：{evidence_summary}。"
-                    f"\n解释：方法部分显示，{method_summary}；实验部分声称，{evidence_summary}。"
+                    f"\n解释：方法部分显示，{method_summary}；实验部分提供了覆盖提升的方向性证据。"
                     "\n验证缺口：当前样例没有给出详细数据表、基线方法设置或显著性检验，"
                     "因此结论只能被视为需要复核的方向性证据。"
                 ),
