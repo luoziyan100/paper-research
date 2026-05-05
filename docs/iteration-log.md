@@ -4382,3 +4382,34 @@
 - `python3 -m unittest discover -s tests` passed with 136 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter153 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 154 - 2026-05-05 00:46 PDT
+
+### Current Problems
+
+- Local benchmark strength inference did not recognize reproducibility-only reports.
+- A report focused on reproducibility setup and replication details fell back to the generic `Provides a reusable external comparison point.` strength.
+
+### Planned Changes
+
+- Add regression coverage for reproducibility benchmark strength extraction.
+- Recognize English `reproduc...` / `replication` and Chinese `复现` signals.
+- Preserve existing method-audit and Chinese keyword behavior.
+
+### Changes Made
+
+- Added `test_local_benchmark_extracts_reproducibility_strength`.
+- Updated `_infer_report_strengths` to emit:
+  - `Checks reproducibility and replication details.`
+  - `检查可复现性和复现实验细节。`
+
+### Verification After Changes
+
+- Red target test first failed because the reproducibility report only received the generic default strength.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_extracts_reproducibility_strength tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_extracts_method_audit_strength tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter154_en_after`
+- `python3 -m unittest discover -s tests` passed with 137 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter154 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

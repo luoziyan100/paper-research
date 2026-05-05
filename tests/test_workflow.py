@@ -629,6 +629,25 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("excellent_report.markdown", results[0].source)
             self.assertEqual(results[0].source_type, "local")
 
+    def test_local_benchmark_extracts_reproducibility_strength(self):
+        paper_text = """
+Title: Reproducibility Audit
+
+Abstract
+We study reproducibility checks for paper reports.
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "reproducibility.md").write_text(
+                "A strong review checks reproducibility setup and replication details.",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir)
+
+            results = agent.search(paper_text, round_number=1, previous_report=None)
+
+            self.assertIn("Checks reproducibility and replication details.", results[0].strengths)
+
     def test_local_benchmark_search_avoids_substring_keyword_matches(self):
         paper_text = """
 Title: Data Audit
