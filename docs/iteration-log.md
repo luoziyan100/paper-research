@@ -1787,3 +1787,30 @@
 - `python3 -m unittest discover -s tests` passed with 67 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter61 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 62 - 2026-05-04 19:08 PDT
+
+### Current Problems
+
+- Chinese `后续研究议程` still used English terms: `baseline`, `ablation`, and `agent`.
+- This weakened Chinese output quality in the final report and DOCX.
+
+### Planned Changes
+
+- Add a Chinese report regression test for the research agenda section.
+- Replace those English terms with natural Chinese equivalents.
+- Preserve existing Chinese DOCX generation behavior.
+
+### Changes Made
+
+- Added `test_chinese_research_agenda_localizes_agent_terms`.
+- `后续研究议程` now says `基线方法`、`消融实验`、`智能体角色`.
+
+### Verification After Changes
+
+- Red test first failed because the agenda contained `baseline`, `ablation`, and `agent`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_research_agenda_localizes_agent_terms tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+- `python3 -m unittest discover -s tests` passed with 68 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter62 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

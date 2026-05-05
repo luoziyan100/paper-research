@@ -93,7 +93,7 @@ class ReportWriterAgent:
                 ),
                 "后续研究议程": (
                     "可继续推进的工作包括：复现核心结果，在分布外论文上测试稳健性，"
-                    "与更简单的 baseline 对比，并做 ablation 来隔离各个 agent 角色的贡献。"
+                    "与更简单的基线方法对比，并做消融实验来隔离各个智能体角色的贡献。"
                 ),
             }
             if previous_report:

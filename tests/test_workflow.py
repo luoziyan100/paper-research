@@ -617,6 +617,22 @@ class ResearchWorkflowTest(unittest.TestCase):
                 sections["执行摘要"].lower(),
             )
 
+    def test_chinese_research_agenda_localizes_agent_terms(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            agenda = result.rounds[0].report.sections["后续研究议程"]
+
+            self.assertIn("基线", agenda)
+            self.assertIn("消融实验", agenda)
+            self.assertIn("智能体角色", agenda)
+            self.assertNotIn("baseline", agenda)
+            self.assertNotIn("ablation", agenda)
+            self.assertNotIn("agent", agenda.lower())
+
     def test_chinese_contribution_analysis_localizes_marker_terms(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
