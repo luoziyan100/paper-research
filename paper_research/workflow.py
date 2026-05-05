@@ -622,7 +622,7 @@ def _round_from_dict(data: Dict[str, object], language: str = "en") -> RoundResu
             title=str(item["title"]),
             source=str(item["source"]),
             summary=str(item["summary"]),
-            strengths=list(item["strengths"]),
+            strengths=_string_list(item["strengths"]),
             source_type=str(
                 item.get(  # type: ignore[union-attr]
                     "source_type",
@@ -754,6 +754,12 @@ def _legacy_search_note(source: str, language: str = "en") -> str:
     if language == "zh":
         return f"从缺少 benchmark trace metadata 的旧版 JSONL 恢复：{source}。"
     return f"Recovered from legacy JSONL without benchmark trace metadata: {source}."
+
+
+def _string_list(value: object) -> List[str]:
+    if isinstance(value, str):
+        return [value]
+    return [str(item) for item in value]  # type: ignore[union-attr]
 
 
 def _find_evidence_snippet(

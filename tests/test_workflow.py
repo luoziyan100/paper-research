@@ -893,6 +893,70 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(legacy_benchmark.source_type, "built-in")
             self.assertIn("legacy JSONL", legacy_benchmark.search_note)
 
+    def test_resume_keeps_scalar_legacy_benchmark_strength_as_single_item(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+            legacy_round = {
+                "round_number": 1,
+                "benchmark_reports": [
+                    {
+                        "title": "Legacy fallback",
+                        "source": "built-in://legacy",
+                        "summary": "A legacy benchmark report.",
+                        "strengths": "Separates paper claims from evaluator interpretation.",
+                    }
+                ],
+                "report": {"title": "Legacy report", "sections": {"Summary": "Old output"}},
+                "rubric": {
+                    "title": "Legacy rubric",
+                    "criteria": [
+                        {
+                            "name": "Problem Framing",
+                            "description": "Frames the problem.",
+                            "max_points": 20,
+                        }
+                    ],
+                    "source_notes": "Legacy notes",
+                },
+                "scorecard": {
+                    "total_score": 12,
+                    "scores": [
+                        {
+                            "name": "Problem Framing",
+                            "points": 12,
+                            "max_points": 20,
+                            "rationale": "Legacy rationale",
+                        }
+                    ],
+                    "summary": "Legacy score",
+                },
+                "critic_review": {
+                    "issues": ["Legacy issue"],
+                    "recommendations": ["Legacy recommendation"],
+                },
+            }
+            (output_dir / "research_rounds.jsonl").write_text(
+                json.dumps(legacy_round) + "\n",
+                encoding="utf-8",
+            )
+
+            result = run_continuous_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=output_dir),
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=0,
+                    sleep_seconds=0,
+                    max_rounds=1,
+                    resume=True,
+                ),
+            )
+
+            legacy_benchmark = result.rounds[0].benchmark_reports[0]
+            self.assertEqual(
+                legacy_benchmark.strengths,
+                ["Separates paper claims from evaluator interpretation."],
+            )
+
     def test_chinese_resume_hydrates_legacy_benchmark_note_in_chinese(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)

@@ -1624,3 +1624,31 @@
 - `python3 -m unittest discover -s tests` passed with 63 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter55 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 56 - 2026-05-04 18:55 PDT
+
+### Current Problems
+
+- Legacy JSONL could store benchmark `strengths` as a scalar string.
+- Hydration used `list(value)`, which split that string into individual characters and silently corrupted benchmark strengths.
+
+### Planned Changes
+
+- Add a resume regression test for scalar legacy benchmark strengths.
+- Wrap scalar strings as single-item lists.
+- Preserve normal list hydration and invalid-record detection.
+
+### Changes Made
+
+- Added `test_resume_keeps_scalar_legacy_benchmark_strength_as_single_item`.
+- Added `_string_list(...)` for string-list hydration.
+- Benchmark strengths now hydrate from either `["..."]` or `"..."` safely.
+
+### Verification After Changes
+
+- Red test first failed because strengths became a character list.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_resume_keeps_scalar_legacy_benchmark_strength_as_single_item tests.test_workflow.ResearchWorkflowTest.test_resume_hydrates_legacy_benchmark_metadata tests.test_cli_io.InputAndCliTest.test_cli_reports_invalid_resume_record_without_traceback`
+- `python3 -m unittest discover -s tests` passed with 64 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter56 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
