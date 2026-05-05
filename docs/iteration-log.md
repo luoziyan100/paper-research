@@ -3382,3 +3382,31 @@
 - `python3 -m unittest discover -s tests` passed with 110 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter119 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 120 - 2026-05-04 21:49 PDT
+
+### Current Problems
+
+- Chinese Markdown section headings such as `## 摘要` and `## 方法` were not normalized.
+- Reports generated from Chinese Markdown papers could lose method and experiment sections and fall back to generic summaries.
+
+### Planned Changes
+
+- Add a regression test for Chinese Markdown section headings.
+- Strip Markdown heading markers before Chinese heading normalization.
+- Preserve existing Chinese plain-heading and Markdown title behavior.
+
+### Changes Made
+
+- Added `MARKDOWN_CHINESE_SECTION_PAPER_TEXT`.
+- Added `test_chinese_markdown_section_headings_are_parsed`.
+- Updated `normalize_chinese_heading` to remove leading Markdown heading markers.
+
+### Verification After Changes
+
+- Red target test first failed because the method section fell back to a generic technical-process summary.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_markdown_section_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed tests.test_workflow.ResearchWorkflowTest.test_markdown_chinese_title_label_is_cleaned`
+- `python3 -m unittest discover -s tests` passed with 111 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter120 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

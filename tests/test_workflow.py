@@ -164,6 +164,22 @@ MARKDOWN_CHINESE_TITLE_PAPER_TEXT = """
 系统仍依赖对照报告质量。
 """
 
+MARKDOWN_CHINESE_SECTION_PAPER_TEXT = """
+# 标题：Markdown 中文章节论文
+
+## 摘要
+本文研究一个多智能体系统，用于生成中文论文研究报告。
+
+## 方法
+系统把报告写作、评分标准生成和证据审查拆分为多角色流程。
+
+## 实验
+实验显示该系统提高了基线方法、限制和可复现性细节覆盖。
+
+## 局限
+系统仍依赖对照报告质量。
+"""
+
 
 class ResearchWorkflowTest(unittest.TestCase):
     def test_runs_iterative_agents_and_records_every_round(self):
@@ -1465,6 +1481,20 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("基线方法", report.sections["论文主张与证据账本"])
             self.assertNotIn("baseline", report.sections["论文主张与证据账本"])
             self.assertNotIn("实验部分声称，实验声称", report.sections["论文主张与证据账本"])
+            self.assertIn("对照报告质量", report.sections["限制与风险"])
+
+    def test_chinese_markdown_section_headings_are_parsed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=MARKDOWN_CHINESE_SECTION_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertEqual(report.title, "深度研究报告 - Markdown 中文章节论文")
+            self.assertIn("多角色流程", report.sections["方法与证据"])
+            self.assertIn("基线方法", report.sections["论文主张与证据账本"])
             self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_numbered_chinese_headings_are_parsed(self):
