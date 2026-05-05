@@ -2753,3 +2753,30 @@
 - `python3 -m unittest discover -s tests` passed with 89 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter96 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 97 - 2026-05-04 20:46 PDT
+
+### Current Problems
+
+- Web result attribute parsing only supported quoted attribute values.
+- Simplified HTML with `class=result__a` or `href=https://...` was missed and triggered built-in fallback.
+
+### Planned Changes
+
+- Add a regression test for unquoted result and snippet attributes.
+- Extend HTML attribute parsing to support double-quoted, single-quoted, and unquoted values.
+- Verify quoted-attribute parsing still works.
+
+### Changes Made
+
+- Added `test_web_search_agent_handles_unquoted_attributes`.
+- `_parse_html_attrs` now parses quoted and unquoted attribute values.
+
+### Verification After Changes
+
+- Red target test first failed because search fell back to `built-in://claim-evidence-round-1`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_unquoted_attributes tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_single_quoted_result_attributes tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_href_before_class`
+- `python3 -m unittest discover -s tests` passed with 90 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter97 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

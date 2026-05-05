@@ -585,6 +585,25 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         self.assertIn("Div snippet connects experiment evidence", results[0].summary)
 
+    def test_web_search_agent_handles_unquoted_attributes(self):
+        html = """
+        <a class=result__a href=https://example.com/unquoted>
+          Unquoted Attribute Report
+        </a>
+        <div class=result__snippet>
+          Unquoted snippet connects evidence and limitations.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "https://example.com/unquoted")
+        self.assertIn("Unquoted snippet connects evidence", results[0].summary)
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """

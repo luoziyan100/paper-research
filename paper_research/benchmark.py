@@ -380,10 +380,13 @@ def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
 
 
 def _parse_html_attrs(attrs: str) -> Dict[str, str]:
-    attr_pattern = re.compile(r"""([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*(["'])(.*?)\2""", re.DOTALL)
+    attr_pattern = re.compile(
+        r"""([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""",
+        re.DOTALL,
+    )
     return {
-        name.lower(): unescape(value)
-        for name, _, value in attr_pattern.findall(attrs)
+        name.lower(): unescape(double_quoted or single_quoted or unquoted)
+        for name, double_quoted, single_quoted, unquoted in attr_pattern.findall(attrs)
     }
 
 
