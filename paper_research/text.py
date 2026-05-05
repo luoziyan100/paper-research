@@ -191,7 +191,15 @@ def zh_problem_summary(abstract: str) -> str:
         parts.append("过程记录")
     if parts:
         return "、".join(parts)
-    return "论文自动分析流程"
+    sentence = first_sentences(abstract, count=1)
+    if sentence:
+        cleaned = re.sub(
+            r"^(本文|本研究|我们)(研究|提出|介绍|探讨|设计|构建|开发|分析)",
+            "",
+            sentence,
+        ).strip()
+        return compact(cleaned.rstrip("。！？ "), limit=160) or "论文核心问题"
+    return "论文核心问题"
 
 
 def zh_method_summary(method: str) -> str:
@@ -201,7 +209,7 @@ def zh_method_summary(method: str) -> str:
     if "separates" in lower and "roles" in lower:
         return "系统把报告写作、评分标准设计、评分和批评分离为独立角色"
     if method.strip():
-        return "论文提出了一个需要进一步拆解的技术流程"
+        return compact(method, limit=180)
     return "方法描述不够明确"
 
 
@@ -216,7 +224,7 @@ def zh_evidence_summary(experiments: str) -> str:
     if "three papers" in lower and "improved coverage" in lower:
         return "在三篇论文上，迭代评分提高了假设、限制和可复现性细节的覆盖"
     if experiments.strip():
-        return "实验声称支持主要结论，但仍需要检查基线方法、指标和统计细节"
+        return compact(experiments, limit=180)
     return "实验或结果部分不够明确"
 
 
@@ -231,6 +239,8 @@ def zh_limitation_summary(limitations: str) -> str:
         risks.append("批评智能体的能力会影响纠偏效果")
     if risks:
         return "；".join(risks)
+    if limitations.strip():
+        return compact(limitations, limit=180)
     return "论文限制没有充分展开，需要从评估设计和可复现性角度补查"
 
 

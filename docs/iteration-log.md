@@ -4682,3 +4682,42 @@
 - `python3 -m unittest discover -s tests` passed with 145 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter163 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 164 - 2026-05-05 03:17 PDT
+
+### Current Problems
+
+- Chinese reports still injected the project-specific multi-agent review workflow into unrelated Chinese papers.
+- Generic Chinese abstracts fell back to `论文自动分析流程`, losing domain terms such as reliable reasoning, contrastive pretraining, and retrieval filtering.
+
+### Planned Changes
+
+- Add a regression test with a general Chinese AI paper outside the paper-research project domain.
+- Preserve domain-specific Chinese problem, method, evidence, and limitation text when no specialized heuristic applies.
+- Replace the Chinese claim/evidence template text that implied every paper proves multi-role iterative improvement.
+
+### Changes Made
+
+- Added `GENERAL_CHINESE_PAPER_TEXT` and `test_chinese_report_preserves_domain_specific_topic`.
+- Updated `zh_problem_summary` to fall back to a cleaned first abstract sentence instead of a fixed project-domain label.
+- Updated Chinese method, evidence, and limitation fallback summaries to compact the source section content.
+- Revised the Chinese executive summary scope and claim text to avoid hardcoding `论文长文本理解` and `多角色流程持续改进`.
+- Updated scoring evidence selection so Chinese technical contribution scores prefer `贡献分析` over the broader executive summary when citing `多智能体`.
+
+### Verification After Changes
+
+- Red target test first failed because the generated report did not include `检索过滤` and still contained project-specific report wording.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_report_preserves_domain_specific_topic`
+- Related Chinese workflow and DOCX tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_chinese_evidence_ledger_avoids_repeating_evidence_summary tests.test_workflow.ResearchWorkflowTest.test_chinese_executive_summary_states_problem_scope_and_importance tests.test_workflow.ResearchWorkflowTest.test_chinese_limitation_section_localizes_framework_terms`
+  - `python3 -m unittest tests.test_docx.DocxWriterTest`
+- Full test run initially failed on `test_chinese_scoring_counts_localized_agent_marker`; fixing preferred scoring evidence sections restored the expected `多智能体` citation.
+- Regression tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_agent_marker`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_report_preserves_domain_specific_topic`
+- Manual Chinese sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 1 --output-dir /tmp/paper_research_iter164_zh_after`
+- `python3 -m unittest discover -s tests` passed with 146 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter164 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

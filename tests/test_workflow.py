@@ -262,6 +262,22 @@ MARKDOWN_CHINESE_SECTION_PAPER_TEXT = """
 系统仍依赖对照报告质量。
 """
 
+GENERAL_CHINESE_PAPER_TEXT = """
+标题：可靠推理的对比预训练
+
+摘要
+本文提出一种对比预训练方法，用于提升多跳问题回答中的可靠推理。
+
+方法
+模型结合对比预训练、检索过滤和验证器重排序，减少不受支持的中间推理主张。
+
+评估
+在 MMLU 和 HotpotQA 上，该系统相对检索基线提高了事实一致性和校准效果。
+
+局限
+该方法依赖人工构造的负样本，尚未在低资源领域验证。
+"""
+
 
 class ResearchWorkflowTest(unittest.TestCase):
     def test_first_sentences_splits_chinese_punctuation(self):
@@ -1478,6 +1494,21 @@ We analyze data quality.
 
             self.assertIn("问题范围", summary)
             self.assertIn("重要性", summary)
+
+    def test_chinese_report_preserves_domain_specific_topic(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=GENERAL_CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            report_text = result.rounds[0].report.as_text()
+
+            self.assertIn("可靠推理", report_text)
+            self.assertIn("对比预训练", report_text)
+            self.assertIn("检索过滤", report_text)
+            self.assertNotIn("多角色流程持续改进", report_text)
+            self.assertNotIn("论文长文本理解、外部对照报告、评分标准迭代和过程记录", report_text)
 
     def test_chinese_limitation_section_localizes_framework_terms(self):
         paper_text = """

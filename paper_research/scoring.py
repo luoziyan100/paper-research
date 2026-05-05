@@ -184,12 +184,16 @@ def _find_evidence_snippet(
 ) -> str:
     separator = "：" if language == "zh" else " - "
     preferred_sections = [
+        ("贡献", "贡献分析"),
+        ("智能体", "贡献分析"),
         ("限制", "限制与风险"),
         ("风险", "限制与风险"),
         ("复现", "关键假设与验证缺口"),
         ("baseline", "关键假设与验证缺口"),
         ("证据", "论文主张与证据账本"),
         ("实验", "论文主张与证据账本"),
+        ("contribution", "Contribution Analysis"),
+        ("agent", "Contribution Analysis"),
         ("limitation", "Limitations and Risks"),
         ("risk", "Limitations and Risks"),
         ("reproduc", "Key Assumptions and Verification Gaps"),
