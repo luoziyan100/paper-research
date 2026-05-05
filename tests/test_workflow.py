@@ -778,7 +778,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             contribution = result.rounds[0].report.sections["贡献分析"]
 
-            self.assertIn("论文强调 多智能体", contribution)
+            self.assertIn("论文强调多智能体", contribution)
+            self.assertNotIn("论文强调 多智能体", contribution)
             self.assertIn("评分标准", contribution)
             self.assertIn("检索", contribution)
             self.assertNotIn("论文贡献没有明确表述", contribution)

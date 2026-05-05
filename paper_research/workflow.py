@@ -826,7 +826,7 @@ def _extract_contribution(abstract: str, method: str, language: str = "en") -> s
             found.append((marker, zh_label))
     if found:
         if language == "zh":
-            return "论文强调 " + "、".join(label for _, label in found[:5]) + "。"
+            return "论文强调" + "、".join(label for _, label in found[:5]) + "。"
         return "the paper emphasizes " + ", ".join(marker for marker, _ in found[:5]) + "."
     if language == "zh":
         return _first_sentences(combined, count=1) or "论文贡献没有明确表述。"

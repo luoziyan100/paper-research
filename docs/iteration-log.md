@@ -2370,3 +2370,30 @@
 - `python3 -m unittest discover -s tests` passed with 78 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter82 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 83 - 2026-05-04 20:07 PDT
+
+### Current Problems
+
+- Chinese contribution analysis emitted `论文强调 多智能体` with an unnatural extra space after `强调`.
+- This affected a high-visibility report section.
+
+### Planned Changes
+
+- Update the Chinese contribution-marker test to require natural spacing.
+- Remove the extra space in `_extract_contribution`.
+- Preserve English contribution phrasing.
+
+### Changes Made
+
+- Chinese contribution extraction now returns `论文强调多智能体、...`.
+- The regression test now rejects `论文强调 多智能体`.
+
+### Verification After Changes
+
+- Red target test first failed because contribution text still contained `论文强调 多智能体`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_contribution_analysis_extracts_chinese_markers`
+- `python3 -m unittest discover -s tests` passed with 78 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter83 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
