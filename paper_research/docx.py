@@ -181,6 +181,7 @@ def _numbering_xml() -> str:
       <w:numFmt w:val="bullet"/>
       <w:lvlText w:val="•"/>
       <w:lvlJc w:val="left"/>
+      <w:pPr><w:ind w:left="720" w:hanging="360"/></w:pPr>
     </w:lvl>
   </w:abstractNum>
   <w:num w:numId="1">

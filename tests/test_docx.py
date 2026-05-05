@@ -64,6 +64,19 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("word/_rels/document.xml.rels", names)
             self.assertIn("<w:numPr>", styles_xml)
 
+    def test_bullet_numbering_defines_indentation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            document = DocxDocument()
+            document.add(paragraph("content"))
+
+            document.save(path)
+
+            with zipfile.ZipFile(path) as archive:
+                numbering_xml = archive.read("word/numbering.xml").decode("utf-8")
+
+            self.assertIn('<w:ind w:left="720" w:hanging="360"/>', numbering_xml)
+
     def test_writes_custom_docx_core_title(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"

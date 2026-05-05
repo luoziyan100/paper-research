@@ -2970,3 +2970,30 @@
 - `python3 -m unittest discover -s tests` passed with 97 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter104 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 105 - 2026-05-04 21:05 PDT
+
+### Current Problems
+
+- DOCX bullet numbering had a bullet glyph but no indentation settings.
+- Long benchmark, rubric, or scorecard bullets could render too close to the page margin in Word-compatible readers.
+
+### Planned Changes
+
+- Add a DOCX regression test for bullet indentation in `word/numbering.xml`.
+- Add a left indent and hanging indent to the bullet level definition.
+- Preserve the existing numbering part and ListBullet style relationship.
+
+### Changes Made
+
+- Added `test_bullet_numbering_defines_indentation`.
+- Added `<w:ind w:left="720" w:hanging="360"/>` to the bullet numbering level.
+
+### Verification After Changes
+
+- Red target test first failed because `word/numbering.xml` had no bullet indentation.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_bullet_numbering_defines_indentation tests.test_docx.DocxWriterTest.test_writes_numbering_part_for_bullets`
+- `python3 -m unittest discover -s tests` passed with 98 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter105 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
