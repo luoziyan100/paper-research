@@ -3051,3 +3051,31 @@
 - `python3 -m unittest discover -s tests` passed with 100 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter107 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 108 - 2026-05-04 21:12 PDT
+
+### Current Problems
+
+- Benchmark quality summaries counted built-in fallback archetypes as sources without separating real external sources.
+- Chinese reports could say `来源数量：3` while all three entries were internal fallback patterns.
+
+### Planned Changes
+
+- Add a regression assertion for external source count and built-in-only warning text.
+- Compute external benchmark count separately from total benchmark entries.
+- Preserve readable handling for empty benchmark lists and mixed local/web source types.
+
+### Changes Made
+
+- Updated `test_chinese_report_records_benchmark_source_quality`.
+- Added external source counting and a built-in-only note to `_benchmark_quality_summary`.
+- Added `_raw_benchmark_source_type` to avoid duplicating source-type inference.
+
+### Verification After Changes
+
+- Red target test first failed because the Chinese quality section had no external source count.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_report_records_benchmark_source_quality tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_handles_empty_sources_readably tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_uses_chinese_source_delimiter`
+- `python3 -m unittest discover -s tests` passed with 100 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter108 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -705,6 +705,11 @@ def _benchmark_quality_summary(
     language: str,
 ) -> str:
     source_count = len(benchmark_reports)
+    external_count = sum(
+        1
+        for report in benchmark_reports
+        if _raw_benchmark_source_type(report) != "built-in"
+    )
     source_types = sorted({_benchmark_source_type(report, language) for report in benchmark_reports})
     strength_text = " ".join(
         strength
@@ -722,9 +727,16 @@ def _benchmark_quality_summary(
         if not coverage:
             coverage.append("通用研究报告模式")
         source_type_text = "、".join(source_types) if source_types else "无"
+        built_in_only_note = (
+            "注意：本轮仅使用内置回退模式，结论不应视为外部文献对照。"
+            if source_count and external_count == 0
+            else ""
+        )
         return (
-            f"来源数量：{source_count}。来源类型：{source_type_text}。"
+            f"来源数量：{source_count}。外部来源数量：{external_count}。"
+            f"来源类型：{source_type_text}。"
             f"覆盖维度：{'、'.join(coverage)}。"
+            f"{built_in_only_note}"
             "如果后续接入真实网页或本地对照报告，应继续记录来源多样性和领域差异。"
         )
 
@@ -747,7 +759,7 @@ def _benchmark_quality_summary(
 
 
 def _benchmark_source_type(report: BenchmarkReport, language: str) -> str:
-    source_type = report.source_type or _infer_benchmark_source_type(report.source)
+    source_type = _raw_benchmark_source_type(report)
     if source_type == "built-in":
         return "内置回退模式" if language == "zh" else "built-in fallback"
     if source_type == "web":
@@ -755,6 +767,10 @@ def _benchmark_source_type(report: BenchmarkReport, language: str) -> str:
     if source_type == "local":
         return "本地对照报告" if language == "zh" else "local benchmark"
     return "未知来源" if language == "zh" else "unknown source"
+
+
+def _raw_benchmark_source_type(report: BenchmarkReport) -> str:
+    return report.source_type or _infer_benchmark_source_type(report.source)
 
 
 def _infer_benchmark_source_type(source: str) -> str:

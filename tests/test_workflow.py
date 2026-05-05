@@ -809,7 +809,9 @@ class ResearchWorkflowTest(unittest.TestCase):
             section = result.rounds[0].report.sections["对照报告质量"]
 
             self.assertIn("来源数量：3", section)
+            self.assertIn("外部来源数量：0", section)
             self.assertIn("内置回退模式", section)
+            self.assertIn("仅使用内置回退模式", section)
             self.assertIn("主张-证据", section)
             self.assertNotIn("fallback", section.lower())
             self.assertNotIn("benchmark", section.lower())
