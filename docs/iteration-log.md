@@ -1868,3 +1868,30 @@
 - `python3 -m unittest discover -s tests` passed with 70 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter64 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 65 - 2026-05-04 19:15 PDT
+
+### Current Problems
+
+- The Chinese report section title `基于 Benchmark 的改进` still mixed English into a visible heading.
+- This affected JSONL structure and DOCX headings.
+
+### Planned Changes
+
+- Add a regression test requiring the localized section title.
+- Rename the Chinese section to `基于对照报告的改进`.
+- Update existing tests to use the new section title.
+
+### Changes Made
+
+- Added `test_chinese_benchmark_improvement_section_title_is_localized`.
+- Renamed the Chinese report section from `基于 Benchmark 的改进` to `基于对照报告的改进`.
+
+### Verification After Changes
+
+- Red test first failed because report sections still contained `基于 Benchmark 的改进`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_section_title_is_localized tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_has_clean_punctuation tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_includes_method_audit_lessons tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_deduplicates_repeated_lessons`
+- `python3 -m unittest discover -s tests` passed with 71 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter65 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

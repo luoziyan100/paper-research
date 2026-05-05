@@ -752,10 +752,22 @@ class ResearchWorkflowTest(unittest.TestCase):
                 config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
             )
 
-            benchmark_section = result.rounds[0].report.sections["基于 Benchmark 的改进"]
+            benchmark_section = result.rounds[0].report.sections["基于对照报告的改进"]
 
             self.assertNotIn("。。", benchmark_section)
             self.assertNotIn(".。", benchmark_section)
+
+    def test_chinese_benchmark_improvement_section_title_is_localized(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            sections = result.rounds[0].report.sections
+
+            self.assertIn("基于对照报告的改进", sections)
+            self.assertNotIn("基于 Benchmark 的改进", sections)
 
     def test_chinese_benchmark_improvement_includes_method_audit_lessons(self):
         benchmarks = [
@@ -782,7 +794,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             language="zh",
         )
 
-        benchmark_section = report.sections["基于 Benchmark 的改进"]
+        benchmark_section = report.sections["基于对照报告的改进"]
 
         self.assertIn("检查 baseline、数据和消融实验是否充分", benchmark_section)
 
@@ -815,7 +827,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             language="zh",
         )
 
-        benchmark_section = report.sections["基于 Benchmark 的改进"]
+        benchmark_section = report.sections["基于对照报告的改进"]
 
         self.assertEqual(benchmark_section.count("把论文主张连接到实验证据"), 1)
 

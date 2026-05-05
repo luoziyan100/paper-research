@@ -83,7 +83,7 @@ class ReportWriterAgent:
                     "\n关键假设 3：批评智能体能发现评分标准本身的偏差。"
                     "\n需要补充的验证：对照报告多样性统计、跨论文复现实验、人工专家盲评和消融实验。"
                 ),
-                "基于 Benchmark 的改进": (
+                "基于对照报告的改进": (
                     f"第 {round_number} 轮先搜索优秀研究报告。可复用特征："
                     f"{_join_phrases(benchmark_lessons) or '清晰主张、证据、限制和后续问题'}。"
                 ),
