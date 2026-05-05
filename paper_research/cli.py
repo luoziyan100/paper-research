@@ -126,19 +126,22 @@ def main(argv: list[str] | None = None) -> int:
         jsonl_filename=args.jsonl_filename,
         docx_filename=args.docx_filename,
     )
-    if args.duration_hours is None:
-        result = run_research_workflow(paper_text=paper_text, config=config)
-    else:
-        result = run_continuous_workflow(
-            paper_text=paper_text,
-            config=config,
-            continuous_config=ContinuousRunConfig(
-                duration_seconds=args.duration_hours * 3600,
-                sleep_seconds=args.sleep_seconds,
-                max_rounds=args.max_rounds,
-                resume=not args.no_resume,
-            ),
-        )
+    try:
+        if args.duration_hours is None:
+            result = run_research_workflow(paper_text=paper_text, config=config)
+        else:
+            result = run_continuous_workflow(
+                paper_text=paper_text,
+                config=config,
+                continuous_config=ContinuousRunConfig(
+                    duration_seconds=args.duration_hours * 3600,
+                    sleep_seconds=args.sleep_seconds,
+                    max_rounds=args.max_rounds,
+                    resume=not args.no_resume,
+                ),
+            )
+    except ValueError as exc:
+        parser.error(str(exc))
     print(f"Wrote {result.jsonl_path}")
     print(f"Wrote {result.docx_path}")
     return 0

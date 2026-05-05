@@ -152,6 +152,34 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("custom-rounds.jsonl", stdout.getvalue())
             self.assertIn("custom-report.docx", stdout.getvalue())
 
+    def test_cli_reports_corrupt_resume_jsonl_without_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "paper.txt"
+            output_dir = root / "out"
+            output_dir.mkdir()
+            paper.write_text("Title: T\n\nAbstract\ncontent", encoding="utf-8")
+            (output_dir / "research_rounds.jsonl").write_text("{bad json\n", encoding="utf-8")
+            stderr = io.StringIO()
+
+            with contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    main(
+                        [
+                            str(paper),
+                            "--duration-hours",
+                            "1",
+                            "--max-rounds",
+                            "1",
+                            "--output-dir",
+                            str(output_dir),
+                        ]
+                    )
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("Could not load existing JSONL", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
+
     def test_cli_rejects_output_filenames_with_path_segments(self):
         with tempfile.TemporaryDirectory() as tmp:
             paper = Path(tmp) / "paper.txt"

@@ -599,9 +599,15 @@ def _load_jsonl_rounds(path: Path, language: str = "en") -> List[RoundResult]:
     if not path.exists():
         return []
     rounds = []
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
+    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if raw_line.strip():
-            rounds.append(_round_from_dict(json.loads(raw_line), language))
+            try:
+                data = json.loads(raw_line)
+            except json.JSONDecodeError as exc:
+                raise ValueError(
+                    f"Could not load existing JSONL {path}: invalid JSON on line {line_number}."
+                ) from exc
+            rounds.append(_round_from_dict(data, language))
     return rounds
 
 

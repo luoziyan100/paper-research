@@ -1568,3 +1568,31 @@
 - `python3 -m unittest discover -s tests` passed with 61 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter53 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 54 - 2026-05-04 18:49 PDT
+
+### Current Problems
+
+- Continuous resume failed with a raw `JSONDecodeError` traceback when an existing `research_rounds.jsonl` file was corrupt.
+- This made recovery from interrupted or manually edited long runs hard to diagnose.
+
+### Planned Changes
+
+- Add a CLI regression test for corrupt resume JSONL.
+- Wrap JSON decode failures with a clear file and line number message.
+- Route workflow `ValueError`s through argparse so CLI output stays traceback-free.
+
+### Changes Made
+
+- Added `test_cli_reports_corrupt_resume_jsonl_without_traceback`.
+- `_load_jsonl_rounds(...)` now raises `Could not load existing JSONL ... invalid JSON on line N`.
+- `main(...)` now catches workflow `ValueError` and reports it through `parser.error(...)`.
+
+### Verification After Changes
+
+- Red test first errored with `json.decoder.JSONDecodeError`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_reports_corrupt_resume_jsonl_without_traceback tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_resumes_and_keeps_appending_rounds`
+- `python3 -m unittest discover -s tests` passed with 62 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter54 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
