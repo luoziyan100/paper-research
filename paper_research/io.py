@@ -12,7 +12,7 @@ def load_paper_text(path: Path) -> str:
     if not path.exists():
         raise FileNotFoundError(f"Paper file does not exist: {path}")
     suffix = path.suffix.lower()
-    if suffix in {".txt", ".md"}:
+    if suffix in {".txt", ".md", ".markdown"}:
         text = path.read_text(encoding="utf-8")
         if not text.strip():
             raise ValueError(f"Paper file is empty: {path}")
@@ -20,7 +20,7 @@ def load_paper_text(path: Path) -> str:
     if suffix == ".pdf":
         return _load_pdf_text(path)
     raise ValueError(
-        f"Unsupported paper file type: {path.suffix}. Supported types: .txt, .md, .pdf."
+        f"Unsupported paper file type: {path.suffix}. Supported types: .txt, .md, .markdown, .pdf."
     )
 
 

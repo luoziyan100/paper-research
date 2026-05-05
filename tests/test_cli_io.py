@@ -21,8 +21,20 @@ class InputAndCliTest(unittest.TestCase):
             paper = Path(tmp) / "paper.docx"
             paper.write_text("not supported", encoding="utf-8")
 
-            with self.assertRaisesRegex(ValueError, "Supported types: .txt, .md, .pdf"):
+            with self.assertRaisesRegex(
+                ValueError,
+                "Supported types: .txt, .md, .markdown, .pdf",
+            ):
                 load_paper_text(paper)
+
+    def test_load_paper_text_accepts_markdown_extension(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            paper = Path(tmp) / "paper.markdown"
+            paper.write_text("# Title\n\nAbstract\ncontent", encoding="utf-8")
+
+            text = load_paper_text(paper)
+
+            self.assertIn("Abstract", text)
 
     def test_cli_rejects_invalid_rounds_without_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:

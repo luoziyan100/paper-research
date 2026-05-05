@@ -3219,3 +3219,31 @@
 - `python3 -m unittest discover -s tests` passed with 105 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter113 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 114 - 2026-05-04 21:30 PDT
+
+### Current Problems
+
+- Paper input accepted `.md` but rejected `.markdown`.
+- Benchmark search already accepted `.markdown`, so Markdown support was inconsistent across input paths.
+
+### Planned Changes
+
+- Add an input regression test for `.markdown` paper files.
+- Accept `.markdown` in `load_paper_text`.
+- Update the unsupported-file error message to list `.markdown`.
+
+### Changes Made
+
+- Added `test_load_paper_text_accepts_markdown_extension`.
+- Updated `load_paper_text` suffix handling and the supported-types message.
+- Updated the unsupported-file test expectation.
+
+### Verification After Changes
+
+- Red target test first failed because `.markdown` raised `Unsupported paper file type`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_load_paper_text_accepts_markdown_extension tests.test_cli_io.InputAndCliTest.test_load_paper_text_lists_supported_types_for_unsupported_file`
+- `python3 -m unittest discover -s tests` passed with 106 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter114 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
