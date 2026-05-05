@@ -742,6 +742,39 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         self.assertIn("检查 baseline、数据和消融实验是否充分", benchmark_section)
 
+    def test_chinese_benchmark_improvement_deduplicates_repeated_lessons(self):
+        benchmarks = [
+            BenchmarkReport(
+                title="Report A",
+                source="local-a",
+                summary="summary",
+                strengths=["把论文主张连接到实验证据。"],
+                source_type="local",
+                search_note="local",
+            ),
+            BenchmarkReport(
+                title="Report B",
+                source="local-b",
+                summary="summary",
+                strengths=["把论文主张连接到实验证据。"],
+                source_type="local",
+                search_note="local",
+            ),
+        ]
+
+        report = ReportWriterAgent().write(
+            paper_text=CHINESE_PAPER_TEXT,
+            benchmark_reports=benchmarks,
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        benchmark_section = report.sections["基于 Benchmark 的改进"]
+
+        self.assertEqual(benchmark_section.count("把论文主张连接到实验证据"), 1)
+
     def test_english_benchmark_improvement_has_clean_punctuation(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

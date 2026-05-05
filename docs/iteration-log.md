@@ -1706,3 +1706,30 @@
 - `python3 -m unittest discover -s tests` passed with 66 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter58 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 59 - 2026-05-04 19:02 PDT
+
+### Current Problems
+
+- If multiple benchmark reports shared the same strength, `基于 Benchmark 的改进` repeated identical lessons.
+- Repetition made the generated report less concise and less useful for later scoring.
+
+### Planned Changes
+
+- Add a regression test for duplicate benchmark lessons.
+- Deduplicate lessons while preserving the first occurrence order.
+- Preserve method-audit lesson inclusion from Iteration 58.
+
+### Changes Made
+
+- Added `test_chinese_benchmark_improvement_deduplicates_repeated_lessons`.
+- `ReportWriterAgent` now builds benchmark lessons through ordered deduplication.
+
+### Verification After Changes
+
+- Red test first failed because the repeated lesson appeared twice.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_deduplicates_repeated_lessons tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_includes_method_audit_lessons tests.test_workflow.ResearchWorkflowTest.test_english_benchmark_improvement_has_clean_punctuation`
+- `python3 -m unittest discover -s tests` passed with 67 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter59 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

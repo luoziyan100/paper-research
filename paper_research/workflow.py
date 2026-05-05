@@ -34,11 +34,11 @@ class ReportWriterAgent:
             if language == "zh"
             else f"Deep Research Report - {paper_title}"
         )
-        benchmark_lessons = "; ".join(
+        benchmark_lessons = "; ".join(dict.fromkeys(
             strength
             for report in benchmark_reports
             for strength in report.strengths[:3]
-        )
+        ))
         abstract = parsed.get("abstract", _first_sentences(paper_text, count=3))
         method = parsed.get("method", parsed.get("methods", "The method section was not explicit."))
         experiments = parsed.get(
