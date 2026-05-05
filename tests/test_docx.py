@@ -186,6 +186,35 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("Custom Round Rubric Title", document_xml)
             self.assertIn('w:styleId="Heading3"', styles_xml)
 
+    def test_export_renders_rubric_title_as_nested_heading(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            round_result = RoundResult(
+                round_number=1,
+                benchmark_reports=[],
+                report=ResearchReport(
+                    title="Deep Research Report - Example",
+                    sections={"Executive Thesis": "Report section body."},
+                ),
+                rubric=Rubric(
+                    title="Round 1 Evidence Rubric",
+                    criteria=[],
+                    source_notes="Rubric notes.",
+                ),
+                scorecard=Scorecard(total_score=0, scores=[], summary="Score summary."),
+                critic_review=CriticReview(issues=[], recommendations=[]),
+            )
+
+            write_docx(path, [round_result])
+
+            with zipfile.ZipFile(path) as archive:
+                document_xml = archive.read("word/document.xml").decode("utf-8")
+
+            self.assertIn(
+                '<w:pStyle w:val="Heading3"/></w:pPr><w:r><w:t xml:space="preserve">Round 1 Evidence Rubric',
+                document_xml,
+            )
+
     def test_export_uses_language_specific_core_title(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"

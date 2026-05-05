@@ -4750,3 +4750,33 @@
 - `python3 -m unittest discover -s tests` passed with 147 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter165 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 166 - 2026-05-05 03:22 PDT
+
+### Current Problems
+
+- DOCX exports rendered the rubric title as a plain paragraph below `Scoring Rubric`.
+- This made per-round rubric titles less visible in Word's document outline/navigation structure.
+
+### Planned Changes
+
+- Add DOCX XML coverage that requires the rubric title to use the nested heading style.
+- Render rubric titles as level-3 headings under the level-2 scoring rubric section.
+- Verify existing English and Chinese exports still include expected sections and scorecards.
+
+### Changes Made
+
+- Added `test_export_renders_rubric_title_as_nested_heading`.
+- Changed `write_docx` to render `round_result.rubric.title` with `Heading3`.
+
+### Verification After Changes
+
+- Red target test first failed because `Round 1 Evidence Rubric` was emitted as a normal paragraph.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_export_renders_rubric_title_as_nested_heading tests.test_docx.DocxWriterTest.test_export_uses_nested_heading_levels_for_report_sections`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --rounds 1 --output-dir /tmp/paper_research_iter166_docx_after`
+- `python3 -m unittest discover -s tests` passed with 148 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter166 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
