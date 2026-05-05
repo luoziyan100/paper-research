@@ -5005,3 +5005,31 @@
 - `python3 -m unittest discover -s tests` passed with 155 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter174 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 175 - 2026-05-05 03:45 PDT
+
+### Current Problems
+
+- English problem-statement cleanup lowercased the first character unconditionally.
+- Abstracts starting with acronyms such as `LLMs ...` produced broken report text like `lLMs`.
+
+### Planned Changes
+
+- Add a regression test for acronym-leading English abstracts.
+- Preserve leading acronyms while still lowercasing ordinary sentence starts for smoother report phrasing.
+- Verify existing English intro cleanup still works.
+
+### Changes Made
+
+- Added `ACRONYM_START_PAPER_TEXT` and `test_english_problem_statement_preserves_leading_acronym`.
+- Added `_lower_sentence_initial` and used it from `problem_statement`.
+
+### Verification After Changes
+
+- Red target test first failed because the report contained `lLMs struggle`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_problem_statement_preserves_leading_acronym tests.test_workflow.ResearchWorkflowTest.test_english_problem_statement_cleans_we_introduce`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_executive_thesis_states_question_scope_and_importance tests.test_workflow.ResearchWorkflowTest.test_english_report_uses_claim_evidence_ledger_sections`
+- `python3 -m unittest discover -s tests` passed with 156 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter175 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

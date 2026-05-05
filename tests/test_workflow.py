@@ -214,6 +214,22 @@ Limitations
 The approach depends on curated negative examples.
 """
 
+ACRONYM_START_PAPER_TEXT = """
+Title: LLM Calibration
+
+Abstract
+LLMs struggle with calibrated reasoning on long-context tasks.
+
+Method
+The method combines retrieval filtering and verifier reranking.
+
+Experiments
+On MMLU, the system improves calibration over retrieval-only baselines.
+
+Limitations
+The approach depends on curated verifier data.
+"""
+
 MARKDOWN_TITLE_PAPER_TEXT = """
 # Markdown Research Paper
 
@@ -590,6 +606,18 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("contrastive pretraining", report_text)
             self.assertNotIn("evaluate we introduce", report_text)
             self.assertNotIn("argues that we introduce", report_text)
+
+    def test_english_problem_statement_preserves_leading_acronym(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=ACRONYM_START_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            report_text = result.rounds[0].report.as_text()
+
+            self.assertIn("LLMs struggle", report_text)
+            self.assertNotIn("lLMs", report_text)
 
     def test_english_scorecard_cites_report_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
