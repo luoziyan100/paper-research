@@ -791,6 +791,27 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("Real snippet connects evidence", results[0].summary)
         self.assertNotIn("Missing href snippet", results[0].summary)
 
+    def test_web_search_agent_extracts_nested_result_snippets(self):
+        html = """
+        <div class="result">
+          <a class="result__a" href="https://example.com/nested-report">
+            Nested Result
+          </a>
+          <div class="result__snippet">
+            Nested snippet connects evidence and limitations.
+          </div>
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "https://example.com/nested-report")
+        self.assertIn("Nested snippet connects evidence", results[0].summary)
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """

@@ -3355,3 +3355,30 @@
 - `python3 -m unittest discover -s tests` passed with 109 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter118 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 119 - 2026-05-04 21:44 PDT
+
+### Current Problems
+
+- The ordered snippet parser still used a broad element regex.
+- When a search result was wrapped in an outer container, the regex could consume that container and miss an inner `result__snippet` element.
+
+### Planned Changes
+
+- Add a regression test for snippets nested inside a result container.
+- Use a dedicated snippet-element pattern that only matches elements whose opening tag mentions `result__snippet`.
+- Keep exact class-token filtering after the regex match.
+
+### Changes Made
+
+- Added `test_web_search_agent_extracts_nested_result_snippets`.
+- Replaced the broad snippet element scan with a dedicated `snippet_pattern`.
+
+### Verification After Changes
+
+- Red target test first failed because the nested result fell back to the generic summary.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_nested_result_snippets tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_does_not_reuse_snippet_from_skipped_anchor tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_div_snippets tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_requires_result_class_tokens`
+- `python3 -m unittest discover -s tests` passed with 110 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter119 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -353,8 +353,8 @@ def _fetch_url(url: str) -> str:
 
 def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
     anchor_pattern = re.compile(r"<a\s+([^>]*)>(.*?)</a>", re.IGNORECASE | re.DOTALL)
-    element_pattern = re.compile(
-        r"<([a-zA-Z][a-zA-Z0-9:-]*)\s+([^>]*)>(.*?)</\1>",
+    snippet_pattern = re.compile(
+        r"<([a-zA-Z][a-zA-Z0-9:-]*)\s+([^>]*result__snippet[^>]*)>(.*?)</\1>",
         re.IGNORECASE | re.DOTALL,
     )
     events = []
@@ -362,7 +362,7 @@ def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
         attrs = _parse_html_attrs(match.group(1))
         if _has_class(attrs, "result__a"):
             events.append((match.start(), "anchor", attrs, match.group(2)))
-    for match in element_pattern.finditer(raw_html):
+    for match in snippet_pattern.finditer(raw_html):
         attrs = _parse_html_attrs(match.group(2))
         if _has_class(attrs, "result__snippet"):
             events.append((match.start(), "snippet", attrs, match.group(3)))
