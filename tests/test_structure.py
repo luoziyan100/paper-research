@@ -11,7 +11,7 @@ class CodeStructureTest(unittest.TestCase):
         workflow_path = Path("paper_research/workflow.py")
         line_count = len(workflow_path.read_text(encoding="utf-8").splitlines())
 
-        self.assertLessEqual(line_count, 950)
+        self.assertLessEqual(line_count, 900)
 
     def test_public_api_and_models_remain_importable(self):
         self.assertEqual(WorkflowConfig.__name__, "WorkflowConfig")
@@ -23,6 +23,11 @@ class CodeStructureTest(unittest.TestCase):
         benchmark_module = import_module("paper_research.benchmark")
 
         self.assertEqual(benchmark_module.BenchmarkSearchAgent.__name__, "BenchmarkSearchAgent")
+
+    def test_report_scoring_agent_has_dedicated_module(self):
+        scoring_module = import_module("paper_research.scoring")
+
+        self.assertEqual(scoring_module.ReportScoringAgent.__name__, "ReportScoringAgent")
 
 
 if __name__ == "__main__":

@@ -3857,3 +3857,34 @@
 - `python3 -m unittest discover -s tests` passed with 126 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter136 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 137 - 2026-05-04 23:43 PDT
+
+### Current Problems
+
+- `workflow.py` was 915 lines and had accumulated report writing, rubric building, scoring, critique, persistence, and resume logic in one module.
+- `ReportScoringAgent` lived in `workflow.py`, even though scoring helpers already had a dedicated `scoring.py` module.
+
+### Planned Changes
+
+- Tighten the workflow maintainability threshold so the structure problem is caught by tests.
+- Move `ReportScoringAgent` and its scoring-only helper functions into `paper_research.scoring`.
+- Keep `paper_research.workflow.ReportScoringAgent` import-compatible through a module import.
+
+### Changes Made
+
+- Lowered the workflow structure threshold from 950 to 900 lines.
+- Added `test_report_scoring_agent_has_dedicated_module`.
+- Moved `ReportScoringAgent`, marker-aware evidence lookup, quality banding, and risk-summary helpers to `scoring.py`.
+- Updated `workflow.py` to import `ReportScoringAgent` from `scoring.py`; `workflow.py` is now 746 lines.
+
+### Verification After Changes
+
+- Red target tests first failed because `workflow.py` had 915 lines and `paper_research.scoring` did not expose `ReportScoringAgent`.
+- Target structure tests passed:
+  - `python3 -m unittest tests.test_structure.CodeStructureTest.test_workflow_module_stays_below_maintainability_threshold tests.test_structure.CodeStructureTest.test_report_scoring_agent_has_dedicated_module`
+- Target scoring regressions passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scoring_does_not_match_data_inside_metadata tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_lists_matched_markers tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_baseline_marker tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 127 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter137 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
