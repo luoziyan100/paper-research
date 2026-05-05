@@ -2561,3 +2561,30 @@
 - `python3 -m unittest discover -s tests` passed with 83 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter89 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 90 - 2026-05-04 20:28 PDT
+
+### Current Problems
+
+- A benchmark directory containing only blank files produced empty local benchmark reports.
+- This prevented the workflow from falling back to useful built-in benchmark archetypes.
+
+### Planned Changes
+
+- Add a regression test for blank local benchmark files.
+- Skip blank local files during benchmark search.
+- Verify hidden-file filtering still works.
+
+### Changes Made
+
+- Added `test_local_benchmark_search_ignores_empty_files_and_uses_fallback`.
+- Local search now skips files whose content is empty after trimming whitespace.
+
+### Verification After Changes
+
+- Red target test first failed because an empty file produced a `local` benchmark result.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_ignores_empty_files_and_uses_fallback tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_ignores_hidden_files`
+- `python3 -m unittest discover -s tests` passed with 84 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter90 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

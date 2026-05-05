@@ -368,6 +368,18 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("published.md", results[0].source)
             self.assertNotIn(".draft.md", [Path(result.source).name for result in results])
 
+    def test_local_benchmark_search_ignores_empty_files_and_uses_fallback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "empty.md").write_text("   \n", encoding="utf-8")
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir)
+
+            results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertEqual(results[0].source_type, "built-in")
+            self.assertTrue(results[0].source.startswith("built-in://"))
+            self.assertNotIn("empty.md", [Path(result.source).name for result in results])
+
     def test_local_benchmark_search_prioritizes_chinese_keyword_matches(self):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)
