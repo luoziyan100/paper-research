@@ -400,6 +400,10 @@ class RubricCriticAgent:
         ]
         if not benchmark_reports:
             recommendations.append("Do not score a round unless benchmark search returns at least one result.")
+        elif all(_raw_benchmark_source_type(report) == "built-in" for report in benchmark_reports):
+            recommendations.append(
+                "This round used only built-in fallback patterns; prioritize real external benchmark reports next."
+            )
         return CriticReview(issues=issues, recommendations=recommendations)
 
 

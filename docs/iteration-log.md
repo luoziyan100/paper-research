@@ -3162,3 +3162,30 @@
 - `python3 -m unittest discover -s tests` passed with 103 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter111 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 112 - 2026-05-04 21:23 PDT
+
+### Current Problems
+
+- The English critic did not flag rounds that relied only on built-in fallback benchmark patterns.
+- This made the English feedback loop weaker than the Chinese one for source-quality remediation.
+
+### Planned Changes
+
+- Add an English regression test for built-in-only benchmark critic recommendations.
+- Add an English recommendation that prioritizes real external benchmark reports after built-in-only rounds.
+- Preserve the Chinese recommendation added in the previous iteration.
+
+### Changes Made
+
+- Added `test_english_critic_flags_builtin_only_benchmark_sources`.
+- Updated the English `RubricCriticAgent` branch to detect built-in-only benchmark reports.
+
+### Verification After Changes
+
+- Red target test first failed because English recommendations did not mention `built-in fallback`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_critic_flags_builtin_only_benchmark_sources tests.test_workflow.ResearchWorkflowTest.test_chinese_critic_flags_builtin_only_benchmark_sources`
+- `python3 -m unittest discover -s tests` passed with 104 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter112 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
