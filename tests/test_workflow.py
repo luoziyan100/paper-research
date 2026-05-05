@@ -1510,6 +1510,22 @@ We analyze data quality.
             self.assertNotIn("多角色流程持续改进", report_text)
             self.assertNotIn("论文长文本理解、外部对照报告、评分标准迭代和过程记录", report_text)
 
+    def test_chinese_contribution_analysis_keeps_domain_markers(self):
+        report = ReportWriterAgent().write(
+            paper_text=GENERAL_CHINESE_PAPER_TEXT,
+            benchmark_reports=[],
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        contribution = report.sections["贡献分析"]
+
+        self.assertIn("对比预训练", contribution)
+        self.assertIn("可靠推理", contribution)
+        self.assertIn("验证器", contribution)
+
     def test_chinese_limitation_section_localizes_framework_terms(self):
         paper_text = """
 标题：中文限制术语测试

@@ -725,11 +725,19 @@ def _validate_language(language: str) -> None:
 def _extract_contribution(abstract: str, method: str, language: str = "en") -> str:
     combined = f"{abstract} {method}"
     marker_labels = [
+        (
+            "contrastive pretraining",
+            "对比预训练",
+            ["contrastive pretraining", "contrastive learning", "对比预训练", "对比学习"],
+        ),
+        ("reliable reasoning", "可靠推理", ["reliable reasoning", "reasoning", "可靠推理"]),
         ("multi-agent", "多智能体", ["multi-agent", "multi agent", "多智能体"]),
         ("agent", "智能体", ["agent", "智能体"]),
         ("workflow", "工作流", ["workflow", "流程", "工作流"]),
         ("rubric", "评分标准", ["rubric", "评分标准"]),
         ("search", "检索", ["search", "retrieval", "检索"]),
+        ("verifier", "验证器", ["verifier", "验证器"]),
+        ("reranking", "重排序", ["reranking", "rerank", "重排序"]),
         ("evidence", "证据", ["evidence", "证据"]),
         ("experiments", "实验", ["experiment", "experiments", "实验"]),
         ("reproducibility", "可复现性", ["reproducibility", "可复现性", "复现"]),

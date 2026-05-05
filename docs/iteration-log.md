@@ -4780,3 +4780,31 @@
 - `python3 -m unittest discover -s tests` passed with 148 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter166 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 167 - 2026-05-05 03:25 PDT
+
+### Current Problems
+
+- Chinese contribution analysis for a general AI paper collapsed the core contribution to `检索`.
+- Domain markers such as `对比预训练`, `可靠推理`, and `验证器` were present in the paper text but absent from the contribution section.
+
+### Planned Changes
+
+- Add a focused regression test for Chinese contribution extraction on a non-project-domain AI paper.
+- Extend contribution marker extraction with common AI method/task terms.
+- Verify the change does not break existing Chinese scoring evidence or English report behavior.
+
+### Changes Made
+
+- Added `test_chinese_contribution_analysis_keeps_domain_markers`.
+- Extended `_extract_contribution` with markers for contrastive pretraining, reliable reasoning, verifier, and reranking concepts.
+
+### Verification After Changes
+
+- Red target test first failed because `贡献分析` only contained `论文强调检索`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_contribution_analysis_keeps_domain_markers tests.test_workflow.ResearchWorkflowTest.test_chinese_report_preserves_domain_specific_topic`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_agent_marker tests.test_workflow.ResearchWorkflowTest.test_english_executive_thesis_states_question_scope_and_importance`
+- `python3 -m unittest discover -s tests` passed with 149 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter167 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
