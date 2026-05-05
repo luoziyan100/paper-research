@@ -4231,3 +4231,34 @@
 - `python3 -m unittest discover -s tests` passed with 134 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter148 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 149 - 2026-05-05 00:19 PDT
+
+### Current Problems
+
+- README did not document the new source-confidence scoring behavior.
+- README did not document unsafe web result link filtering.
+
+### Planned Changes
+
+- Add documentation regression coverage for source-confidence scoring and unsafe link filtering.
+- Update README in the benchmark traceability and web-search sections.
+- Preserve existing usage and library examples.
+
+### Changes Made
+
+- Extended `test_readme_documents_benchmark_traceability_and_library_import`.
+- Documented that `External source count: 0` triggers source-confidence caps and summary risk notes.
+- Documented that unsafe web result links are ignored for `javascript:`, `mailto:`, `data:`, and `vbscript:` schemes.
+
+### Verification After Changes
+
+- Red documentation test first failed because README did not mention unsafe web result links or source confidence.
+- The first README update split `External source count: 0` across lines; the documentation test caught that searchability issue.
+- Target documentation test passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter149_en_after`
+- `python3 -m unittest discover -s tests` passed with 134 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter149 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

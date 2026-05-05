@@ -32,6 +32,11 @@ Benchmark entries in `research_rounds.jsonl` include traceability metadata:
 - `search_note`: why the benchmark was selected, such as local keyword matches,
   a DuckDuckGo query, or built-in fallback usage.
 
+Scoring uses that provenance. When rubric notes contain `External source count: 0`,
+high per-criterion scores are capped by source confidence, and the scorecard
+summary calls out the missing external benchmark evidence instead of presenting
+a built-in-only run as high-confidence validation.
+
 ## Usage
 
 Run from the repository root:
@@ -79,6 +84,10 @@ With web search fallback enabled:
 ```bash
 python3 -m paper_research path/to/paper.txt --rounds 3 --web-search
 ```
+
+The lightweight web parser keeps normal result links and safe relative search
+links, but unsafe web result links are ignored for schemes such as
+`javascript:`, `mailto:`, `data:`, and `vbscript:`.
 
 Run continuous iteration for ten hours. The runner resumes existing
 `research_rounds.jsonl` records by default, appends every new round, and rewrites

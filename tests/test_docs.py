@@ -15,6 +15,9 @@ class DocumentationTest(unittest.TestCase):
         self.assertIn("`.markdown`", readme)
         self.assertIn("Paper inputs can be `.txt`, `.md`, or `.markdown` files", readme)
         self.assertIn("Hidden files and placeholder files are ignored", readme)
+        self.assertIn("unsafe web result links are ignored", readme)
+        self.assertIn("source confidence", readme)
+        self.assertIn("External source count: 0", readme)
         self.assertIn("--no-resume", readme)
 
 
