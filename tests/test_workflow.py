@@ -129,6 +129,22 @@ CHINESE_TECHNICAL_ROUTE_PAPER_TEXT = """
 系统仍依赖对照报告质量。
 """
 
+CHINESE_ABLATION_HEADING_PAPER_TEXT = """
+标题：中文消融标题论文
+
+摘要
+本文研究一个多智能体系统，用于生成中文论文研究报告。
+
+方法
+系统把报告写作、评分标准生成和证据审查拆分为多角色流程。
+
+消融实验
+消融实验显示评分标准和批评角色提高了基线方法、限制和可复现性细节覆盖。
+
+不足
+系统仍依赖对照报告质量。
+"""
+
 SPACE_NUMBERED_CHINESE_PAPER_TEXT = """
 标题：空格编号论文审查系统
 
@@ -1703,6 +1719,18 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertIn("评估显示", ledger)
             self.assertIn("基线方法", ledger)
+            self.assertNotIn("实验声称支持主要结论", ledger)
+
+    def test_chinese_ablation_heading_is_parsed_as_experiments(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=CHINESE_ABLATION_HEADING_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            ledger = result.rounds[0].report.sections["论文主张与证据账本"]
+
+            self.assertIn("消融实验显示", ledger)
             self.assertNotIn("实验声称支持主要结论", ledger)
 
     def test_chinese_technical_route_heading_is_parsed_as_method(self):

@@ -3771,3 +3771,31 @@
 - `python3 -m unittest discover -s tests` passed with 123 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter133 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 134 - 2026-05-04 23:26 PDT
+
+### Current Problems
+
+- Chinese `消融实验` headings were not mapped to the experiments section.
+- Ablation evidence could be missed and replaced with the generic experiment fallback.
+
+### Planned Changes
+
+- Add a regression test for Chinese ablation headings.
+- Map `消融实验` and `消融` to experiments.
+- Preserve ablation-specific language in Chinese evidence summaries.
+
+### Changes Made
+
+- Added `CHINESE_ABLATION_HEADING_PAPER_TEXT`.
+- Added `test_chinese_ablation_heading_is_parsed_as_experiments`.
+- Updated Chinese heading normalization and `zh_evidence_summary`.
+
+### Verification After Changes
+
+- Red target test first failed because the ledger used the generic experiment statement.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_ablation_heading_is_parsed_as_experiments tests.test_workflow.ResearchWorkflowTest.test_chinese_evaluation_heading_is_parsed_as_experiments tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_ablation_marker`
+- `python3 -m unittest discover -s tests` passed with 124 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter134 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
