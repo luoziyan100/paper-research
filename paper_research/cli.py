@@ -145,7 +145,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Wrote {result.jsonl_path}")
     print(f"Wrote {result.docx_path}")
     if result.rounds:
-        print(f"Final score summary: {result.rounds[-1].scorecard.summary}")
+        label = "最终评分摘要：" if args.language == "zh" else "Final score summary:"
+        spacer = "" if args.language == "zh" else " "
+        print(f"{label}{spacer}{result.rounds[-1].scorecard.summary}")
     return 0
 
 

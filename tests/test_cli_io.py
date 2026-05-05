@@ -191,6 +191,34 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("Final score summary:", stdout.getvalue())
             self.assertIn("Quality band:", stdout.getvalue())
 
+    def test_cli_localizes_chinese_final_score_summary_label(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "paper.txt"
+            output_dir = root / "out"
+            paper.write_text(
+                "标题：中文论文\n\n摘要\n本文研究论文评分。\n",
+                encoding="utf-8",
+            )
+
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                exit_code = main(
+                    [
+                        str(paper),
+                        "--language",
+                        "zh",
+                        "--rounds",
+                        "1",
+                        "--output-dir",
+                        str(output_dir),
+                    ]
+                )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn("最终评分摘要：", stdout.getvalue())
+            self.assertNotIn("Final score summary:", stdout.getvalue())
+
     def test_cli_reports_corrupt_resume_jsonl_without_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

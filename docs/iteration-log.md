@@ -4502,3 +4502,33 @@
 - `python3 -m unittest discover -s tests` passed with 139 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter157 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 158 - 2026-05-05 00:58 PDT
+
+### Current Problems
+
+- Chinese CLI runs printed an English `Final score summary:` label before a Chinese scorecard summary.
+- This made terminal output less consistent with `--language zh` output elsewhere.
+
+### Planned Changes
+
+- Add CLI regression coverage for the Chinese final score label.
+- Localize the final score summary label based on `--language`.
+- Preserve the existing English CLI label.
+
+### Changes Made
+
+- Added `test_cli_localizes_chinese_final_score_summary_label`.
+- Updated CLI output to use `最终评分摘要：` in Chinese mode and `Final score summary:` in English mode.
+
+### Verification After Changes
+
+- Red target test first failed because Chinese stdout still contained `Final score summary:`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_localizes_chinese_final_score_summary_label tests.test_cli_io.InputAndCliTest.test_cli_prints_final_score_summary`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 1 --output-dir /tmp/paper_research_iter158_zh_after`
+- Manual CLI output now starts the final score line with `最终评分摘要：`.
+- `python3 -m unittest discover -s tests` passed with 140 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter158 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
