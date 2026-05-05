@@ -106,8 +106,9 @@ python3 -m paper_research examples/sample_paper.txt \
   --output-dir research_output
 ```
 
-Text and Markdown inputs work without extra dependencies. PDF input is supported
-when the optional `pypdf` package is installed.
+Paper inputs can be `.txt`, `.md`, or `.markdown` files without extra
+dependencies. PDF input is supported when the optional `pypdf` package is
+installed.
 
 ## Library Use
 

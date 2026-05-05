@@ -3247,3 +3247,30 @@
 - `python3 -m unittest discover -s tests` passed with 106 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter114 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 115 - 2026-05-04 21:32 PDT
+
+### Current Problems
+
+- README described Markdown input generally but did not list `.markdown` paper inputs.
+- This lagged behind the input loader behavior added in Iteration 114.
+
+### Planned Changes
+
+- Add a documentation regression assertion for `.txt`, `.md`, and `.markdown` paper input support.
+- Update README usage notes to list supported paper input extensions explicitly.
+- Preserve existing benchmark traceability documentation checks.
+
+### Changes Made
+
+- Updated `test_readme_documents_benchmark_traceability_and_library_import`.
+- Updated README to state that paper inputs can be `.txt`, `.md`, or `.markdown` files.
+
+### Verification After Changes
+
+- Red documentation test first failed because README did not contain the explicit paper input extension sentence.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import tests.test_cli_io.InputAndCliTest.test_load_paper_text_accepts_markdown_extension`
+- `python3 -m unittest discover -s tests` passed with 106 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter115 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -13,6 +13,7 @@ class DocumentationTest(unittest.TestCase):
         self.assertIn("--docx-filename", readme)
         self.assertIn("`--benchmark-dir` must point to an existing directory", readme)
         self.assertIn("`.markdown`", readme)
+        self.assertIn("Paper inputs can be `.txt`, `.md`, or `.markdown` files", readme)
         self.assertIn("Hidden files and placeholder files are ignored", readme)
         self.assertIn("--no-resume", readme)
 
