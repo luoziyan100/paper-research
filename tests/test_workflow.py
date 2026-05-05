@@ -633,6 +633,22 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("ablation", agenda)
             self.assertNotIn("agent", agenda.lower())
 
+    def test_chinese_assumption_gap_section_localizes_framework_terms(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            gaps = result.rounds[0].report.sections["关键假设与验证缺口"]
+
+            self.assertIn("对照报告", gaps)
+            self.assertIn("智能体", gaps)
+            self.assertIn("评分标准", gaps)
+            self.assertNotIn("benchmark", gaps.lower())
+            self.assertNotIn("agent", gaps.lower())
+            self.assertNotIn("rubric", gaps.lower())
+
     def test_chinese_contribution_analysis_localizes_marker_terms(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

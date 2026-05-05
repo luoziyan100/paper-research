@@ -1814,3 +1814,30 @@
 - `python3 -m unittest discover -s tests` passed with 68 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter62 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 63 - 2026-05-04 19:11 PDT
+
+### Current Problems
+
+- Chinese `关键假设与验证缺口` still contained framework terms `benchmark`, `agent`, and `rubric`.
+- This made the Chinese report feel partially untranslated.
+
+### Planned Changes
+
+- Add a regression test for the assumptions/gaps section.
+- Replace the remaining English framework terms with natural Chinese terms.
+- Preserve scorecard evidence behavior that references the section.
+
+### Changes Made
+
+- Added `test_chinese_assumption_gap_section_localizes_framework_terms`.
+- The section now uses `对照报告`、`智能体`、`评分标准`.
+
+### Verification After Changes
+
+- Red test first failed because the section did not include `对照报告` and still contained English framework terms.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_assumption_gap_section_localizes_framework_terms tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score`
+- `python3 -m unittest discover -s tests` passed with 69 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter63 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
