@@ -78,6 +78,21 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("迭代式论文研究报告", core_xml)
             self.assertNotIn("Iterative Paper Research Report", core_xml)
 
+    def test_styles_define_multilingual_fonts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            document = DocxDocument(title="迭代式论文研究报告")
+            document.add(paragraph("中文 content"))
+
+            document.save(path)
+
+            with zipfile.ZipFile(path) as archive:
+                styles_xml = archive.read("word/styles.xml").decode("utf-8")
+
+            self.assertIn('w:rFonts w:ascii="Aptos"', styles_xml)
+            self.assertIn('w:hAnsi="Aptos"', styles_xml)
+            self.assertIn('w:eastAsia="Microsoft YaHei"', styles_xml)
+
     def test_export_uses_nested_heading_levels_for_report_sections(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"

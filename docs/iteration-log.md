@@ -2943,3 +2943,30 @@
 - `python3 -m unittest discover -s tests` passed with 96 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter103 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 104 - 2026-05-04 21:03 PDT
+
+### Current Problems
+
+- DOCX styles did not define explicit fonts for Latin or East Asian text.
+- Chinese reports could render with unpredictable fallback fonts in Word-compatible readers.
+
+### Planned Changes
+
+- Add a DOCX regression test that inspects `word/styles.xml`.
+- Define default Latin and East Asian fonts in the Normal style.
+- Preserve existing Chinese title metadata and document export behavior.
+
+### Changes Made
+
+- Added `test_styles_define_multilingual_fonts`.
+- Added `w:rFonts` to the DOCX Normal style with `Aptos` and `Microsoft YaHei`.
+
+### Verification After Changes
+
+- Red target test first failed because styles XML had no `w:rFonts` entry.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_styles_define_multilingual_fonts tests.test_docx.DocxWriterTest.test_export_uses_language_specific_core_title`
+- `python3 -m unittest discover -s tests` passed with 97 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter104 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
