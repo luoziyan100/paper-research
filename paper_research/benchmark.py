@@ -204,7 +204,7 @@ class BenchmarkSearchAgent:
             reports.append(
                 BenchmarkReport(
                     title=item["title"] or (
-                        f"外部 benchmark 报告 {index}"
+                        f"外部对照报告 {index}"
                         if self.language == "zh"
                         else f"External benchmark report {index}"
                     ),

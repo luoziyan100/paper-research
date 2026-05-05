@@ -2008,3 +2008,30 @@
 - `python3 -m unittest discover -s tests` passed with 72 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter69 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 70 - 2026-05-04 19:35 PDT
+
+### Current Problems
+
+- Chinese web-search results with missing titles defaulted to `外部 benchmark 报告 N`.
+- This left English framework vocabulary in a generated result title that appears in reports and DOCX exports.
+
+### Planned Changes
+
+- Update the missing-title web-search regression test to require `外部对照报告 N`.
+- Keep English web-search fallback titles unchanged.
+- Verify the full workflow still passes.
+
+### Changes Made
+
+- Changed the Chinese missing-title fallback from `外部 benchmark 报告 {index}` to `外部对照报告 {index}`.
+- Added an assertion that the Chinese fallback title does not contain `benchmark`.
+
+### Verification After Changes
+
+- Red target test first failed because the title was still `外部 benchmark 报告 1`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_web_search_localizes_missing_title`
+- `python3 -m unittest discover -s tests` passed with 72 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter70 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

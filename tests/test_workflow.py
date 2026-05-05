@@ -489,7 +489,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
 
-        self.assertEqual(results[0].title, "外部 benchmark 报告 1")
+        self.assertEqual(results[0].title, "外部对照报告 1")
+        self.assertNotIn("benchmark", results[0].title.lower())
         self.assertNotIn("External benchmark report", results[0].title)
 
     def test_builtin_benchmark_fallback_returns_diverse_report_archetypes(self):
