@@ -2425,3 +2425,30 @@
 - `python3 -m unittest discover -s tests` passed with 79 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter84 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 85 - 2026-05-04 20:14 PDT
+
+### Current Problems
+
+- The Chinese `贡献分析` section emitted `。 本报告...` with an English-style space after the Chinese full stop.
+- This made a high-visibility paragraph feel mechanically concatenated.
+
+### Planned Changes
+
+- Add a regression assertion rejecting `。 ` in Chinese contribution analysis.
+- Remove the extra space from the section concatenation.
+- Preserve English report spacing.
+
+### Changes Made
+
+- Updated `test_chinese_contribution_analysis_localizes_marker_terms`.
+- Removed the extra space between the extracted contribution sentence and the follow-up sentence.
+
+### Verification After Changes
+
+- Red target test first failed because contribution analysis contained `。 本报告`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_contribution_analysis_localizes_marker_terms`
+- `python3 -m unittest discover -s tests` passed with 79 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter85 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

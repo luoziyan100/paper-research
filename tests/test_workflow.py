@@ -782,6 +782,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("智能体", contribution)
             self.assertIn("工作流", contribution)
             self.assertIn("评分标准", contribution)
+            self.assertNotIn("。 ", contribution)
             self.assertNotIn("agent、workflow、rubric", contribution)
 
     def test_chinese_contribution_analysis_extracts_chinese_markers(self):

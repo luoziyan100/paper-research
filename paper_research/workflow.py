@@ -59,7 +59,7 @@ class ReportWriterAgent:
                     "评分标准和批评意见放进可迭代的研究审查流程。"
                 ),
                 "贡献分析": (
-                    f"核心贡献信号：{_extract_contribution(abstract, method, language)} "
+                    f"核心贡献信号：{_extract_contribution(abstract, method, language)}"
                     "本报告区分论文原始主张和评审者解释，让后续评分可以同时挑战二者。"
                 ),
                 "论文主张与证据账本": (
