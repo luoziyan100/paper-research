@@ -4652,3 +4652,33 @@
 - `python3 -m unittest discover -s tests` passed with 143 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter162 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 163 - 2026-05-05 03:12 PDT
+
+### Current Problems
+
+- Protocol-relative redirect targets such as `//example.com/report` were not normalized into usable benchmark URLs.
+- The parser kept the original `/url?q=...` redirect instead of the intended target.
+
+### Planned Changes
+
+- Add module-level web search parsing coverage for protocol-relative redirect targets.
+- Normalize protocol-relative targets to HTTPS.
+- Preserve non-URL query fallback behavior.
+
+### Changes Made
+
+- Added `test_protocol_relative_redirect_target_becomes_https`.
+- Added `test_skipped_anchor_does_not_steal_next_snippet` as module-level coverage for skipped anchors.
+- Updated redirect target cleaning to return `https://...` for decoded `//...` candidates.
+
+### Verification After Changes
+
+- Red target test first failed because the URL stayed as `/url?q=...`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_web_search.WebSearchParsingTest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_q_redirect_urls tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_non_url_q_values_as_original_href`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter163_en_after`
+- `python3 -m unittest discover -s tests` passed with 145 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter163 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

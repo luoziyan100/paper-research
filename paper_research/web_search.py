@@ -88,6 +88,8 @@ def _clean_result_url(href: str) -> str:
             candidate = unquote(query[redirect_param][0]).strip()
             if _has_unsupported_scheme(candidate):
                 return ""
+            if candidate.startswith("//"):
+                return f"https:{candidate}"
             if candidate.lower().startswith(("http://", "https://")):
                 return candidate
     return href
