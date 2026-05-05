@@ -247,8 +247,16 @@ class RubricBuilderAgent:
                 max_points=20,
             ),
             RubricCriterion(
-                name="Research Usefulness",
-                description="Produces actionable follow-up questions, replications, and decision guidance.",
+                name=(
+                    "Reproducibility and Evidence Citation"
+                    if critic_mentions_reproducibility(prior_critic_review)
+                    else "Research Usefulness"
+                ),
+                description=(
+                    "Requires concrete paper evidence and explains replication, data, baseline, and evaluation gaps."
+                    if critic_mentions_reproducibility(prior_critic_review)
+                    else "Produces actionable follow-up questions, replications, and decision guidance."
+                ),
                 max_points=20,
             ),
         ]
@@ -290,6 +298,13 @@ class ReportScoringAgent:
                 "Evidence Quality": ["evidence", "experiment", "baseline", "measured", "result"],
                 "Limitations and Failure Modes": ["limitation", "risk", "fragile", "failure", "reproduc"],
                 "Research Usefulness": ["follow-up", "replicate", "agenda", "ablation", "decision"],
+                "Reproducibility and Evidence Citation": [
+                    "evidence",
+                    "reproduc",
+                    "baseline",
+                    "data",
+                    "evaluation",
+                ],
             }
         for criterion in rubric.criteria:
             keywords = keyword_map.get(criterion.name, [])

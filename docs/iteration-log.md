@@ -2915,3 +2915,31 @@
 - `python3 -m unittest discover -s tests` passed with 95 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter102 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 103 - 2026-05-04 21:01 PDT
+
+### Current Problems
+
+- The Chinese rubric already evolved when the prior critic asked for an explicit reproducibility criterion.
+- The English rubric ignored the same critic signal and kept the generic `Research Usefulness` criterion in round 2.
+
+### Planned Changes
+
+- Add a regression test for second-round English rubric evolution.
+- Replace the generic English final criterion with `Reproducibility and Evidence Citation` when prior critic feedback mentions reproducibility.
+- Add scoring keywords for the new English criterion.
+
+### Changes Made
+
+- Added `test_second_round_english_rubric_evolves_from_critic_feedback`.
+- Updated English `RubricBuilderAgent` logic to mirror the Chinese critic-feedback path.
+- Added a keyword map entry for `Reproducibility and Evidence Citation`.
+
+### Verification After Changes
+
+- Red target test first failed because the second-round English rubric still used `Research Usefulness`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_second_round_english_rubric_evolves_from_critic_feedback tests.test_workflow.ResearchWorkflowTest.test_second_round_chinese_rubric_evolves_from_critic_feedback`
+- `python3 -m unittest discover -s tests` passed with 96 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter103 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

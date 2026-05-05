@@ -1118,6 +1118,19 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("研究价值", second_criteria)
             self.assertIn("上一轮评分标准批评", result.rounds[1].rubric.source_notes)
 
+    def test_second_round_english_rubric_evolves_from_critic_feedback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp)),
+            )
+
+            second_criteria = [criterion.name for criterion in result.rounds[1].rubric.criteria]
+
+            self.assertIn("Reproducibility and Evidence Citation", second_criteria)
+            self.assertNotIn("Research Usefulness", second_criteria)
+            self.assertIn("prior rubric critic review", result.rounds[1].rubric.source_notes)
+
     def test_chinese_scoring_counts_localized_baseline_marker(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
