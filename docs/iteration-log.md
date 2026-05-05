@@ -1514,3 +1514,30 @@
 - `python3 -m unittest discover -s tests` passed with 59 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter51 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 52 - 2026-05-04 18:44 PDT
+
+### Current Problems
+
+- `--benchmark-dir` accepted ordinary files.
+- The workflow then treated the path as unusable and silently fell back to built-in benchmark patterns.
+
+### Planned Changes
+
+- Add a CLI regression test for file paths passed as `--benchmark-dir`.
+- Reject non-directory benchmark paths with a clear argparse error.
+- Preserve missing-directory validation from Iteration 51.
+
+### Changes Made
+
+- Added `test_cli_rejects_file_benchmark_dir_without_traceback`.
+- `main(...)` now emits `--benchmark-dir must be a directory: ...` when the path exists but is not a directory.
+
+### Verification After Changes
+
+- Red test first failed because no `SystemExit` was raised and default outputs were written.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_rejects_file_benchmark_dir_without_traceback tests.test_cli_io.InputAndCliTest.test_cli_rejects_missing_benchmark_dir_without_traceback tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- `python3 -m unittest discover -s tests` passed with 60 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter52 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
