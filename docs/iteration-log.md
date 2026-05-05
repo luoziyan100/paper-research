@@ -2063,3 +2063,31 @@
 - `python3 -m unittest discover -s tests` passed with 72 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter71 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 72 - 2026-05-04 19:39 PDT
+
+### Current Problems
+
+- Chinese rubric critic issues and recommendations still used `benchmark`.
+- The no-results recommendation also said `benchmark 搜索`, so Chinese DOCX/JSON traces were not fully localized.
+
+### Planned Changes
+
+- Add a focused regression test for Chinese critic issue and recommendation text.
+- Replace `benchmark 报告` with `对照报告`.
+- Replace `benchmark 搜索` with `对照报告搜索`.
+
+### Changes Made
+
+- Added `test_chinese_rubric_critic_localizes_benchmark_terms`.
+- Chinese critic issues now describe `对照报告` style/domain bias.
+- Chinese critic recommendations now track `对照报告` metadata and handle missing `对照报告搜索` results.
+
+### Verification After Changes
+
+- Red target test first failed because critic text still contained three `benchmark` phrases.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_rubric_critic_localizes_benchmark_terms`
+- `python3 -m unittest discover -s tests` passed with 73 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter72 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

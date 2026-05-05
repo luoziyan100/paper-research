@@ -353,18 +353,18 @@ class RubricCriticAgent:
         if language == "zh":
             issues = [
                 "评分标准可能过度奖励关键词覆盖，而不是奖励真正的因果深度，除非每个分数都引用具体论文证据。",
-                "如果 benchmark 报告来自相同风格或相同领域，评分标准可能被样式偏见污染。",
+                "如果对照报告来自相同风格或相同领域，评分标准可能被样式偏见污染。",
             ]
             criterion_names = {criterion.name for criterion in rubric.criteria}
             if "可复现性" not in criterion_names:
                 issues.append("可复现性目前嵌在限制项中，对实证论文可能应该单独成为评分项。")
             recommendations = [
                 "要求未来每个评分都包含一个论文证据引用或转述。",
-                "记录 benchmark 的来源类型、领域和报告结构，避免样本单一。",
+                "记录对照报告的来源类型、领域和报告结构，避免样本单一。",
                 f"基于当前 {scorecard.total_score}/100 的评估，优先复查低分项。",
             ]
             if not benchmark_reports:
-                recommendations.append("如果 benchmark 搜索没有返回结果，就不要进入评分环节。")
+                recommendations.append("如果对照报告搜索没有返回结果，就不要进入评分环节。")
             return CriticReview(issues=issues, recommendations=recommendations)
 
         issues = [

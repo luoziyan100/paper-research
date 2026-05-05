@@ -9,6 +9,7 @@ from paper_research.workflow import (
     BenchmarkSearchAgent,
     ContinuousRunConfig,
     ReportWriterAgent,
+    RubricCriticAgent,
     WorkflowConfig,
     run_continuous_workflow,
     run_research_workflow,
@@ -607,6 +608,26 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("20 pts", document_xml)
             self.assertNotIn("搜索说明:", document_xml)
             self.assertNotIn("搜索说明： ", document_xml)
+
+    def test_chinese_rubric_critic_localizes_benchmark_terms(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            first_round = result.rounds[0]
+            critic = RubricCriticAgent().critique(
+                first_round.rubric,
+                first_round.scorecard,
+                [],
+                language="zh",
+            )
+            critic_text = " ".join(critic.issues + critic.recommendations)
+
+            self.assertIn("对照报告", critic_text)
+            self.assertIn("对照报告搜索", critic_text)
+            self.assertNotIn("benchmark", critic_text.lower())
 
     def test_chinese_report_uses_evidence_ledger_sections(self):
         with tempfile.TemporaryDirectory() as tmp:
