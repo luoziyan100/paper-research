@@ -231,7 +231,10 @@ def _contains_marker(text: str, keyword: str, language: str) -> bool:
         return lowered_keyword in text
     if lowered_keyword in {"reproduc", "result", "experiment"}:
         return lowered_keyword in text
-    return re.search(rf"(?<![a-z]){re.escape(lowered_keyword)}(?![a-z])", text) is not None
+    return (
+        re.search(rf"(?<![a-z]){re.escape(lowered_keyword)}s?(?![a-z])", text)
+        is not None
+    )
 
 
 def _apply_source_confidence_cap(

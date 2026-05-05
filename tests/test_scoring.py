@@ -81,6 +81,27 @@ class ReportScoringAgentTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "language must be 'en' or 'zh'"):
             ReportScoringAgent().score(report, rubric, language="fr")
 
+    def test_english_scoring_counts_plural_keyword_markers(self):
+        report = ResearchReport(
+            title="Plural Marker Report",
+            sections={"Summary": "The report compares baselines across model families."},
+        )
+        rubric = Rubric(
+            title="Rubric",
+            criteria=[
+                RubricCriterion(
+                    name="Evidence Quality",
+                    description="Evaluate evidence.",
+                    max_points=20,
+                )
+            ],
+            source_notes="External source count: 1.",
+        )
+
+        scorecard = ReportScoringAgent().score(report, rubric)
+
+        self.assertIn("Matched markers: baseline", scorecard.scores[0].rationale)
+
 
 if __name__ == "__main__":
     unittest.main()

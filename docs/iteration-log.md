@@ -5033,3 +5033,31 @@
 - `python3 -m unittest discover -s tests` passed with 156 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter175 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 176 - 2026-05-05 03:48 PDT
+
+### Current Problems
+
+- English scoring matched many rubric markers only in singular form.
+- Common plural evidence words such as `baselines` did not count for the `baseline` marker, lowering evidence quality scoring.
+
+### Planned Changes
+
+- Add a focused scoring regression test where only the plural marker appears.
+- Allow simple plural matching while preserving word-boundary protection against substrings like `metadata`.
+- Re-run evidence marker and scoring rationale tests.
+
+### Changes Made
+
+- Added `test_english_scoring_counts_plural_keyword_markers`.
+- Updated `_contains_marker` to allow an optional trailing `s` for bounded English keyword matches.
+
+### Verification After Changes
+
+- Red target test first failed because `baselines` produced `Matched markers: none`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_scoring.ReportScoringAgentTest.test_english_scoring_counts_plural_keyword_markers tests.test_workflow.ResearchWorkflowTest.test_english_scoring_does_not_match_data_inside_metadata`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_lists_matched_markers tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_cites_report_evidence`
+- `python3 -m unittest discover -s tests` passed with 157 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter176 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
