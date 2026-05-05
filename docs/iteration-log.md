@@ -1652,3 +1652,30 @@
 - `python3 -m unittest discover -s tests` passed with 64 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter56 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 57 - 2026-05-04 18:57 PDT
+
+### Current Problems
+
+- Legacy JSONL could store `critic_review.issues` or `critic_review.recommendations` as scalar strings.
+- Hydration used `list(value)`, which split those strings into characters.
+
+### Planned Changes
+
+- Add a resume regression test for scalar critic issue/recommendation fields.
+- Reuse the string-list hydration helper from Iteration 56.
+- Preserve invalid-record detection for genuinely malformed objects.
+
+### Changes Made
+
+- Added `test_resume_keeps_scalar_legacy_critic_lists_as_single_items`.
+- `_round_from_dict(...)` now hydrates critic issues and recommendations with `_string_list(...)`.
+
+### Verification After Changes
+
+- Red test first failed because `critic.issues` became a list of characters.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_resume_keeps_scalar_legacy_critic_lists_as_single_items tests.test_workflow.ResearchWorkflowTest.test_resume_keeps_scalar_legacy_benchmark_strength_as_single_item tests.test_cli_io.InputAndCliTest.test_cli_reports_invalid_resume_record_without_traceback`
+- `python3 -m unittest discover -s tests` passed with 65 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter57 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

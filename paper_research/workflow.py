@@ -672,8 +672,8 @@ def _round_from_dict(data: Dict[str, object], language: str = "en") -> RoundResu
     )
     critic_data = data["critic_review"]  # type: ignore[index]
     critic_review = CriticReview(
-        issues=list(critic_data["issues"]),  # type: ignore[index]
-        recommendations=list(critic_data["recommendations"]),  # type: ignore[index]
+        issues=_string_list(critic_data["issues"]),  # type: ignore[index]
+        recommendations=_string_list(critic_data["recommendations"]),  # type: ignore[index]
     )
     return RoundResult(
         round_number=int(data["round_number"]),
