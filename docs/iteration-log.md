@@ -3629,3 +3629,34 @@
 - `python3 -m unittest discover -s tests` passed with 118 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter128 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 129 - 2026-05-04 23:08 PDT
+
+### Current Problems
+
+- The English deterministic scorecard gave the sample report 91/100.
+- This over-rewarded keyword coverage and was inconsistent with the stricter Chinese scoring behavior.
+
+### Planned Changes
+
+- Add an English regression test that caps the sample score at a non-inflated level.
+- Reduce English keyword-hit reward while preserving evidence citations.
+- Verify the sample score and quality band after the change.
+
+### Changes Made
+
+- Added `test_english_scorecard_avoids_inflated_sample_score`.
+- Changed English scoring from `8 + hits * 3` to `8 + min(hits, 5) * 2`.
+
+### Verification After Changes
+
+- Ran a two-round Chinese sample:
+  - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter129_zh`
+- Confirmed rubric source notes included `外部来源数量：0` and DOCX had one page break between two rounds.
+- Red target test first failed because the English sample score was 91/100.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_avoids_inflated_sample_score tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_cites_report_evidence tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- Manual score check now reports 78/100 with quality band `good`.
+- `python3 -m unittest discover -s tests` passed with 119 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter129 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -326,7 +326,7 @@ class ReportScoringAgent:
                 )
             else:
                 evidence = _find_evidence_snippet(report, keywords, language)
-                points = min(criterion.max_points, 8 + hits * 3)
+                points = min(criterion.max_points, 8 + min(hits, 5) * 2)
                 rationale = (
                     f"Found {hits} evidence markers for {criterion.name.lower()} "
                     f"in the generated report. Evidence: {evidence}"

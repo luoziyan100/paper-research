@@ -380,6 +380,22 @@ class ResearchWorkflowTest(unittest.TestCase):
                 rationales,
             )
 
+    def test_english_scorecard_avoids_inflated_sample_score(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            scorecard = result.rounds[0].scorecard
+
+            self.assertLessEqual(scorecard.total_score, 85)
+            self.assertIn("Quality band:", scorecard.summary)
+            self.assertTrue(
+                all("Evidence:" in score.rationale for score in scorecard.scores),
+                [score.rationale for score in scorecard.scores],
+            )
+
     def test_second_round_report_uses_prior_low_score_items(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
