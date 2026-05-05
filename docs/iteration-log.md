@@ -4949,3 +4949,31 @@
 - `python3 -m unittest discover -s tests` passed with 154 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter172 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 173 - 2026-05-05 03:38 PDT
+
+### Current Problems
+
+- Chinese reports with missing method or experiment sections could include English fallback sentences.
+- The output mixed phrases such as `The method section was not explicit` into otherwise Chinese reports.
+
+### Planned Changes
+
+- Add a regression test for Chinese papers that only provide a title and abstract.
+- Route missing Chinese sections through localized summary helpers instead of English defaults.
+- Verify English report defaults and Chinese DOCX generation remain intact.
+
+### Changes Made
+
+- Added `test_chinese_missing_sections_use_chinese_defaults`.
+- Changed `ReportWriterAgent.write` to use empty defaults for missing method, experiment, and limitation text when `language="zh"`.
+
+### Verification After Changes
+
+- Red target test first failed because the report contained English fallback method and experiment sentences.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_missing_sections_use_chinese_defaults tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_report_uses_claim_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 155 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter173 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

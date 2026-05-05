@@ -1646,6 +1646,29 @@ We analyze data quality.
         self.assertIn("图神经网络", summary)
         self.assertNotIn("关于了", summary)
 
+    def test_chinese_missing_sections_use_chinese_defaults(self):
+        paper_text = """
+标题：缺少章节的中文论文
+
+摘要
+本文研究一种用于论文审查的自动分析流程。
+"""
+        report = ReportWriterAgent().write(
+            paper_text=paper_text,
+            benchmark_reports=[],
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        report_text = report.as_text()
+
+        self.assertIn("方法描述不够明确", report_text)
+        self.assertIn("实验或结果部分不够明确", report_text)
+        self.assertNotIn("The method section was not explicit", report_text)
+        self.assertNotIn("The experiments or results section was not explicit", report_text)
+
     def test_chinese_limitation_section_localizes_framework_terms(self):
         paper_text = """
 标题：中文限制术语测试

@@ -40,12 +40,19 @@ class ReportWriterAgent:
             for strength in report.strengths[:4]
         ))
         abstract = parsed.get("abstract", _first_sentences(paper_text, count=3))
-        method = parsed.get("method", parsed.get("methods", "The method section was not explicit."))
+        method_default = "" if language == "zh" else "The method section was not explicit."
+        experiments_default = (
+            "" if language == "zh" else "The experiments or results section was not explicit."
+        )
+        limitations_default = (
+            "" if language == "zh" else "The paper does not state limitations directly."
+        )
+        method = parsed.get("method", parsed.get("methods", method_default))
         experiments = parsed.get(
             "experiments",
-            parsed.get("results", "The experiments or results section was not explicit."),
+            parsed.get("results", experiments_default),
         )
-        limitations = parsed.get("limitations", "The paper does not state limitations directly.")
+        limitations = parsed.get("limitations", limitations_default)
 
         if language == "zh":
             problem_summary = _zh_problem_summary(abstract)
