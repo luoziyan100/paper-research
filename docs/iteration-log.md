@@ -3492,3 +3492,31 @@
 - `python3 -m unittest discover -s tests` passed with 114 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter123 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 124 - 2026-05-04 22:50 PDT
+
+### Current Problems
+
+- The Chinese punctuation split from Iteration 123 introduced an English abbreviation regression.
+- `first_sentences("... e.g. retrieval ...", count=1)` stopped at `e.` or `e.g.` instead of the real sentence boundary.
+
+### Planned Changes
+
+- Add a regression test for English abbreviations without internal spaces.
+- Keep Chinese punctuation splitting.
+- Protect common abbreviations before sentence splitting.
+
+### Changes Made
+
+- Added `test_first_sentences_preserves_english_abbreviations_without_space`.
+- Updated `first_sentences` to protect `e.g.` and `i.e.` before splitting, then restore them.
+
+### Verification After Changes
+
+- Red target test first failed because the summary stopped at `The system uses e.`.
+- An intermediate regex-only fix still stopped at `The system uses e.g.`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_first_sentences_preserves_english_abbreviations_without_space tests.test_workflow.ResearchWorkflowTest.test_first_sentences_splits_chinese_punctuation tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 115 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter124 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

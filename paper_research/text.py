@@ -137,8 +137,11 @@ def normalize_english_heading(normalized_line: str) -> str:
 
 
 def first_sentences(text: str, count: int = 2) -> str:
-    sentences = re.split(r"(?<=[.!?。！？])\s*", " ".join(text.split()))
-    selected = [sentence for sentence in sentences if sentence][:count]
+    compacted = " ".join(text.split())
+    for abbreviation in ("e.g.", "i.e."):
+        compacted = compacted.replace(abbreviation, abbreviation.replace(".", "<DOT>"))
+    sentences = re.split(r"(?<=[。！？])\s*|(?<=[.!?])\s+", compacted)
+    selected = [sentence.replace("<DOT>", ".") for sentence in sentences if sentence][:count]
     return " ".join(selected)[:900]
 
 
