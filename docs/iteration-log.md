@@ -3274,3 +3274,30 @@
 - `python3 -m unittest discover -s tests` passed with 106 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter115 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 116 - 2026-05-04 21:35 PDT
+
+### Current Problems
+
+- `run_research_workflow` rejected `WorkflowConfig(rounds=0)`, but `run_continuous_workflow` accepted it.
+- Library callers could pass an invalid shared config and get different behavior depending on run mode.
+
+### Planned Changes
+
+- Add a continuous-mode regression test for invalid `WorkflowConfig.rounds`.
+- Reuse the same `WorkflowConfig.rounds must be at least 1` validation in continuous mode.
+- Preserve normal continuous resume behavior.
+
+### Changes Made
+
+- Added `test_continuous_runner_rejects_invalid_workflow_rounds`.
+- Added a `config.rounds` validation check to `run_continuous_workflow`.
+
+### Verification After Changes
+
+- Red target test first failed because continuous mode accepted `rounds=0`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_rejects_invalid_workflow_rounds tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_resumes_and_keeps_appending_rounds`
+- `python3 -m unittest discover -s tests` passed with 107 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter116 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

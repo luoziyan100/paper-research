@@ -513,6 +513,8 @@ def run_continuous_workflow(
     clock: Callable[[], float] = time.monotonic,
     sleeper: Callable[[float], None] = time.sleep,
 ) -> WorkflowResult:
+    if config.rounds < 1:
+        raise ValueError("WorkflowConfig.rounds must be at least 1.")
     if not paper_text.strip():
         raise ValueError("paper_text cannot be empty.")
     _validate_language(config.language)

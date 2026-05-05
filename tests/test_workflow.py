@@ -1493,6 +1493,19 @@ class ResearchWorkflowTest(unittest.TestCase):
                 document_xml = archive.read("word/document.xml").decode("utf-8")
             self.assertIn("Round 3", document_xml)
 
+    def test_continuous_runner_rejects_invalid_workflow_rounds(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "WorkflowConfig.rounds must be at least 1"):
+                run_continuous_workflow(
+                    paper_text=PAPER_TEXT,
+                    config=WorkflowConfig(rounds=0, output_dir=Path(tmp)),
+                    continuous_config=ContinuousRunConfig(
+                        duration_seconds=0,
+                        sleep_seconds=0,
+                        max_rounds=1,
+                    ),
+                )
+
     def test_resume_hydrates_legacy_benchmark_metadata(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)
