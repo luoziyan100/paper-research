@@ -2091,3 +2091,32 @@
 - `python3 -m unittest discover -s tests` passed with 73 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter72 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 73 - 2026-05-04 19:41 PDT
+
+### Current Problems
+
+- Chinese DOCX intro text still said `benchmark 搜索`.
+- The benchmark-results heading was `Benchmark 搜索结果`.
+- Empty benchmark-search output said `未记录可用的 benchmark 搜索结果。`
+
+### Planned Changes
+
+- Strengthen the DOCX regression test to inspect the Chinese intro, heading, and empty-state text.
+- Replace all three reader-facing DOCX strings with `对照报告搜索`.
+- Preserve English DOCX wording.
+
+### Changes Made
+
+- Chinese DOCX intro now says `对照报告搜索`.
+- Chinese round heading now says `对照报告搜索结果`.
+- Chinese empty search state now says `未记录可用的对照报告搜索结果。`
+
+### Verification After Changes
+
+- Red target test first failed because the generated DOCX still contained all three `benchmark 搜索` strings.
+- Target test passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_chinese_export_explains_empty_benchmark_results`
+- `python3 -m unittest discover -s tests` passed with 73 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter73 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

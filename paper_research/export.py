@@ -16,7 +16,7 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
         document.add(heading(title, level=1))
         document.add(
             paragraph(
-                "本文档记录每一轮研究报告、benchmark 搜索、评分标准、评分结果和评分标准批评。"
+                "本文档记录每一轮研究报告、对照报告搜索、评分标准、评分结果和评分标准批评。"
             )
         )
     else:
@@ -30,13 +30,13 @@ def write_docx(path: Path, rounds: Iterable[RoundResult], language: str = "en") 
     for round_result in rounds:
         if language == "zh":
             document.add(heading(f"第 {round_result.round_number} 轮", level=1))
-            document.add(heading("Benchmark 搜索结果", level=2))
+            document.add(heading("对照报告搜索结果", level=2))
         else:
             document.add(heading(f"Round {round_result.round_number}", level=1))
             document.add(heading("Benchmark Search Results", level=2))
         if not round_result.benchmark_reports:
             empty_text = (
-                "未记录可用的 benchmark 搜索结果。"
+                "未记录可用的对照报告搜索结果。"
                 if language == "zh"
                 else "No usable benchmark search results were recorded."
             )

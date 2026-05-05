@@ -163,7 +163,11 @@ class DocxWriterTest(unittest.TestCase):
             with zipfile.ZipFile(path) as archive:
                 document_xml = archive.read("word/document.xml").decode("utf-8")
 
-            self.assertIn("未记录可用的 benchmark 搜索结果。", document_xml)
+            self.assertIn("本文档记录每一轮研究报告、对照报告搜索、评分标准", document_xml)
+            self.assertIn("对照报告搜索结果", document_xml)
+            self.assertIn("未记录可用的对照报告搜索结果。", document_xml)
+            self.assertNotIn("benchmark 搜索", document_xml)
+            self.assertNotIn("Benchmark 搜索", document_xml)
 
 
 if __name__ == "__main__":
