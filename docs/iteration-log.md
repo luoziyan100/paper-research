@@ -2259,3 +2259,31 @@
 - `python3 -m unittest discover -s tests` passed with 74 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter78 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 79 - 2026-05-04 19:56 PDT
+
+### Current Problems
+
+- Chinese scoring still used the internal keyword `baseline` for evidence-quality and reproducibility scoring.
+- After report text was localized to `基线方法`, the evidence snippet for `证据质量` could jump to the wrong section instead of citing the evidence ledger.
+
+### Planned Changes
+
+- Add a regression test requiring Chinese evidence scoring to cite `基线方法`.
+- Replace Chinese scoring keywords with localized terms.
+- Preserve English scoring keywords unchanged.
+
+### Changes Made
+
+- Added `test_chinese_scoring_counts_localized_baseline_marker`.
+- Chinese `证据质量` scoring now uses `基线方法` instead of `baseline`.
+- Chinese `可复现性与证据引用` scoring also uses `基线方法`.
+
+### Verification After Changes
+
+- Red target test first failed because the evidence rationale cited `关键假设与验证缺口` and did not include `基线方法`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_baseline_marker`
+- `python3 -m unittest discover -s tests` passed with 75 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter79 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

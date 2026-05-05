@@ -808,6 +808,23 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("研究价值", second_criteria)
             self.assertIn("上一轮评分标准批评", result.rounds[1].rubric.source_notes)
 
+    def test_chinese_scoring_counts_localized_baseline_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            evidence_score = next(
+                score
+                for score in result.rounds[0].scorecard.scores
+                if score.name == "证据质量"
+            )
+
+            self.assertGreaterEqual(evidence_score.points, 12)
+            self.assertIn("基线方法", evidence_score.rationale)
+            self.assertNotIn("baseline", evidence_score.rationale.lower())
+
     def test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
