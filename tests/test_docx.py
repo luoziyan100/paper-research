@@ -141,7 +141,7 @@ class DocxWriterTest(unittest.TestCase):
                     sections={"Executive Thesis": "Report section body."},
                 ),
                 rubric=Rubric(
-                    title="Rubric",
+                    title="Custom Round Rubric Title",
                     criteria=[
                         RubricCriterion(
                             name="Evidence",
@@ -183,6 +183,7 @@ class DocxWriterTest(unittest.TestCase):
                 '<w:pStyle w:val="Heading3"/></w:pPr><w:r><w:t xml:space="preserve">Executive Thesis',
                 document_xml,
             )
+            self.assertIn("Custom Round Rubric Title", document_xml)
             self.assertIn('w:styleId="Heading3"', styles_xml)
 
     def test_export_uses_language_specific_core_title(self):

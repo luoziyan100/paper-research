@@ -4353,3 +4353,32 @@
 - `python3 -m unittest discover -s tests` passed with 136 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter152 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 153 - 2026-05-05 00:42 PDT
+
+### Current Problems
+
+- DOCX exports showed a generic `Scoring Rubric` / `评分标准` section heading.
+- The actual per-round rubric title, such as `Round 1 Scoring Rubric`, was not rendered in the document body.
+
+### Planned Changes
+
+- Add a DOCX regression test requiring the concrete rubric title to appear.
+- Render rubric title before rubric source notes.
+- Preserve existing heading levels and Chinese DOCX formatting.
+
+### Changes Made
+
+- Extended `test_export_uses_nested_heading_levels_for_report_sections`.
+- Updated `write_docx` to add `round_result.rubric.title` under the scoring rubric heading.
+
+### Verification After Changes
+
+- Red target test first failed because `Custom Round Rubric Title` was missing from `word/document.xml`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_export_uses_nested_heading_levels_for_report_sections tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 1 --output-dir /tmp/paper_research_iter153_zh_after`
+- `python3 -m unittest discover -s tests` passed with 136 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter153 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
