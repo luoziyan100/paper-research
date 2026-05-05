@@ -506,7 +506,7 @@ class ResearchWorkflowTest(unittest.TestCase):
                 config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
             )
 
-            section = result.rounds[0].report.sections["Benchmark 对照质量"]
+            section = result.rounds[0].report.sections["对照报告质量"]
 
             self.assertIn("来源数量：3", section)
             self.assertIn("内置 fallback", section)
@@ -514,7 +514,7 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             with zipfile.ZipFile(result.docx_path) as archive:
                 document_xml = archive.read("word/document.xml").decode("utf-8")
-            self.assertIn("Benchmark 对照质量", document_xml)
+            self.assertIn("对照报告质量", document_xml)
             self.assertIn("搜索说明", document_xml)
 
     def test_chinese_benchmark_quality_uses_chinese_source_delimiter(self):
@@ -545,7 +545,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             language="zh",
         )
 
-        section = report.sections["Benchmark 对照质量"]
+        section = report.sections["对照报告质量"]
 
         self.assertIn("来源类型：本地 benchmark、网页搜索", section)
         self.assertNotIn("本地 benchmark, 网页搜索", section)
@@ -560,7 +560,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             language="zh",
         )
 
-        section = report.sections["Benchmark 对照质量"]
+        section = report.sections["对照报告质量"]
 
         self.assertIn("来源数量：0", section)
         self.assertIn("来源类型：无", section)

@@ -87,7 +87,7 @@ class ReportWriterAgent:
                     f"第 {round_number} 轮先搜索优秀研究报告。可复用特征："
                     f"{_join_phrases(benchmark_lessons) or '清晰主张、证据、限制和后续问题'}。"
                 ),
-                "Benchmark 对照质量": _benchmark_quality_summary(
+                "对照报告质量": _benchmark_quality_summary(
                     benchmark_reports,
                     language,
                 ),
