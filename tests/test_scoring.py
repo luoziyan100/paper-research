@@ -30,6 +30,8 @@ class ReportScoringAgentTest(unittest.TestCase):
         scorecard = ReportScoringAgent().score(report, rubric)
 
         self.assertEqual(scorecard.scores[0].points, 16)
+        self.assertIn("16/20", scorecard.summary)
+        self.assertIn("Quality band: good", scorecard.summary)
         self.assertIn("source confidence cap", scorecard.scores[0].rationale)
         self.assertIn("source confidence", scorecard.summary)
 

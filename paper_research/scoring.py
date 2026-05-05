@@ -84,12 +84,14 @@ class ReportScoringAgent:
                 )
             )
         total = sum(item.points for item in scores)
+        max_total = sum(criterion.max_points for criterion in rubric.criteria) or 100
+        quality_total = _normalized_total(total, max_total)
         if language == "zh":
             return Scorecard(
                 total_score=total,
                 scores=scores,
                 summary=(
-                    f"本轮报告总分 {total}/100。质量等级：{_quality_band(total, language)}。"
+                    f"本轮报告总分 {total}/{max_total}。质量等级：{_quality_band(quality_total, language)}。"
                     f"主要风险：{_score_risk_summary(scores, language, source_confidence_limited)}。"
                     "低分项应在下一轮优先修订。"
                 ),
@@ -98,7 +100,7 @@ class ReportScoringAgent:
             total_score=total,
             scores=scores,
             summary=(
-                f"The report scores {total}/100. Quality band: {_quality_band(total, language)}. "
+                f"The report scores {total}/{max_total}. Quality band: {_quality_band(quality_total, language)}. "
                 f"Main risks: {_score_risk_summary(scores, language, source_confidence_limited)}. Strong areas are "
                 "the criteria with explicit evidence markers; weaker areas should be revised "
                 "in the next round."
@@ -143,6 +145,10 @@ def _quality_band(total: int, language: str) -> str:
     if total >= 55:
         return "moderate"
     return "low"
+
+
+def _normalized_total(total: int, max_total: int) -> int:
+    return round((total / max_total) * 100) if max_total else total
 
 
 def _score_risk_summary(

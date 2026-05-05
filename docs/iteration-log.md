@@ -4076,3 +4076,34 @@
 - `python3 -m unittest discover -s tests` passed with 133 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter143 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 144 - 2026-05-05 00:04 PDT
+
+### Current Problems
+
+- The standalone scoring API always wrote summaries as `x/100`.
+- Custom rubrics with a non-100 max score, such as a one-criterion 20-point rubric, produced misleading summaries like `16/100` and an incorrect low quality band.
+
+### Planned Changes
+
+- Add a regression check for the scoring summary denominator.
+- Use the sum of rubric criterion max points as the summary denominator.
+- Normalize the total to a percentage only for quality-band calculation.
+
+### Changes Made
+
+- Extended `test_builtin_only_rubric_caps_high_english_scores` to require `16/20` and `Quality band: good`.
+- Added `_normalized_total`.
+- Updated English and Chinese scorecard summaries to use dynamic denominators while preserving standard `x/100` output for normal five-criterion rubrics.
+
+### Verification After Changes
+
+- Red target test first failed because the summary still said `16/100`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_scoring.ReportScoringAgentTest.test_builtin_only_rubric_caps_high_english_scores tests.test_scoring.ReportScoringAgentTest.test_builtin_only_rubric_notes_chinese_source_confidence_risk tests.test_workflow.ResearchWorkflowTest.test_english_builtin_only_second_round_does_not_reach_high_band`
+- Manual English sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 2 --output-dir /tmp/paper_research_iter144_en_after`
+- Manual sample quality check: standard workflow still reports `80/100` and `Quality band: good`.
+- `python3 -m unittest discover -s tests` passed with 133 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter144 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
