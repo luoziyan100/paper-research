@@ -9,10 +9,10 @@ records every round in both JSONL and DOCX.
 Each round follows the same agent pipeline:
 
 1. `BenchmarkSearchAgent` searches for strong external research-report examples.
-   It can search a local benchmark directory of `.txt` or `.md` reports, and
-   `--web-search` enables a lightweight web search fallback. If neither returns
-   results, it uses a built-in benchmark pattern so the workflow still runs from
-   an empty repo.
+   It can search a local benchmark directory of `.txt`, `.md`, or `.markdown`
+   reports, and `--web-search` enables a lightweight web search fallback. If
+   neither returns results, it uses a built-in benchmark pattern so the workflow
+   still runs from an empty repo.
 2. `ReportWriterAgent` writes the current deep research report for the paper.
 3. `RubricBuilderAgent` creates a fresh scoring standard from the benchmark
    results, the current report, the previous report, and the previous rubric
@@ -71,8 +71,8 @@ python3 -m paper_research path/to/paper.txt \
   --output-dir research_output
 ```
 
-`--benchmark-dir` must point to an existing directory containing `.txt` or `.md`
-benchmark reports.
+`--benchmark-dir` must point to an existing directory containing `.txt`, `.md`,
+or `.markdown` benchmark reports. Hidden files and placeholder files are ignored.
 
 With web search fallback enabled:
 

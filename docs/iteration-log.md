@@ -2616,3 +2616,30 @@
 - `python3 -m unittest discover -s tests` passed with 85 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter91 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 92 - 2026-05-04 20:33 PDT
+
+### Current Problems
+
+- README still documented local benchmark directories as `.txt` or `.md` only.
+- It did not mention `.markdown` support or hidden/placeholder file filtering.
+
+### Planned Changes
+
+- Add documentation assertions for `.markdown` and ignored hidden/placeholder files.
+- Update README local benchmark documentation.
+- Keep existing traceability and CLI filename documentation intact.
+
+### Changes Made
+
+- README now says local benchmark directories can contain `.txt`, `.md`, or `.markdown` reports.
+- README now says hidden files and placeholder files are ignored.
+- Documentation test now covers both behaviors.
+
+### Verification After Changes
+
+- Red documentation test first failed because README did not mention `.markdown`.
+- After updating README, the same test passed.
+- `python3 -m unittest discover -s tests` passed with 85 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter92 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
