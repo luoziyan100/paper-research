@@ -3547,3 +3547,30 @@
 - `python3 -m unittest discover -s tests` passed with 116 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter125 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 126 - 2026-05-04 22:57 PDT
+
+### Current Problems
+
+- `first_sentences` still split on common paper abbreviations like `Fig. 1`.
+- Summaries could truncate to `Fig.` instead of keeping the actual evidence sentence.
+
+### Planned Changes
+
+- Add a regression test for figure abbreviations.
+- Protect common figure/table abbreviations before sentence splitting.
+- Preserve the abbreviation and Chinese punctuation behavior from prior iterations.
+
+### Changes Made
+
+- Added `test_first_sentences_preserves_figure_abbreviations`.
+- Added `Fig.`, `fig.`, `Tab.`, and `tab.` to abbreviation protection.
+
+### Verification After Changes
+
+- Red target test first failed because the summary stopped at `Fig.`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_first_sentences_preserves_figure_abbreviations tests.test_workflow.ResearchWorkflowTest.test_first_sentences_preserves_capitalized_english_abbreviations tests.test_workflow.ResearchWorkflowTest.test_first_sentences_splits_chinese_punctuation`
+- `python3 -m unittest discover -s tests` passed with 117 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter126 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

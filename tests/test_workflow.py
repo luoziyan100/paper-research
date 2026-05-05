@@ -220,6 +220,13 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         self.assertEqual(summary, "E.g. retrieval filtering improves evidence coverage.")
 
+    def test_first_sentences_preserves_figure_abbreviations(self):
+        text = "Fig. 1 shows the workflow. The report then scores each section."
+
+        summary = first_sentences(text, count=1)
+
+        self.assertEqual(summary, "Fig. 1 shows the workflow.")
+
     def test_runs_iterative_agents_and_records_every_round(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)
