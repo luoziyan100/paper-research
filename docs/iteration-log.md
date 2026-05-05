@@ -2204,3 +2204,31 @@
 - `python3 -m unittest discover -s tests` passed with 73 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter76 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 77 - 2026-05-04 19:52 PDT
+
+### Current Problems
+
+- Chinese rubric criterion descriptions still contained `baseline`.
+- This appeared in the DOCX scoring-standard section, even after report body and benchmark lessons were localized.
+
+### Planned Changes
+
+- Add a regression test that inspects all Chinese rubric criterion descriptions across two rounds.
+- Replace visible Chinese rubric descriptions with `基线方法`.
+- Keep internal scoring keyword compatibility unchanged.
+
+### Changes Made
+
+- Added `test_chinese_rubric_descriptions_localize_baseline_terms`.
+- The `证据质量` criterion now says `评价实验、基线方法、测量方式和主张支撑`.
+- The second-round reproducibility criterion now says `复现实验、数据、基线方法和评估缺口`.
+
+### Verification After Changes
+
+- Red target test first failed because descriptions still contained two `baseline` occurrences.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_rubric_descriptions_localize_baseline_terms`
+- `python3 -m unittest discover -s tests` passed with 74 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter77 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

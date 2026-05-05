@@ -777,6 +777,22 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("benchmark", first_notes.lower())
             self.assertNotIn("基于benchmark 报告, 当前报告", first_notes)
 
+    def test_chinese_rubric_descriptions_localize_baseline_terms(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp), language="zh"),
+            )
+
+            descriptions = " ".join(
+                criterion.description
+                for round_result in result.rounds
+                for criterion in round_result.rubric.criteria
+            )
+
+            self.assertIn("基线方法", descriptions)
+            self.assertNotIn("baseline", descriptions.lower())
+
     def test_second_round_chinese_rubric_evolves_from_critic_feedback(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

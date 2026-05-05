@@ -188,7 +188,7 @@ class RubricBuilderAgent:
                 ),
                 RubricCriterion(
                     name="证据质量",
-                    description="评价实验、baseline、测量方式和主张支撑。",
+                    description="评价实验、基线方法、测量方式和主张支撑。",
                     max_points=20,
                 ),
                 RubricCriterion(
@@ -203,7 +203,7 @@ class RubricBuilderAgent:
                         else "研究价值"
                     ),
                     description=(
-                        "要求报告引用具体论文证据，并说明复现实验、数据、baseline 和评估缺口。"
+                        "要求报告引用具体论文证据，并说明复现实验、数据、基线方法和评估缺口。"
                         if critic_mentions_reproducibility(prior_critic_review)
                         else "产出可执行的后续问题、复现实验和决策建议。"
                     ),
