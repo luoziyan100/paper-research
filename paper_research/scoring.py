@@ -13,6 +13,7 @@ class ReportScoringAgent:
     """Scores the report against the current round's rubric."""
 
     def score(self, report: ResearchReport, rubric: Rubric, language: str = "en") -> Scorecard:
+        _validate_language(language)
         report_text = report.as_text().lower()
         scores: List[CriterionScore] = []
         if language == "zh":
@@ -194,3 +195,8 @@ def _contains_marker(text: str, keyword: str, language: str) -> bool:
     if lowered_keyword in {"reproduc", "result", "experiment"}:
         return lowered_keyword in text
     return re.search(rf"(?<![a-z]){re.escape(lowered_keyword)}(?![a-z])", text) is not None
+
+
+def _validate_language(language: str) -> None:
+    if language not in {"en", "zh"}:
+        raise ValueError("language must be 'en' or 'zh'.")

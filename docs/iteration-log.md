@@ -3888,3 +3888,32 @@
 - `python3 -m unittest discover -s tests` passed with 127 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter137 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 138 - 2026-05-04 23:45 PDT
+
+### Current Problems
+
+- After `ReportScoringAgent` moved into its own module, `score()` became a clearer standalone API surface.
+- Direct calls with an unsupported language silently used English scoring rules instead of failing fast.
+
+### Planned Changes
+
+- Add a focused scoring-module regression test.
+- Reject languages outside `en` and `zh` inside `ReportScoringAgent.score()`.
+- Preserve existing English and Chinese scoring behavior.
+
+### Changes Made
+
+- Added `tests/test_scoring.py`.
+- Added `test_score_rejects_unknown_language`.
+- Added scoring-module language validation with the same `en`/`zh` contract as the workflow.
+
+### Verification After Changes
+
+- Red target test first failed because `ValueError` was not raised.
+- Target tests passed:
+  - `python3 -m unittest tests.test_scoring.ReportScoringAgentTest.test_score_rejects_unknown_language`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scoring_does_not_match_data_inside_metadata tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_baseline_marker`
+- `python3 -m unittest discover -s tests` passed with 128 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter138 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
