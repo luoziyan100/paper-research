@@ -1002,6 +1002,28 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source_type, "built-in")
         self.assertNotEqual(results[0].title, "Missing Href Result")
 
+    def test_web_search_agent_ignores_unsafe_result_links(self):
+        html = """
+        <a class="result__a" href="javascript:void(0)">
+          JavaScript Result
+        </a>
+        <div class="result__snippet">
+          This snippet should not be used.
+        </div>
+        <a class="result__a" href="mailto:paper@example.com">
+          Mail Result
+        </a>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source_type, "built-in")
+        self.assertNotIn("JavaScript Result", [result.title for result in results])
+
     def test_web_search_agent_keeps_snippet_after_skipped_anchor_without_snippet(self):
         html = """
         <a class="result__a">

@@ -414,6 +414,8 @@ def _strip_html(value: str) -> str:
 
 def _clean_result_url(href: str) -> str:
     href = unescape(href)
+    if _is_unsafe_result_href(href):
+        return ""
     parsed = urlparse(href)
     query = parse_qs(parsed.query)
     for redirect_param in ("uddg", "q"):
@@ -422,3 +424,8 @@ def _clean_result_url(href: str) -> str:
             if candidate.lower().startswith(("http://", "https://")):
                 return candidate
     return href
+
+
+def _is_unsafe_result_href(href: str) -> bool:
+    scheme = urlparse(href).scheme.lower()
+    return scheme in {"javascript", "mailto", "data", "vbscript"}

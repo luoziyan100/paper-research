@@ -4201,3 +4201,33 @@
 - `python3 -m unittest discover -s tests` passed with 133 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter147 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 148 - 2026-05-05 00:17 PDT
+
+### Current Problems
+
+- Web benchmark parsing accepted any non-empty result href.
+- `javascript:` and `mailto:` anchors could be treated as usable web benchmark sources.
+
+### Planned Changes
+
+- Add regression coverage for unsafe result links.
+- Reject obvious non-content schemes while preserving existing relative URL behavior.
+- Recheck normal web extraction and non-URL query fallback behavior.
+
+### Changes Made
+
+- Added `test_web_search_agent_ignores_unsafe_result_links`.
+- Added `_is_unsafe_result_href`.
+- Updated `_clean_result_url` to return an empty URL for `javascript`, `mailto`, `data`, and `vbscript` schemes.
+
+### Verification After Changes
+
+- Red target test first failed because a `javascript:void(0)` result was treated as `source_type='web'`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsafe_result_links tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_non_url_q_values_as_original_href tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter148_en_after`
+- `python3 -m unittest discover -s tests` passed with 134 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter148 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
