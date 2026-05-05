@@ -710,7 +710,7 @@ def _benchmark_quality_summary(
         return (
             f"来源数量：{source_count}。来源类型：{source_type_text}。"
             f"覆盖维度：{'、'.join(coverage)}。"
-            "如果后续接入真实网页或本地 benchmark，应继续记录来源多样性和领域差异。"
+            "如果后续接入真实网页或本地对照报告，应继续记录来源多样性和领域差异。"
         )
 
     coverage = []
@@ -734,11 +734,11 @@ def _benchmark_quality_summary(
 def _benchmark_source_type(report: BenchmarkReport, language: str) -> str:
     source_type = report.source_type or _infer_benchmark_source_type(report.source)
     if source_type == "built-in":
-        return "内置 fallback" if language == "zh" else "built-in fallback"
+        return "内置回退模式" if language == "zh" else "built-in fallback"
     if source_type == "web":
         return "网页搜索" if language == "zh" else "web search"
     if source_type == "local":
-        return "本地 benchmark" if language == "zh" else "local benchmark"
+        return "本地对照报告" if language == "zh" else "local benchmark"
     return "未知来源" if language == "zh" else "unknown source"
 
 

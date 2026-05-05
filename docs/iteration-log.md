@@ -1952,3 +1952,31 @@
 - `python3 -m unittest discover -s tests` passed with 72 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter67 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 68 - 2026-05-04 19:31 PDT
+
+### Current Problems
+
+- The Chinese `对照报告质量` section still described source types as `内置 fallback` and `本地 benchmark`.
+- Its follow-up sentence also said `本地 benchmark`, leaving English framework vocabulary in a reader-facing paragraph.
+
+### Planned Changes
+
+- Update benchmark-quality tests to require localized source-type labels.
+- Keep the Chinese source delimiter behavior unchanged.
+- Localize only the Chinese report text while preserving English report wording.
+
+### Changes Made
+
+- Changed Chinese built-in source type from `内置 fallback` to `内置回退模式`.
+- Changed Chinese local source type from `本地 benchmark` to `本地对照报告`.
+- Updated the benchmark-quality summary tail sentence to say `本地对照报告`.
+
+### Verification After Changes
+
+- Red target tests first failed because source types still emitted `内置 fallback` and `本地 benchmark`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_report_records_benchmark_source_quality tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_uses_chinese_source_delimiter`
+- `python3 -m unittest discover -s tests` passed with 72 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter68 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

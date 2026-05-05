@@ -509,8 +509,10 @@ class ResearchWorkflowTest(unittest.TestCase):
             section = result.rounds[0].report.sections["对照报告质量"]
 
             self.assertIn("来源数量：3", section)
-            self.assertIn("内置 fallback", section)
+            self.assertIn("内置回退模式", section)
             self.assertIn("主张-证据", section)
+            self.assertNotIn("fallback", section.lower())
+            self.assertNotIn("benchmark", section.lower())
 
             with zipfile.ZipFile(result.docx_path) as archive:
                 document_xml = archive.read("word/document.xml").decode("utf-8")
@@ -547,8 +549,9 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         section = report.sections["对照报告质量"]
 
-        self.assertIn("来源类型：本地 benchmark、网页搜索", section)
-        self.assertNotIn("本地 benchmark, 网页搜索", section)
+        self.assertIn("来源类型：本地对照报告、网页搜索", section)
+        self.assertNotIn("本地 benchmark", section)
+        self.assertNotIn("本地对照报告, 网页搜索", section)
 
     def test_chinese_benchmark_quality_handles_empty_sources_readably(self):
         report = ReportWriterAgent().write(
