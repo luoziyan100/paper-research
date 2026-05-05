@@ -1168,6 +1168,37 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertNotIn("rubric", limitations.lower())
         self.assertNotIn("agent", limitations.lower())
 
+    def test_chinese_shortcoming_heading_is_parsed_as_limitations(self):
+        paper_text = """
+标题：中文不足标题测试
+
+摘要
+本文研究一个多智能体论文审查系统。
+
+方法
+系统把报告写作、评分标准生成和批评拆分为多角色流程。
+
+评估
+评估显示该系统提高了基线方法和可复现性细节覆盖。
+
+不足
+系统依赖对照报告质量，评分标准可能过拟合当前报告。
+"""
+        report = ReportWriterAgent().write(
+            paper_text=paper_text,
+            benchmark_reports=[],
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        limitations = report.sections["限制与风险"]
+
+        self.assertIn("结果依赖对照报告质量", limitations)
+        self.assertIn("评分标准可能过拟合当前报告", limitations)
+        self.assertNotIn("论文限制没有充分展开", limitations)
+
     def test_chinese_research_agenda_localizes_agent_terms(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

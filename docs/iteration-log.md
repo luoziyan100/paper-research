@@ -3438,3 +3438,30 @@
 - `python3 -m unittest discover -s tests` passed with 112 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter121 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 122 - 2026-05-04 21:55 PDT
+
+### Current Problems
+
+- Chinese papers using `不足` or `局限性` headings were not mapped to limitations.
+- The generated limitations section could fall back to a generic warning even when the paper stated concrete risks.
+
+### Planned Changes
+
+- Add a regression test for the `不足` heading.
+- Map common Chinese limitations aliases to the `limitations` section.
+- Preserve existing localized limitations behavior.
+
+### Changes Made
+
+- Added `test_chinese_shortcoming_heading_is_parsed_as_limitations`.
+- Added `局限性`, `不足`, and `不足与展望` to Chinese heading normalization.
+
+### Verification After Changes
+
+- Red target test first failed because the limitations section used the generic fallback.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_shortcoming_heading_is_parsed_as_limitations tests.test_workflow.ResearchWorkflowTest.test_chinese_limitation_section_localizes_framework_terms tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 113 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter122 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

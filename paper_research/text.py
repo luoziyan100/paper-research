@@ -102,7 +102,10 @@ def normalize_chinese_heading(line: str) -> str:
         "结果": "results",
         "讨论": "discussion",
         "局限": "limitations",
+        "局限性": "limitations",
         "限制": "limitations",
+        "不足": "limitations",
+        "不足与展望": "limitations",
         "结论": "conclusion",
     }
     return heading_map.get(normalized, "")
