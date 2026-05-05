@@ -2643,3 +2643,31 @@
 - `python3 -m unittest discover -s tests` passed with 85 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter92 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 93 - 2026-05-04 20:36 PDT
+
+### Current Problems
+
+- DOCX bullet paragraphs used a `ListBullet` style name but the package had no numbering part.
+- Some DOCX readers may not render bullets reliably without `word/numbering.xml` and a document relationship.
+
+### Planned Changes
+
+- Add a DOCX structure regression test for numbering support.
+- Add `word/numbering.xml` and `word/_rels/document.xml.rels`.
+- Bind the `ListBullet` style to numbering ID 1.
+
+### Changes Made
+
+- Added `test_writes_numbering_part_for_bullets`.
+- DOCX exports now include a numbering content type override, numbering relationship, and bullet numbering definition.
+- `ListBullet` style now includes `w:numPr`.
+
+### Verification After Changes
+
+- Red target test first failed because `word/numbering.xml` was missing.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_writes_numbering_part_for_bullets tests.test_docx.DocxWriterTest.test_export_uses_nested_heading_levels_for_report_sections`
+- `python3 -m unittest discover -s tests` passed with 86 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter93 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

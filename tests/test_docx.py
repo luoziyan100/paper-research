@@ -48,6 +48,22 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("docProps/core.xml", names)
             self.assertIn("docProps/app.xml", names)
 
+    def test_writes_numbering_part_for_bullets(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            document = DocxDocument()
+            document.add(paragraph("content"))
+
+            document.save(path)
+
+            with zipfile.ZipFile(path) as archive:
+                names = set(archive.namelist())
+                styles_xml = archive.read("word/styles.xml").decode("utf-8")
+
+            self.assertIn("word/numbering.xml", names)
+            self.assertIn("word/_rels/document.xml.rels", names)
+            self.assertIn("<w:numPr>", styles_xml)
+
     def test_writes_custom_docx_core_title(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"
