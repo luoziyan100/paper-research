@@ -469,6 +469,23 @@ class ResearchWorkflowTest(unittest.TestCase):
                 rationales,
             )
 
+    def test_english_scorecard_lists_matched_markers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            evidence_score = next(
+                score
+                for score in result.rounds[0].scorecard.scores
+                if score.name == "Evidence Quality"
+            )
+
+            self.assertIn("Matched markers:", evidence_score.rationale)
+            self.assertIn("evidence", evidence_score.rationale)
+            self.assertIn("experiment", evidence_score.rationale)
+
     def test_english_scorecard_avoids_inflated_sample_score(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

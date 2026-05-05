@@ -3799,3 +3799,30 @@
 - `python3 -m unittest discover -s tests` passed with 124 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter134 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 135 - 2026-05-04 23:30 PDT
+
+### Current Problems
+
+- Score rationales reported only how many markers were found.
+- Reviewers could not see which rubric markers caused a score without inspecting the code.
+
+### Planned Changes
+
+- Add a regression test for listed matched markers in English score rationale.
+- Include matched keyword names in English rationale.
+- Include matched keyword names in Chinese rationale as well.
+
+### Changes Made
+
+- Added `test_english_scorecard_lists_matched_markers`.
+- `ReportScoringAgent` now stores `matched_keywords` and includes them in rationale text.
+
+### Verification After Changes
+
+- Red target test first failed because rationale had no `Matched markers:` text.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_lists_matched_markers tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_cites_report_evidence tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_baseline_marker`
+- `python3 -m unittest discover -s tests` passed with 125 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter135 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -315,21 +315,25 @@ class ReportScoringAgent:
             }
         for criterion in rubric.criteria:
             keywords = keyword_map.get(criterion.name, [])
-            hits = sum(1 for keyword in keywords if keyword in report_text)
+            matched_keywords = [keyword for keyword in keywords if keyword in report_text]
+            hits = len(matched_keywords)
             if language == "zh":
                 evidence = _find_evidence_snippet(report, keywords, language)
                 points = min(criterion.max_points, 6 + min(hits, 5) * 2)
                 if "验证缺口" in evidence or "没有给出" in evidence:
                     points = min(points, 14)
+                marker_text = "、".join(matched_keywords) if matched_keywords else "无"
                 rationale = (
-                    f"找到 {hits} 个相关标记。证据：{evidence}"
+                    f"找到 {hits} 个相关标记（{marker_text}）。证据：{evidence}"
                 )
             else:
                 evidence = _find_evidence_snippet(report, keywords, language)
                 points = min(criterion.max_points, 8 + min(hits, 5) * 2)
+                marker_text = ", ".join(matched_keywords) if matched_keywords else "none"
                 rationale = (
                     f"Found {hits} evidence markers for {criterion.name.lower()} "
-                    f"in the generated report. Evidence: {evidence}"
+                    f"in the generated report. Matched markers: {marker_text}. "
+                    f"Evidence: {evidence}"
                 )
             scores.append(
                 CriterionScore(
