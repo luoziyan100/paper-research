@@ -538,7 +538,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("Research Usefulness", second_refinement)
             self.assertIn("Research Usefulness", first_summary)
 
-    def test_second_round_report_uses_prior_low_score_items(self):
+    def test_second_round_report_summarizes_prior_score_status(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
                 paper_text=PAPER_TEXT,
@@ -548,8 +548,9 @@ class ResearchWorkflowTest(unittest.TestCase):
             refinement = result.rounds[1].report.sections["本轮改进"]
 
             self.assertIn("上一轮低分项", refinement)
-            self.assertIn("限制与失败模式", refinement)
+            self.assertIn("没有明显低分项", refinement)
             self.assertNotIn("问题定义 12/20", refinement)
+            self.assertNotIn("限制与失败模式 12/20", refinement)
 
     def test_searches_local_benchmark_reports_when_provided(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1363,6 +1364,8 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("评分标准可能过拟合当前报告", limitations)
         self.assertIn("批评智能体的能力", limitations)
         self.assertIn("对照报告敏感性", limitations)
+        self.assertIn("失败模式", limitations)
+        self.assertIn("脆弱点", limitations)
         self.assertNotIn("benchmark", limitations.lower())
         self.assertNotIn("rubric", limitations.lower())
         self.assertNotIn("agent", limitations.lower())

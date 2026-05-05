@@ -3948,3 +3948,35 @@
 - `python3 -m unittest discover -s tests` passed with 129 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter139 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 140 - 2026-05-04 23:51 PDT
+
+### Current Problems
+
+- The Chinese `限制与风险` section listed limitations but did not explicitly name failure modes or fragile points.
+- The sample report therefore still under-expressed the `限制与失败模式` rubric criterion.
+
+### Planned Changes
+
+- Add assertions that the Chinese limitation section includes `失败模式` and `脆弱点`.
+- Improve the limitation section language without changing the scoring rules.
+- Update second-round refinement expectations now that the first-round low-score set is genuinely empty.
+
+### Changes Made
+
+- Extended `test_chinese_limitation_section_localizes_framework_terms`.
+- Updated the Chinese `限制与风险` template to include explicit failure modes and fragile points.
+- Renamed the second-round refinement test to `test_second_round_report_summarizes_prior_score_status` and updated its expectation to `没有明显低分项`.
+
+### Verification After Changes
+
+- Red target test first failed because `失败模式` was absent from the limitation section.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_limitation_section_localizes_framework_terms tests.test_workflow.ResearchWorkflowTest.test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_second_round_report_summarizes_prior_score_status tests.test_workflow.ResearchWorkflowTest.test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score`
+- Manual Chinese sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 2 --output-dir /tmp/paper_research_iter140_zh_after`
+- Manual sample quality check: round 2 total improved to 78/100; `限制与失败模式` improved to 16/20 with matched markers `限制、风险、脆弱、失败、复现`.
+- `python3 -m unittest discover -s tests` passed with 129 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter140 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
