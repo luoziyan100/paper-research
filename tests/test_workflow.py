@@ -1024,6 +1024,25 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source_type, "built-in")
         self.assertNotIn("JavaScript Result", [result.title for result in results])
 
+    def test_web_search_agent_ignores_unsafe_redirect_targets(self):
+        html = """
+        <a class="result__a" href="/url?q=javascript%3Aalert%281%29">
+          Unsafe Redirect Result
+        </a>
+        <div class="result__snippet">
+          This redirect snippet should not be used.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source_type, "built-in")
+        self.assertNotIn("Unsafe Redirect Result", [result.title for result in results])
+
     def test_web_search_agent_keeps_snippet_after_skipped_anchor_without_snippet(self):
         html = """
         <a class="result__a">

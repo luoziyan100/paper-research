@@ -4294,3 +4294,32 @@
 - `python3 -m unittest discover -s tests` passed with 134 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter150 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 151 - 2026-05-05 00:36 PDT
+
+### Current Problems
+
+- Direct unsafe web result links were ignored, but unsafe targets inside redirect query parameters were still preserved as relative `/url?q=...` results.
+- A `javascript:` redirect target could therefore still enter benchmark search results.
+
+### Planned Changes
+
+- Add regression coverage for unsafe redirect targets.
+- Reject redirect candidates with unsafe schemes.
+- Preserve existing safe redirect cleanup and non-URL query fallback behavior.
+
+### Changes Made
+
+- Added `test_web_search_agent_ignores_unsafe_redirect_targets`.
+- Updated `_clean_result_url` to inspect decoded redirect candidates with `_is_unsafe_result_href`.
+
+### Verification After Changes
+
+- Red target test first failed because the unsafe redirect was treated as a web benchmark.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsafe_redirect_targets tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsafe_result_links tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_non_url_q_values_as_original_href tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_q_redirect_urls`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter151_en_after`
+- `python3 -m unittest discover -s tests` passed with 135 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter151 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
