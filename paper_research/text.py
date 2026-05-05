@@ -89,11 +89,13 @@ def _strip_title_markup(text: str) -> str:
 def normalize_chinese_heading(line: str) -> str:
     normalized = line.strip().rstrip("：:")
     normalized = re.sub(r"^#{1,6}\s*", "", normalized)
+    normalized = _strip_title_markup(normalized)
     normalized = re.sub(r"^[（(][一二三四五六七八九十\d]+[）)]\s*", "", normalized)
     normalized = re.sub(r"^[一二三四五六七八九十]+[、.．]\s*", "", normalized)
     normalized = re.sub(r"^[一二三四五六七八九十]+\s+", "", normalized)
     normalized = re.sub(r"^\d+[、.．]\s*", "", normalized)
     normalized = re.sub(r"^\d+\s+", "", normalized)
+    normalized = _strip_title_markup(normalized)
     heading_map = {
         "摘要": "abstract",
         "引言": "introduction",

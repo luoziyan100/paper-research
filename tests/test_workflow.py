@@ -278,6 +278,22 @@ MARKDOWN_CHINESE_SECTION_PAPER_TEXT = """
 系统仍依赖对照报告质量。
 """
 
+MARKDOWN_CHINESE_BOLD_SECTION_PAPER_TEXT = """
+# 标题：Markdown 中文粗体章节论文
+
+## **摘要**
+本文研究图神经网络鲁棒推理报告。
+
+## **方法**
+模型结合结构编码和路径验证来减少错误推理链。
+
+## **评估**
+评估显示该系统提高了复杂关系推理准确率。
+
+## **局限**
+系统依赖高质量图结构，跨领域泛化仍需验证。
+"""
+
 GENERAL_CHINESE_PAPER_TEXT = """
 标题：可靠推理的对比预训练
 
@@ -515,6 +531,19 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "Deep Research Report - Bold Markdown Paper")
             self.assertNotIn("**", report.title)
+
+    def test_markdown_chinese_bold_section_headings_are_parsed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=MARKDOWN_CHINESE_BOLD_SECTION_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertIn("结构编码", report.sections["方法与证据"])
+            self.assertIn("复杂关系推理准确率", report.sections["论文主张与证据账本"])
+            self.assertNotIn("方法描述不够明确", report.as_text())
 
     def test_english_report_uses_claim_evidence_ledger_sections(self):
         with tempfile.TemporaryDirectory() as tmp:

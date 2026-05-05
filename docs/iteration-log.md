@@ -4921,3 +4921,31 @@
 - `python3 -m unittest discover -s tests` passed with 153 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter171 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 172 - 2026-05-05 03:36 PDT
+
+### Current Problems
+
+- Chinese Markdown section headings wrapped in emphasis markup, such as `## **摘要**`, were not recognized.
+- When headings were missed, Chinese reports fell back to generic method/evidence text instead of using the paper's actual sections.
+
+### Planned Changes
+
+- Add a regression test for emphasized Chinese Markdown section headings.
+- Strip common Markdown wrapper characters during Chinese heading normalization.
+- Verify existing Markdown title cleanup and English heading parsing remain intact.
+
+### Changes Made
+
+- Added `MARKDOWN_CHINESE_BOLD_SECTION_PAPER_TEXT` and `test_markdown_chinese_bold_section_headings_are_parsed`.
+- Updated `normalize_chinese_heading` to strip Markdown wrapper characters before and after numbering cleanup.
+
+### Verification After Changes
+
+- Red target test first failed because `方法与证据` did not include `结构编码`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_markdown_chinese_bold_section_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_markdown_chinese_title_label_is_cleaned`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_parses_roman_numbered_english_headings tests.test_workflow.ResearchWorkflowTest.test_parses_approach_and_evaluation_headings`
+- `python3 -m unittest discover -s tests` passed with 154 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter172 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
