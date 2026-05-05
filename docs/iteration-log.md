@@ -4413,3 +4413,32 @@
 - `python3 -m unittest discover -s tests` passed with 137 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter154 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 155 - 2026-05-05 00:49 PDT
+
+### Current Problems
+
+- Benchmark search could now infer reproducibility strengths.
+- Report writing still copied only the first three strengths from each benchmark, so reproducibility lessons could be dropped when a benchmark also covered limitations, evidence, and baseline/data/ablation checks.
+
+### Planned Changes
+
+- Add a regression test that places reproducibility as the fourth benchmark strength.
+- Allow report writing to carry the fourth strength into benchmark-informed improvement text.
+- Preserve existing de-duplication and method-audit lesson behavior.
+
+### Changes Made
+
+- Added `test_chinese_benchmark_improvement_includes_reproducibility_lesson`.
+- Increased per-benchmark lesson intake from three strengths to four strengths.
+
+### Verification After Changes
+
+- Red target test first failed because the benchmark improvement section omitted `检查可复现性和复现实验细节`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_includes_reproducibility_lesson tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_includes_method_audit_lessons tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_deduplicates_repeated_lessons`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 1 --output-dir /tmp/paper_research_iter155_zh_after`
+- `python3 -m unittest discover -s tests` passed with 138 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter155 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

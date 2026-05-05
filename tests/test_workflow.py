@@ -1796,6 +1796,36 @@ We analyze data quality.
         self.assertIn("检查基线方法、数据和消融实验是否充分", benchmark_section)
         self.assertNotIn("baseline", benchmark_section)
 
+    def test_chinese_benchmark_improvement_includes_reproducibility_lesson(self):
+        benchmarks = [
+            BenchmarkReport(
+                title="Reproducibility audit",
+                source="local",
+                summary="summary",
+                strengths=[
+                    "明确讨论限制和风险。",
+                    "把论文主张连接到实验证据。",
+                    "检查基线方法、数据和消融实验是否充分。",
+                    "检查可复现性和复现实验细节。",
+                ],
+                source_type="local",
+                search_note="local",
+            )
+        ]
+
+        report = ReportWriterAgent().write(
+            paper_text=CHINESE_PAPER_TEXT,
+            benchmark_reports=benchmarks,
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        benchmark_section = report.sections["基于对照报告的改进"]
+
+        self.assertIn("检查可复现性和复现实验细节", benchmark_section)
+
     def test_chinese_benchmark_improvement_deduplicates_repeated_lessons(self):
         benchmarks = [
             BenchmarkReport(
