@@ -30,6 +30,11 @@ class CodeStructureTest(unittest.TestCase):
 
         self.assertEqual(benchmark_module.BenchmarkSearchAgent.__name__, "BenchmarkSearchAgent")
 
+    def test_web_search_parsing_has_dedicated_module(self):
+        web_search_module = import_module("paper_research.web_search")
+
+        self.assertTrue(callable(web_search_module.extract_duckduckgo_results))
+
     def test_report_scoring_agent_has_dedicated_module(self):
         scoring_module = import_module("paper_research.scoring")
 

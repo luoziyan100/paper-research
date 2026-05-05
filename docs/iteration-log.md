@@ -4562,3 +4562,33 @@
 - `python3 -m unittest discover -s tests` passed with 140 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter159 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 160 - 2026-05-05 01:06 PDT
+
+### Current Problems
+
+- `benchmark.py` had grown to 451 lines and mixed benchmark agent logic with web fetching, DuckDuckGo HTML parsing, attribute parsing, and result URL cleaning.
+- Future web parsing fixes would continue to bloat the benchmark module.
+
+### Planned Changes
+
+- Add a structure test requiring a dedicated web-search parsing module.
+- Move web fetch and DuckDuckGo parsing helpers into `paper_research.web_search`.
+- Keep `BenchmarkSearchAgent` behavior and existing web parsing regressions intact.
+
+### Changes Made
+
+- Added `test_web_search_parsing_has_dedicated_module`.
+- Added `paper_research/web_search.py`.
+- Moved `fetch_url`, `extract_duckduckgo_results`, HTML attr parsing, class-token checks, HTML stripping, redirect URL cleaning, and unsafe href filtering into the new module.
+- Updated `benchmark.py` to import those helpers; `benchmark.py` dropped from 451 lines to 363 lines.
+
+### Verification After Changes
+
+- Red structure test first failed because `paper_research.web_search` did not exist.
+- Target tests passed:
+  - `python3 -m unittest tests.test_structure.CodeStructureTest.test_web_search_parsing_has_dedicated_module tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsafe_redirect_targets tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_unquoted_attributes`
+- First full verification pass caught a trailing blank line at EOF in `benchmark.py`; fixed it and reran.
+- `python3 -m unittest discover -s tests` passed with 141 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter160 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
