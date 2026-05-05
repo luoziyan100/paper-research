@@ -713,6 +713,35 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("。。", benchmark_section)
             self.assertNotIn(".。", benchmark_section)
 
+    def test_chinese_benchmark_improvement_includes_method_audit_lessons(self):
+        benchmarks = [
+            BenchmarkReport(
+                title="Method audit",
+                source="local",
+                summary="summary",
+                strengths=[
+                    "明确讨论限制和风险。",
+                    "把论文主张连接到实验证据。",
+                    "检查 baseline、数据和消融实验是否充分。",
+                ],
+                source_type="local",
+                search_note="local",
+            )
+        ]
+
+        report = ReportWriterAgent().write(
+            paper_text=CHINESE_PAPER_TEXT,
+            benchmark_reports=benchmarks,
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        benchmark_section = report.sections["基于 Benchmark 的改进"]
+
+        self.assertIn("检查 baseline、数据和消融实验是否充分", benchmark_section)
+
     def test_english_benchmark_improvement_has_clean_punctuation(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

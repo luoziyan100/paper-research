@@ -37,7 +37,7 @@ class ReportWriterAgent:
         benchmark_lessons = "; ".join(
             strength
             for report in benchmark_reports
-            for strength in report.strengths[:2]
+            for strength in report.strengths[:3]
         )
         abstract = parsed.get("abstract", _first_sentences(paper_text, count=3))
         method = parsed.get("method", parsed.get("methods", "The method section was not explicit."))

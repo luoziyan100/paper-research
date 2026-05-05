@@ -1679,3 +1679,30 @@
 - `python3 -m unittest discover -s tests` passed with 65 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter57 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 58 - 2026-05-04 18:59 PDT
+
+### Current Problems
+
+- `ReportWriterAgent` only used the first two strengths from each benchmark report.
+- Newly inferred method-audit strengths such as baseline/data/ablation checks could be omitted from `基于 Benchmark 的改进`.
+
+### Planned Changes
+
+- Add a regression test where method-audit guidance is the third benchmark strength.
+- Include one more strength per benchmark while keeping the section concise.
+- Preserve punctuation cleanup for English and Chinese benchmark improvement sections.
+
+### Changes Made
+
+- Added `test_chinese_benchmark_improvement_includes_method_audit_lessons`.
+- `ReportWriterAgent` now includes up to three strengths from each benchmark in benchmark-informed improvement text.
+
+### Verification After Changes
+
+- Red test first failed because the section only contained the first two benchmark strengths.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_includes_method_audit_lessons tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_has_clean_punctuation tests.test_workflow.ResearchWorkflowTest.test_english_benchmark_improvement_has_clean_punctuation`
+- `python3 -m unittest discover -s tests` passed with 66 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter58 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
