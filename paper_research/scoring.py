@@ -16,6 +16,7 @@ class ReportScoringAgent:
         _validate_language(language)
         report_text = report.as_text().lower()
         scores: List[CriterionScore] = []
+        source_confidence_limited = _has_no_external_benchmark_sources(rubric.source_notes)
         if language == "zh":
             keyword_map = {
                 "问题定义": ["问题", "范围", "假设", "重要", "研究"],
@@ -89,7 +90,7 @@ class ReportScoringAgent:
                 scores=scores,
                 summary=(
                     f"本轮报告总分 {total}/100。质量等级：{_quality_band(total, language)}。"
-                    f"主要风险：{_score_risk_summary(scores, language)}。"
+                    f"主要风险：{_score_risk_summary(scores, language, source_confidence_limited)}。"
                     "低分项应在下一轮优先修订。"
                 ),
             )
@@ -98,7 +99,7 @@ class ReportScoringAgent:
             scores=scores,
             summary=(
                 f"The report scores {total}/100. Quality band: {_quality_band(total, language)}. "
-                f"Main risks: {_score_risk_summary(scores, language)}. Strong areas are "
+                f"Main risks: {_score_risk_summary(scores, language, source_confidence_limited)}. Strong areas are "
                 "the criteria with explicit evidence markers; weaker areas should be revised "
                 "in the next round."
             ),
@@ -144,13 +145,27 @@ def _quality_band(total: int, language: str) -> str:
     return "low"
 
 
-def _score_risk_summary(scores: Sequence[CriterionScore], language: str) -> str:
+def _score_risk_summary(
+    scores: Sequence[CriterionScore],
+    language: str,
+    source_confidence_limited: bool = False,
+) -> str:
     threshold = 12 if language == "zh" else 14
     weak_scores = [
         score.name
         for score in scores
         if score.points <= max(threshold, int(score.max_points * 0.6))
     ]
+    if source_confidence_limited:
+        source_risk = (
+            "来源置信度受限：外部对照报告数量为 0"
+            if language == "zh"
+            else "source confidence capped by missing external benchmark sources"
+        )
+        if weak_scores:
+            prefix = "、".join(weak_scores[:2]) if language == "zh" else ", ".join(weak_scores[:2])
+            return f"{prefix}、{source_risk}" if language == "zh" else f"{prefix}, {source_risk}"
+        return source_risk
     if weak_scores:
         return "、".join(weak_scores[:3]) if language == "zh" else ", ".join(weak_scores[:3])
     return "暂无明显低分项" if language == "zh" else "no obvious low-score criteria"

@@ -31,6 +31,33 @@ class ReportScoringAgentTest(unittest.TestCase):
 
         self.assertEqual(scorecard.scores[0].points, 16)
         self.assertIn("source confidence cap", scorecard.scores[0].rationale)
+        self.assertIn("source confidence", scorecard.summary)
+
+    def test_builtin_only_rubric_notes_chinese_source_confidence_risk(self):
+        report = ResearchReport(
+            title="样例",
+            sections={
+                "执行摘要": (
+                    "问题范围清楚，关键假设明确，重要性充足，研究目标可审查。"
+                )
+            },
+        )
+        rubric = Rubric(
+            title="评分标准",
+            criteria=[
+                RubricCriterion(
+                    name="问题定义",
+                    description="评价问题定义。",
+                    max_points=20,
+                )
+            ],
+            source_notes="基于对照报告生成。外部来源数量：0。当前报告：样例。",
+        )
+
+        scorecard = ReportScoringAgent().score(report, rubric, language="zh")
+
+        self.assertEqual(scorecard.scores[0].points, 16)
+        self.assertIn("来源置信度", scorecard.summary)
 
     def test_score_rejects_unknown_language(self):
         report = ResearchReport(

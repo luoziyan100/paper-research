@@ -4044,3 +4044,35 @@
 - `python3 -m unittest discover -s tests` passed with 132 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter142 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 143 - 2026-05-05 00:02 PDT
+
+### Current Problems
+
+- Source-confidence caps were visible in individual score rationales, but the scorecard summary could still report no obvious risks.
+- Chinese built-in-only runs often landed exactly at the cap, so no per-score cap note appeared even though external benchmark evidence was still absent.
+
+### Planned Changes
+
+- Require source-confidence risk to appear in the overall summary for built-in-only scoring.
+- Treat external source count 0 as a summary-level risk, independent of whether a particular score was reduced.
+- Preserve the per-criterion cap rationale when points are actually capped.
+
+### Changes Made
+
+- Extended `test_builtin_only_rubric_caps_high_english_scores` to check the scorecard summary.
+- Added `test_builtin_only_rubric_notes_chinese_source_confidence_risk`.
+- Changed scoring summary risk calculation to use source-confidence limitation whenever external source count is 0.
+
+### Verification After Changes
+
+- Red English scoring test first failed because the summary did not mention `source confidence`.
+- Red Chinese scoring test first failed because the summary did not mention `来源置信度`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_scoring.ReportScoringAgentTest.test_builtin_only_rubric_caps_high_english_scores tests.test_scoring.ReportScoringAgentTest.test_builtin_only_rubric_notes_chinese_source_confidence_risk tests.test_workflow.ResearchWorkflowTest.test_english_builtin_only_second_round_does_not_reach_high_band`
+- Manual Chinese sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 2 --output-dir /tmp/paper_research_iter143_zh_after2`
+- Manual sample quality check: Chinese round 2 summary now reports `主要风险：来源置信度受限：外部对照报告数量为 0`.
+- `python3 -m unittest discover -s tests` passed with 133 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter143 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
