@@ -4721,3 +4721,32 @@
 - `python3 -m unittest discover -s tests` passed with 146 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter164 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 165 - 2026-05-05 03:20 PDT
+
+### Current Problems
+
+- Direct protocol-relative web result links such as `//example.com/report` were preserved as non-normalized sources.
+- Direct web result links with surrounding whitespace were not trimmed before scheme checks and downstream source recording.
+
+### Planned Changes
+
+- Add module-level web parser coverage for direct protocol-relative result links.
+- Normalize direct protocol-relative links to HTTPS before unsupported-scheme filtering.
+- Keep existing redirect, unsafe-link, and unsupported-scheme behavior intact.
+
+### Changes Made
+
+- Added `test_direct_protocol_relative_result_becomes_https`.
+- Updated `_clean_result_url` to unescape and trim `href` values before parsing.
+- Normalized direct `//...` result URLs to `https://...`.
+
+### Verification After Changes
+
+- Red target test first failed because the result URL remained ` //example.com/direct-report `.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_web_search.WebSearchParsingTest`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsupported_absolute_result_links tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsafe_result_links`
+- `python3 -m unittest discover -s tests` passed with 147 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter165 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

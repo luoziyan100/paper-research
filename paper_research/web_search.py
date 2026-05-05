@@ -78,7 +78,9 @@ def _strip_html(value: str) -> str:
 
 
 def _clean_result_url(href: str) -> str:
-    href = unescape(href)
+    href = unescape(href).strip()
+    if href.startswith("//"):
+        href = f"https:{href}"
     if _has_unsupported_scheme(href):
         return ""
     parsed = urlparse(href)

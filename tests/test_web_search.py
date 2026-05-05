@@ -33,6 +33,20 @@ class WebSearchParsingTest(unittest.TestCase):
 
         self.assertEqual(results[0]["url"], "https://example.com/protocol-report")
 
+    def test_direct_protocol_relative_result_becomes_https(self):
+        html = """
+        <a class="result__a" href=" //example.com/direct-report ">
+          Direct Protocol Relative Report
+        </a>
+        <div class="result__snippet">
+          Direct protocol relative snippet.
+        </div>
+        """
+
+        results = extract_duckduckgo_results(html)
+
+        self.assertEqual(results[0]["url"], "https://example.com/direct-report")
+
     def test_skipped_anchor_does_not_steal_next_snippet(self):
         html = """
         <a class="result__a" href="ftp://example.com/skip">
