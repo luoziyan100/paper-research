@@ -97,6 +97,8 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--sleep-seconds must be positive unless --max-rounds is set")
     if args.max_rounds is not None and args.max_rounds < 1:
         parser.error("--max-rounds must be at least 1")
+    if args.output_dir.exists() and not args.output_dir.is_dir():
+        parser.error(f"--output-dir must be a directory: {args.output_dir}")
     for option_name, filename in (
         ("--jsonl-filename", args.jsonl_filename),
         ("--docx-filename", args.docx_filename),

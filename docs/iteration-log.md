@@ -1541,3 +1541,30 @@
 - `python3 -m unittest discover -s tests` passed with 60 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter52 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 53 - 2026-05-04 18:47 PDT
+
+### Current Problems
+
+- `--output-dir` could point to an existing regular file.
+- The workflow then raised `FileExistsError` while trying to create the output directory, producing a traceback.
+
+### Planned Changes
+
+- Add a CLI regression test for file paths passed as `--output-dir`.
+- Reject non-directory output paths during argument validation.
+- Preserve normal output directory creation for missing directories.
+
+### Changes Made
+
+- Added `test_cli_rejects_file_output_dir_without_traceback`.
+- `main(...)` now emits `--output-dir must be a directory: ...` when the output path exists but is not a directory.
+
+### Verification After Changes
+
+- Red test first errored with `FileExistsError`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_rejects_file_output_dir_without_traceback tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- `python3 -m unittest discover -s tests` passed with 61 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter53 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

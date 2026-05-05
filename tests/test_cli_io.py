@@ -106,6 +106,23 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("--benchmark-dir must be a directory", stderr.getvalue())
             self.assertNotIn("Traceback", stderr.getvalue())
 
+    def test_cli_rejects_file_output_dir_without_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "paper.txt"
+            output_file = root / "output-file"
+            paper.write_text("Title: T\n\nAbstract\ncontent", encoding="utf-8")
+            output_file.write_text("not a directory", encoding="utf-8")
+            stderr = io.StringIO()
+
+            with contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    main([str(paper), "--output-dir", str(output_file)])
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("--output-dir must be a directory", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
+
     def test_cli_accepts_custom_output_filenames(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
