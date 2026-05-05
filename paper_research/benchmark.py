@@ -350,13 +350,18 @@ def _fetch_url(url: str) -> str:
 
 def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
     anchor_pattern = re.compile(r"<a\s+([^>]*)>(.*?)</a>", re.IGNORECASE | re.DOTALL)
+    element_pattern = re.compile(
+        r"<([a-zA-Z][a-zA-Z0-9:-]*)\s+([^>]*)>(.*?)</\1>",
+        re.IGNORECASE | re.DOTALL,
+    )
     parsed_anchors = [
         (_parse_html_attrs(attrs), body)
         for attrs, body in anchor_pattern.findall(raw_html)
     ]
     snippets = [
         _strip_html(body)
-        for attrs, body in parsed_anchors
+        for _, attrs_text, body in element_pattern.findall(raw_html)
+        for attrs in [_parse_html_attrs(attrs_text)]
         if "result__snippet" in attrs.get("class", "")
     ]
     results: List[Dict[str, str]] = []

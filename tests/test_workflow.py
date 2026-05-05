@@ -567,6 +567,24 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source, "https://example.com/reversed-report")
         self.assertIn("Reversed Attribute Report", results[0].title)
 
+    def test_web_search_agent_extracts_div_snippets(self):
+        html = """
+        <a class="result__a" href="https://example.com/div-snippet">
+          Div Snippet Report
+        </a>
+        <div class="result__snippet">
+          Div snippet connects experiment evidence and limitations.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertIn("Div snippet connects experiment evidence", results[0].summary)
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """

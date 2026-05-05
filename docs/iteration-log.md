@@ -2726,3 +2726,30 @@
 - `python3 -m unittest discover -s tests` passed with 88 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter95 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 96 - 2026-05-04 20:44 PDT
+
+### Current Problems
+
+- Web result snippet parsing only checked anchor tags.
+- Search pages using `<div class="result__snippet">` lost their snippets and used generic fallback summaries.
+
+### Planned Changes
+
+- Add a regression test for `div` snippets.
+- Parse simple HTML elements with `result__snippet` class regardless of tag name.
+- Verify existing anchor result parsing still works.
+
+### Changes Made
+
+- Added `test_web_search_agent_extracts_div_snippets`.
+- `_extract_duckduckgo_results` now extracts snippets from any simple element with class `result__snippet`.
+
+### Verification After Changes
+
+- Red target test first failed because the summary fell back to `External search result...`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_div_snippets tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_href_before_class`
+- `python3 -m unittest discover -s tests` passed with 89 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter96 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
