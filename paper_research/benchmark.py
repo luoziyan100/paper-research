@@ -373,11 +373,13 @@ def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
         for attrs, body in parsed_anchors
         if _has_class(attrs, "result__a")
     ]
-    for index, (attrs, title_html) in enumerate(result_anchors):
+    snippet_index = 0
+    for attrs, title_html in result_anchors:
         title = _strip_html(title_html)
         source = _clean_result_url(attrs.get("href", ""))
-        snippet = snippets[index] if index < len(snippets) else ""
         if source:
+            snippet = snippets[snippet_index] if snippet_index < len(snippets) else ""
+            snippet_index += 1
             results.append({"title": title, "url": source, "snippet": snippet})
     return results
 

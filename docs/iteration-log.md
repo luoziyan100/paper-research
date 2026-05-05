@@ -3301,3 +3301,30 @@
 - `python3 -m unittest discover -s tests` passed with 107 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter116 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 117 - 2026-05-04 21:38 PDT
+
+### Current Problems
+
+- Web result snippets were paired by raw result-anchor index.
+- If a skipped `result__a` anchor had no `href` and no snippet, the next valid result lost its actual snippet.
+
+### Planned Changes
+
+- Add a regression test with a skipped anchor before a valid result.
+- Advance the snippet cursor only when a web result is accepted.
+- Preserve behavior for normal results and missing-`href` fallback handling.
+
+### Changes Made
+
+- Added `test_web_search_agent_keeps_snippet_after_skipped_anchor_without_snippet`.
+- `_extract_duckduckgo_results` now advances snippet assignment only for accepted source-bearing results.
+
+### Verification After Changes
+
+- Red target test first failed because the real result fell back to the generic external-result summary.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_snippet_after_skipped_anchor_without_snippet tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_result_anchors_without_href tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 108 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter117 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

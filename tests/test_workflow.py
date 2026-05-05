@@ -743,6 +743,28 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source_type, "built-in")
         self.assertNotEqual(results[0].title, "Missing Href Result")
 
+    def test_web_search_agent_keeps_snippet_after_skipped_anchor_without_snippet(self):
+        html = """
+        <a class="result__a">
+          Missing Href Result
+        </a>
+        <a class="result__a" href="https://example.com/real-report">
+          Real Result
+        </a>
+        <div class="result__snippet">
+          Real snippet connects evidence, limitations, and follow-up work.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "https://example.com/real-report")
+        self.assertIn("Real snippet connects evidence", results[0].summary)
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """
