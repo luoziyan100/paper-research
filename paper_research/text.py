@@ -168,7 +168,14 @@ def problem_statement(abstract: str) -> str:
     sentence = first_sentences(abstract, count=1)
     if not sentence:
         return "an unstated research problem."
-    return sentence[0].lower() + sentence[1:]
+    statement = sentence[0].lower() + sentence[1:]
+    cleaned = re.sub(
+        r"^(we study|we present|we propose|this paper studies|this paper presents|this paper proposes)\s+",
+        "",
+        statement,
+        flags=re.IGNORECASE,
+    )
+    return cleaned.rstrip(".。 ")
 
 
 def zh_problem_summary(abstract: str) -> str:

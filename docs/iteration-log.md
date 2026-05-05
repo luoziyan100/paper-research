@@ -4107,3 +4107,36 @@
 - `python3 -m unittest discover -s tests` passed with 133 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter144 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 145 - 2026-05-05 00:08 PDT
+
+### Current Problems
+
+- The English executive thesis generated an awkward phrase: `how should we evaluate we study ...`.
+- After stripping the leading phrase, the claim-evidence ledger still produced `iteration. can be improved`.
+
+### Planned Changes
+
+- Add regression assertions against the awkward English phrasing.
+- Clean common English abstract preambles before using them as problem statements.
+- Remove trailing sentence punctuation from generated problem statements so they compose cleanly inside claim sentences.
+
+### Changes Made
+
+- Extended the English executive-thesis test to reject `evaluate we study` and `argues that we study`.
+- Extended the claim-evidence ledger test to reject `. can be improved`.
+- Updated `problem_statement` to strip common English preambles such as `we study`, `we present`, and `this paper proposes`.
+- Trimmed trailing punctuation from generated problem statements.
+
+### Verification After Changes
+
+- Red executive-thesis test first failed because `evaluate we study` was present.
+- Red ledger test first failed because `. can be improved` was present.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_executive_thesis_states_question_scope_and_importance tests.test_workflow.ResearchWorkflowTest.test_english_report_uses_claim_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_english_builtin_only_second_round_does_not_reach_high_band`
+- Manual English sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 2 --output-dir /tmp/paper_research_iter145_en_after2`
+- Manual sample quality check: the claim now reads `the paper argues that an agent workflow ... can be improved` without the stray period.
+- `python3 -m unittest discover -s tests` passed with 133 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter145 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
