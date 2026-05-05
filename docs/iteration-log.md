@@ -2807,3 +2807,30 @@
 - `python3 -m unittest discover -s tests` passed with 91 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter98 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 99 - 2026-05-04 20:51 PDT
+
+### Current Problems
+
+- URL cleaning unwrapped any `q` parameter, even if it was a normal search term.
+- A link like `/search?q=paper-analysis` became `paper-analysis`, which is not a usable source URL.
+
+### Planned Changes
+
+- Add a regression test for non-URL `q` values.
+- Only unwrap `uddg` or `q` parameters when the decoded value is an HTTP(S) URL.
+- Preserve the new `q` redirect URL cleaning behavior for real URLs.
+
+### Changes Made
+
+- Added `test_web_search_agent_keeps_non_url_q_values_as_original_href`.
+- `_clean_result_url` now validates decoded redirect candidates before returning them.
+
+### Verification After Changes
+
+- Red target test first failed because `/search?q=paper-analysis` became `paper-analysis`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_non_url_q_values_as_original_href tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_q_redirect_urls`
+- `python3 -m unittest discover -s tests` passed with 92 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter99 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

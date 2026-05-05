@@ -622,6 +622,24 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         self.assertEqual(results[0].source, "https://example.com/clean-report")
 
+    def test_web_search_agent_keeps_non_url_q_values_as_original_href(self):
+        html = """
+        <a class="result__a" href="/search?q=paper-analysis">
+          Search Page Result
+        </a>
+        <div class="result__snippet">
+          Search page snippet connects evidence and limitations.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "/search?q=paper-analysis")
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """

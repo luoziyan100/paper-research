@@ -401,5 +401,7 @@ def _clean_result_url(href: str) -> str:
     query = parse_qs(parsed.query)
     for redirect_param in ("uddg", "q"):
         if redirect_param in query and query[redirect_param]:
-            return unquote(query[redirect_param][0])
+            candidate = unquote(query[redirect_param][0])
+            if candidate.startswith(("http://", "https://")):
+                return candidate
     return href
