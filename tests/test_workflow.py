@@ -927,6 +927,25 @@ We analyze data quality.
             self.assertIn("数据", results[0].search_note)
             self.assertIn("消融", results[0].search_note)
 
+    def test_chinese_local_benchmark_matches_domain_ai_terms(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "aaa_generic.md").write_text(
+                "这是一份普通方法说明，包含实验记录但没有论文领域对照。",
+                encoding="utf-8",
+            )
+            (benchmark_dir / "zzz_gnn_reasoning.md").write_text(
+                "优秀报告会重点审查图神经网络在关系推理任务上的证据、限制和泛化风险。",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir, language="zh")
+
+            results = agent.search(CHINESE_INTRO_LE_PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertIn("zzz_gnn_reasoning.md", results[0].source)
+            self.assertIn("图神经网络", results[0].search_note)
+            self.assertIn("关系推理", results[0].search_note)
+
     def test_local_benchmark_search_scores_more_than_first_five_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)

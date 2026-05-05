@@ -160,7 +160,7 @@ class BenchmarkSearchAgent:
             matched_terms = [
                 term for term in terms if _contains_keyword(lowered_content, term)
             ]
-            score = len(matched_terms)
+            score = sum(_keyword_weight(term) for term in matched_terms)
             structure_score = _report_structure_score(content, self.language)
             scored_reports.append((score, structure_score, path, content, matched_terms))
         matched_reports = [item for item in scored_reports if item[0] > 0]
@@ -257,6 +257,22 @@ def _contains_keyword(lowered_content: str, term: str) -> bool:
     ) is not None
 
 
+def _keyword_weight(term: str) -> int:
+    domain_terms = {
+        "图神经网络",
+        "关系推理",
+        "可靠推理",
+        "对比预训练",
+        "检索过滤",
+        "验证器",
+        "重排序",
+        "校准",
+        "长上下文",
+        "多跳问题",
+    }
+    return 2 if term in domain_terms else 1
+
+
 def _fallback_search_note(language: str) -> str:
     if language == "zh":
         return "内置回退：未找到可用的本地或网页对照报告，使用内置优秀报告模式。"
@@ -282,6 +298,16 @@ def _keywords(text: str, limit: int = 10) -> List[str]:
         "消融",
         "证据引用",
         "证据",
+        "图神经网络",
+        "关系推理",
+        "可靠推理",
+        "对比预训练",
+        "检索过滤",
+        "验证器",
+        "重排序",
+        "校准",
+        "长上下文",
+        "多跳问题",
         "限制",
         "局限",
         "方法",

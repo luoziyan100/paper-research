@@ -5061,3 +5061,32 @@
 - `python3 -m unittest discover -s tests` passed with 157 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter176 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 177 - 2026-05-05 03:51 PDT
+
+### Current Problems
+
+- Chinese local benchmark search was too dependent on project/structure terms such as `方法` and `实验`.
+- Domain-specific AI terms such as `图神经网络` and `关系推理` did not reliably move the most relevant local benchmark report to the top.
+
+### Planned Changes
+
+- Add a regression test with a general Chinese AI paper and two local benchmark reports.
+- Extract common AI domain terms from Chinese papers.
+- Weight domain terms above generic section words during local benchmark scoring.
+
+### Changes Made
+
+- Added `test_chinese_local_benchmark_matches_domain_ai_terms`.
+- Added Chinese AI terms including `图神经网络`, `关系推理`, `可靠推理`, `对比预训练`, `检索过滤`, `验证器`, and `重排序`.
+- Added `_keyword_weight` so domain AI terms contribute more than generic structure terms.
+
+### Verification After Changes
+
+- Red target test first failed because `aaa_generic.md` ranked above the domain-specific benchmark.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_matches_domain_ai_terms tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_matches_baseline_data_ablation_terms`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_tiebreaks_on_report_structure`
+- `python3 -m unittest discover -s tests` passed with 158 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter177 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
