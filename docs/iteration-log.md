@@ -4622,3 +4622,33 @@
 - `python3 -m unittest discover -s tests` passed with 142 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter161 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 162 - 2026-05-05 03:09 PDT
+
+### Current Problems
+
+- `paper_research.web_search` had no direct module-level tests after extraction.
+- Redirect target URLs with leading/trailing whitespace were not cleaned to their HTTP(S) target.
+
+### Planned Changes
+
+- Add a focused `tests/test_web_search.py`.
+- Add regression coverage for whitespace around decoded redirect targets.
+- Preserve existing BenchmarkSearchAgent web parsing behavior.
+
+### Changes Made
+
+- Added `WebSearchParsingTest`.
+- Added `test_redirect_target_whitespace_is_ignored`.
+- Stripped decoded redirect candidates before scheme validation and HTTP(S) target detection.
+
+### Verification After Changes
+
+- Red target test first failed because the URL stayed as `/url?q=...` instead of `https://example.com/spaced-report`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_web_search.WebSearchParsingTest.test_redirect_target_whitespace_is_ignored tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_q_redirect_urls tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_unsupported_absolute_result_links`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter162_en_after`
+- `python3 -m unittest discover -s tests` passed with 143 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter162 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
