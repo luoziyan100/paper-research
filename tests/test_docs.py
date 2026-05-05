@@ -19,6 +19,7 @@ class DocumentationTest(unittest.TestCase):
         self.assertIn("unsafe web result links are ignored", readme)
         self.assertIn("source confidence", readme)
         self.assertIn("External source count: 0", readme)
+        self.assertIn("Final score summary", readme)
         self.assertIn("--no-resume", readme)
 
 

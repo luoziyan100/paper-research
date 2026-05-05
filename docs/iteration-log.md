@@ -4472,3 +4472,33 @@
 - `python3 -m unittest discover -s tests` passed with 139 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter156 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 157 - 2026-05-05 00:55 PDT
+
+### Current Problems
+
+- CLI output now included `Final score summary`, but README did not document that behavior.
+- Users reading Usage would not know they can see the latest score and source-confidence risk directly in terminal output.
+
+### Planned Changes
+
+- Add documentation coverage for `Final score summary`.
+- Update README Usage near the basic command.
+- Preserve CLI behavior and sample execution.
+
+### Changes Made
+
+- Extended `test_readme_documents_benchmark_traceability_and_library_import`.
+- Added README text explaining that successful CLI runs print output paths plus a `Final score summary` line.
+
+### Verification After Changes
+
+- Red documentation test first failed because README did not mention `Final score summary`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import tests.test_cli_io.InputAndCliTest.test_cli_prints_final_score_summary`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 1 --output-dir /tmp/paper_research_iter157_zh_after`
+- Manual CLI output includes the Chinese final score summary and source-confidence risk.
+- `python3 -m unittest discover -s tests` passed with 139 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter157 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
