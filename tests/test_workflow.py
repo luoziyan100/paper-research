@@ -791,7 +791,9 @@ class ResearchWorkflowTest(unittest.TestCase):
             )
 
             self.assertIn("基线方法", descriptions)
+            self.assertIn("注意事项", descriptions)
             self.assertNotIn("baseline", descriptions.lower())
+            self.assertNotIn("caveat", descriptions.lower())
 
     def test_second_round_chinese_rubric_evolves_from_critic_feedback(self):
         with tempfile.TemporaryDirectory() as tmp:

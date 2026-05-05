@@ -2232,3 +2232,30 @@
 - `python3 -m unittest discover -s tests` passed with 74 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter77 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 78 - 2026-05-04 19:53 PDT
+
+### Current Problems
+
+- The Chinese `限制与失败模式` rubric description still ended with the English word `caveat`.
+- This showed up in Chinese DOCX rubric output.
+
+### Planned Changes
+
+- Expand the Chinese rubric-description regression test to require `注意事项`.
+- Reject `caveat` in generated Chinese rubric descriptions.
+- Keep the English rubric description unchanged.
+
+### Changes Made
+
+- Updated `限制与失败模式` description to `揭示弱点、缺失控制、可复现性风险和注意事项。`
+- The rubric-description test now rejects both `baseline` and `caveat`.
+
+### Verification After Changes
+
+- Red target test first failed because descriptions still contained `caveat`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_rubric_descriptions_localize_baseline_terms`
+- `python3 -m unittest discover -s tests` passed with 74 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter78 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

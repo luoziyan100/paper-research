@@ -193,7 +193,7 @@ class RubricBuilderAgent:
                 ),
                 RubricCriterion(
                     name="限制与失败模式",
-                    description="揭示弱点、缺失控制、可复现性风险和 caveat。",
+                    description="揭示弱点、缺失控制、可复现性风险和注意事项。",
                     max_points=20,
                 ),
                 RubricCriterion(
