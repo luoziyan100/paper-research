@@ -629,6 +629,30 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("excellent_report.markdown", results[0].source)
             self.assertEqual(results[0].source_type, "local")
 
+    def test_local_benchmark_search_avoids_substring_keyword_matches(self):
+        paper_text = """
+Title: Data Audit
+
+Abstract
+We analyze data quality.
+"""
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "aaa_metadata.md").write_text(
+                "This report only describes metadata catalogs.",
+                encoding="utf-8",
+            )
+            (benchmark_dir / "zzz_data.md").write_text(
+                "This report studies data values directly.",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir)
+
+            results = agent.search(paper_text, round_number=1, previous_report=None)
+
+            self.assertIn("zzz_data.md", results[0].source)
+            self.assertNotIn("aaa_metadata.md", results[0].source)
+
     def test_local_benchmark_search_ignores_hidden_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)

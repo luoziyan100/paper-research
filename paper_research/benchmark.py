@@ -157,7 +157,9 @@ class BenchmarkSearchAgent:
             if len(content.strip()) < 10 or _is_placeholder_benchmark(content):
                 continue
             lowered_content = content.lower()
-            matched_terms = [term for term in terms if term.lower() in lowered_content]
+            matched_terms = [
+                term for term in terms if _contains_keyword(lowered_content, term)
+            ]
             score = len(matched_terms)
             structure_score = _report_structure_score(content, self.language)
             scored_reports.append((score, structure_score, path, content, matched_terms))
@@ -243,6 +245,16 @@ def _is_placeholder_benchmark(content: str) -> bool:
     if normalized in {"tbd", "todo", "placeholder", "draft"}:
         return True
     return normalized.startswith(("todo:", "tbd:")) or "fill later" in normalized
+
+
+def _contains_keyword(lowered_content: str, term: str) -> bool:
+    lowered_term = term.lower()
+    if not re.fullmatch(r"[a-z-]+", lowered_term):
+        return lowered_term in lowered_content
+    return re.search(
+        rf"(?<![a-z]){re.escape(lowered_term)}(?![a-z])",
+        lowered_content,
+    ) is not None
 
 
 def _fallback_search_note(language: str) -> str:

@@ -4323,3 +4323,33 @@
 - `python3 -m unittest discover -s tests` passed with 135 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter151 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 152 - 2026-05-05 00:39 PDT
+
+### Current Problems
+
+- Local benchmark keyword matching used raw substring checks.
+- An English paper keyword like `data` could match `metadata`, causing an irrelevant local benchmark to outrank a direct `data` benchmark by filename order.
+
+### Planned Changes
+
+- Add a regression test for `data` versus `metadata` local benchmark ranking.
+- Use word-boundary matching for simple English benchmark keywords.
+- Preserve Chinese and mixed-token substring matching behavior.
+
+### Changes Made
+
+- Added `test_local_benchmark_search_avoids_substring_keyword_matches`.
+- Added `_contains_keyword` to benchmark search.
+- Routed local benchmark matched-term detection through `_contains_keyword`.
+
+### Verification After Changes
+
+- Red target test first failed because `aaa_metadata.md` ranked above `zzz_data.md`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_avoids_substring_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_matches_baseline_data_ablation_terms tests.test_workflow.ResearchWorkflowTest.test_searches_local_benchmark_reports_when_provided`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter152_en_after`
+- `python3 -m unittest discover -s tests` passed with 136 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter152 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
