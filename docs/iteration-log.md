@@ -2147,3 +2147,31 @@
 - `python3 -m unittest discover -s tests` passed with 73 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter74 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 75 - 2026-05-04 19:45 PDT
+
+### Current Problems
+
+- Chinese evidence-ledger output copied `baseline` from the paper text into the generated report.
+- The fixed verification-gap sentence also said `baseline 设置`.
+
+### Planned Changes
+
+- Update Chinese report tests to require `基线方法` in the evidence ledger.
+- Ensure generated Chinese evidence summaries translate `baseline`.
+- Localize the fixed verification-gap wording.
+
+### Changes Made
+
+- `zh_evidence_summary` now emits `基线方法` instead of `baseline`.
+- The Chinese evidence-ledger verification gap now says `基线方法设置`.
+- Heading/parser tests now reject `baseline` in the generated Chinese evidence ledger while leaving source-paper fixtures unchanged.
+
+### Verification After Changes
+
+- Red target tests first failed because the evidence ledger still contained `baseline`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed tests.test_workflow.ResearchWorkflowTest.test_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_parenthesized_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_inline_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_space_numbered_chinese_headings_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 73 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter75 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

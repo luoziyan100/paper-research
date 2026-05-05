@@ -180,11 +180,11 @@ def zh_method_summary(method: str) -> str:
 def zh_evidence_summary(experiments: str) -> str:
     lower = experiments.lower()
     if "baseline" in lower and "可复现" in experiments:
-        return "迭代审查提高了假设、限制、baseline 和可复现性细节的覆盖"
+        return "迭代审查提高了假设、限制、基线方法和可复现性细节的覆盖"
     if "three papers" in lower and "improved coverage" in lower:
         return "在三篇论文上，迭代评分提高了假设、限制和可复现性细节的覆盖"
     if experiments.strip():
-        return "实验声称支持主要结论，但仍需要检查 baseline、指标和统计细节"
+        return "实验声称支持主要结论，但仍需要检查基线方法、指标和统计细节"
     return "实验或结果部分不够明确"
 
 

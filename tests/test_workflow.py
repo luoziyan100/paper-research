@@ -924,7 +924,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "深度研究报告 - 多智能体论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
-            self.assertIn("baseline", report.sections["论文主张与证据账本"])
+            self.assertIn("基线方法", report.sections["论文主张与证据账本"])
+            self.assertNotIn("baseline", report.sections["论文主张与证据账本"])
             self.assertNotIn("实验部分声称，实验声称", report.sections["论文主张与证据账本"])
             self.assertIn("对照报告质量", report.sections["限制与风险"])
 
@@ -939,7 +940,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "深度研究报告 - 编号标题论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
-            self.assertIn("baseline", report.sections["论文主张与证据账本"])
+            self.assertIn("基线方法", report.sections["论文主张与证据账本"])
+            self.assertNotIn("baseline", report.sections["论文主张与证据账本"])
             self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_parenthesized_numbered_chinese_headings_are_parsed(self):
@@ -953,7 +955,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "深度研究报告 - 括号编号论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
-            self.assertIn("baseline", report.sections["论文主张与证据账本"])
+            self.assertIn("基线方法", report.sections["论文主张与证据账本"])
+            self.assertNotIn("baseline", report.sections["论文主张与证据账本"])
             self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_inline_chinese_headings_are_parsed(self):
@@ -967,7 +970,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "深度研究报告 - 行内标题论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
-            self.assertIn("baseline", report.sections["论文主张与证据账本"])
+            self.assertIn("基线方法", report.sections["论文主张与证据账本"])
+            self.assertNotIn("baseline", report.sections["论文主张与证据账本"])
             self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_space_numbered_chinese_headings_are_parsed(self):
@@ -981,7 +985,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "深度研究报告 - 空格编号论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
-            self.assertIn("baseline", report.sections["论文主张与证据账本"])
+            self.assertIn("基线方法", report.sections["论文主张与证据账本"])
+            self.assertNotIn("baseline", report.sections["论文主张与证据账本"])
             self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_continuous_runner_resumes_and_keeps_appending_rounds(self):
