@@ -2,7 +2,12 @@ import unittest
 from importlib import import_module
 from pathlib import Path
 
-from paper_research import BenchmarkSearchAgent, WorkflowConfig, run_research_workflow
+from paper_research import (
+    BenchmarkSearchAgent,
+    ReportScoringAgent,
+    WorkflowConfig,
+    run_research_workflow,
+)
 from paper_research.models import RoundResult
 
 
@@ -16,6 +21,7 @@ class CodeStructureTest(unittest.TestCase):
     def test_public_api_and_models_remain_importable(self):
         self.assertEqual(WorkflowConfig.__name__, "WorkflowConfig")
         self.assertEqual(BenchmarkSearchAgent.__name__, "BenchmarkSearchAgent")
+        self.assertEqual(ReportScoringAgent.__name__, "ReportScoringAgent")
         self.assertEqual(RoundResult.__name__, "RoundResult")
         self.assertTrue(callable(run_research_workflow))
 

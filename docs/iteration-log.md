@@ -4262,3 +4262,35 @@
 - `python3 -m unittest discover -s tests` passed with 134 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter149 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 150 - 2026-05-05 00:24 PDT
+
+### Current Problems
+
+- `ReportScoringAgent` had a dedicated module but was not exported from the top-level `paper_research` package.
+- README library-use examples did not show the scoring agent as an independently reusable API.
+
+### Planned Changes
+
+- Add public API coverage for top-level `ReportScoringAgent` import.
+- Export the scoring agent from `paper_research.__init__`.
+- Update README library-use examples to show top-level scoring usage.
+
+### Changes Made
+
+- Updated `test_public_api_and_models_remain_importable`.
+- Added `ReportScoringAgent` to `paper_research.__all__`.
+- Updated README to import `BenchmarkSearchAgent` and `ReportScoringAgent` together and show a direct `.score(...)` call.
+
+### Verification After Changes
+
+- Red structure test first failed because `ReportScoringAgent` could not be imported from `paper_research`.
+- Red documentation test first failed because README did not show the top-level scoring import.
+- Target tests passed:
+  - `python3 -m unittest tests.test_structure.CodeStructureTest.test_public_api_and_models_remain_importable tests.test_structure.CodeStructureTest.test_report_scoring_agent_has_dedicated_module`
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 1 --output-dir /tmp/paper_research_iter150_zh_after`
+- `python3 -m unittest discover -s tests` passed with 134 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter150 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

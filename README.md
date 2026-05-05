@@ -126,7 +126,8 @@ The workflow can also be used from Python:
 ```python
 from pathlib import Path
 
-from paper_research import BenchmarkSearchAgent, WorkflowConfig, run_research_workflow
+from paper_research import BenchmarkSearchAgent, ReportScoringAgent
+from paper_research import WorkflowConfig, run_research_workflow
 
 paper_text = Path("examples/sample_paper.txt").read_text(encoding="utf-8")
 config = WorkflowConfig(rounds=2, language="zh", output_dir=Path("research_output"))
@@ -134,6 +135,7 @@ result = run_research_workflow(paper_text, config)
 
 search_agent = BenchmarkSearchAgent(benchmark_dir=Path("benchmarks"), language="zh")
 benchmarks = search_agent.search(paper_text, round_number=1, previous_report=None)
+scorecard = ReportScoringAgent().score(result.rounds[-1].report, result.rounds[-1].rubric, "zh")
 ```
 
 ## Development
