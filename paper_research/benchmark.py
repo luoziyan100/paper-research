@@ -159,7 +159,10 @@ class BenchmarkSearchAgent:
             structure_score = _report_structure_score(content, self.language)
             scored_reports.append((score, structure_score, path, content, matched_terms))
         matched_reports = [item for item in scored_reports if item[0] > 0]
-        selected_reports = matched_reports or scored_reports[:2]
+        selected_reports = matched_reports or sorted(
+            scored_reports,
+            key=lambda item: (-item[1], item[2].name),
+        )[:2]
         results: List[BenchmarkReport] = []
         for _, _, path, content, matched_terms in sorted(
             selected_reports,

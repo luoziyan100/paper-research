@@ -426,6 +426,30 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("本地 benchmark", results[0].search_note)
             self.assertNotIn("keyword", results[0].search_note.lower())
 
+    def test_local_benchmark_fallback_prefers_structured_reports_without_keyword_matches(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "aaa_plain.md").write_text(
+                "天气、交通和城市说明。",
+                encoding="utf-8",
+            )
+            (benchmark_dir / "bbb_plain.md").write_text(
+                "餐饮、旅游和普通笔记。",
+                encoding="utf-8",
+            )
+            (benchmark_dir / "zzz_structured.md").write_text(
+                "主张：城市交通需要分层分析。\n"
+                "证据：报告引用观测数据。\n"
+                "边界：样本覆盖不足。\n"
+                "后续：补充复核计划。",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir, language="zh")
+
+            results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertIn("zzz_structured.md", results[0].source)
+
     def test_web_search_agent_extracts_external_report_results(self):
         html = """
         <a class="result__a" href="https://example.com/excellent-report">

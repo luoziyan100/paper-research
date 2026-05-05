@@ -2480,3 +2480,30 @@
 - `python3 -m unittest discover -s tests` passed with 80 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter86 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 87 - 2026-05-04 20:21 PDT
+
+### Current Problems
+
+- When no local benchmark file matched paper keywords, fallback selection used the first two files by filename.
+- This could ignore a more structured local report if it appeared later alphabetically.
+
+### Planned Changes
+
+- Add a regression test with no keyword matches and one structured local report.
+- Use structure score for fallback selection as well as keyword-tie sorting.
+- Preserve the existing no-keyword search-note behavior.
+
+### Changes Made
+
+- Added `test_local_benchmark_fallback_prefers_structured_reports_without_keyword_matches`.
+- No-keyword local fallback now sorts by structure score before filename.
+
+### Verification After Changes
+
+- Red target test first failed because `aaa_plain.md` was selected before `zzz_structured.md`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_fallback_prefers_structured_reports_without_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_note_localizes_no_keyword_overlap`
+- `python3 -m unittest discover -s tests` passed with 81 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter87 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
