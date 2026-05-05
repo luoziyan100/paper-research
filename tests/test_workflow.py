@@ -181,6 +181,22 @@ IV. Limitations
 The approach depends on curated negative examples.
 """
 
+ABLATION_HEADING_PAPER_TEXT = """
+Title: Ablation Heading Parsing
+
+Abstract
+We study a verifier workflow for reliable reasoning.
+
+Method
+The method combines retrieval filtering and verifier reranking.
+
+Ablation Study
+The ablation shows verifier reranking improves factual consistency.
+
+Limitations
+The approach depends on curated negative examples.
+"""
+
 MARKDOWN_TITLE_PAPER_TEXT = """
 # Markdown Research Paper
 
@@ -367,6 +383,18 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("retrieval filtering", report.sections["Method and Evidence"])
             self.assertIn("MMLU", report.sections["Method and Evidence"])
             self.assertNotIn("method section was not explicit", report.sections["Method and Evidence"].lower())
+
+    def test_parses_ablation_heading_as_evaluation_evidence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=ABLATION_HEADING_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            evidence = result.rounds[0].report.sections["Method and Evidence"]
+
+            self.assertIn("verifier reranking improves factual consistency", evidence)
+            self.assertNotIn("experiments or results section was not explicit", evidence.lower())
 
     def test_markdown_title_heading_is_cleaned(self):
         with tempfile.TemporaryDirectory() as tmp:

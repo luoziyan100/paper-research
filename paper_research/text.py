@@ -133,6 +133,8 @@ def normalize_english_heading(normalized_line: str) -> str:
         "experiment": "experiments",
         "evaluation": "experiments",
         "empirical evaluation": "experiments",
+        "ablation": "experiments",
+        "ablation study": "experiments",
         "experiments and results": "experiments",
         "results": "results",
         "findings": "results",

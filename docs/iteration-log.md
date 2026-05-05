@@ -3743,3 +3743,31 @@
 - `python3 -m unittest discover -s tests` passed with 122 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter132 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 133 - 2026-05-04 23:22 PDT
+
+### Current Problems
+
+- English `Ablation Study` headings were not mapped to evaluation evidence.
+- Ablation content could be appended to the method section while the evidence section still claimed experiments/results were missing.
+
+### Planned Changes
+
+- Add a regression test for ablation headings.
+- Map `ablation` and `ablation study` to experiments.
+- Preserve existing approach/evaluation and Roman-numbered heading parsing.
+
+### Changes Made
+
+- Added `ABLATION_HEADING_PAPER_TEXT`.
+- Added `test_parses_ablation_heading_as_evaluation_evidence`.
+- Updated English heading normalization for ablation sections.
+
+### Verification After Changes
+
+- Red target test first failed because evidence reading used the explicit missing-results fallback.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_parses_ablation_heading_as_evaluation_evidence tests.test_workflow.ResearchWorkflowTest.test_parses_approach_and_evaluation_headings tests.test_workflow.ResearchWorkflowTest.test_parses_roman_numbered_english_headings`
+- `python3 -m unittest discover -s tests` passed with 123 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter133 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
