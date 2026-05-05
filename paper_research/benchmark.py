@@ -72,10 +72,10 @@ class BenchmarkSearchAgent:
                 BenchmarkReport(
                     title=f"{theme} 的方法审计型优秀报告模式",
                     source=f"built-in://methodology-round-{round_number}",
-                    summary="方法审计型报告关注研究设计、baseline、评估指标、消融实验和可复现设置。",
+                    summary="方法审计型报告关注研究设计、基线方法、评估指标、消融实验和可复现设置。",
                     strengths=[
                         "检查方法选择是否匹配论文目标。",
-                        "追问 baseline、数据和消融实验是否充分。",
+                        "追问基线方法、数据和消融实验是否充分。",
                     ],
                     source_type="built-in",
                     search_note=_fallback_search_note(self.language),
@@ -299,7 +299,7 @@ def _infer_report_strengths(content: str, language: str = "en") -> List[str]:
         or "数据" in content
     ):
         strengths.append(
-            "检查 baseline、数据和消融实验是否充分。"
+            "检查基线方法、数据和消融实验是否充分。"
             if language == "zh"
             else "Audits baselines, data, and ablation evidence."
         )

@@ -369,7 +369,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
 
-            self.assertIn("检查 baseline、数据和消融实验是否充分。", results[0].strengths)
+            self.assertIn("检查基线方法、数据和消融实验是否充分。", results[0].strengths)
+            self.assertNotIn("检查 baseline、数据和消融实验是否充分。", results[0].strengths)
 
     def test_local_benchmark_search_scores_more_than_first_five_files(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -848,7 +849,7 @@ class ResearchWorkflowTest(unittest.TestCase):
                 strengths=[
                     "明确讨论限制和风险。",
                     "把论文主张连接到实验证据。",
-                    "检查 baseline、数据和消融实验是否充分。",
+                    "检查基线方法、数据和消融实验是否充分。",
                 ],
                 source_type="local",
                 search_note="local",
@@ -866,7 +867,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         benchmark_section = report.sections["基于对照报告的改进"]
 
-        self.assertIn("检查 baseline、数据和消融实验是否充分", benchmark_section)
+        self.assertIn("检查基线方法、数据和消融实验是否充分", benchmark_section)
+        self.assertNotIn("baseline", benchmark_section)
 
     def test_chinese_benchmark_improvement_deduplicates_repeated_lessons(self):
         benchmarks = [

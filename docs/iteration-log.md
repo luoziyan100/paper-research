@@ -2175,3 +2175,32 @@
 - `python3 -m unittest discover -s tests` passed with 73 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter75 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 76 - 2026-05-04 19:47 PDT
+
+### Current Problems
+
+- Chinese benchmark method-audit strengths still emitted `检查 baseline、数据和消融实验是否充分`.
+- Built-in Chinese benchmark summaries and strengths also used `baseline`.
+- The `基于对照报告的改进` section could therefore reintroduce English terminology.
+
+### Planned Changes
+
+- Update local benchmark extraction tests to require `基线方法`.
+- Update report-improvement tests to reject `baseline` in Chinese benchmark lessons.
+- Localize both built-in and inferred Chinese benchmark strengths.
+
+### Changes Made
+
+- Chinese built-in methodology benchmark summary now says `基线方法`.
+- Chinese built-in methodology benchmark strength now says `追问基线方法、数据和消融实验是否充分`.
+- `_infer_report_strengths` now emits `检查基线方法、数据和消融实验是否充分。` for Chinese.
+
+### Verification After Changes
+
+- Red target test first failed because extracted Chinese strengths still contained `baseline`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_extracts_method_audit_strength tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_improvement_includes_method_audit_lessons`
+- `python3 -m unittest discover -s tests` passed with 73 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter76 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
