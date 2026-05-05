@@ -2343,3 +2343,30 @@
 - `python3 -m unittest discover -s tests` passed with 77 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter81 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 82 - 2026-05-04 20:04 PDT
+
+### Current Problems
+
+- Chinese `对照报告质量` coverage detection recognized method-audit coverage via `baseline` or `消融`.
+- A localized strength that only said `基线方法` fell back to `通用研究报告模式`.
+
+### Planned Changes
+
+- Add a regression test for localized baseline-only benchmark strengths.
+- Count `基线` as method-audit coverage in Chinese benchmark-quality summaries.
+- Preserve English coverage detection.
+
+### Changes Made
+
+- Added `test_chinese_benchmark_quality_counts_localized_baseline_coverage`.
+- Chinese benchmark-quality coverage now treats `基线` as `方法审计`.
+
+### Verification After Changes
+
+- Red target test first failed because the quality summary returned `通用研究报告模式`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_benchmark_quality_counts_localized_baseline_coverage`
+- `python3 -m unittest discover -s tests` passed with 78 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter82 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

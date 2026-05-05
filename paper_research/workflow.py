@@ -700,7 +700,7 @@ def _benchmark_quality_summary(
         coverage = []
         if "主张" in strength_text or "claims" in strength_text.lower():
             coverage.append("主张-证据")
-        if "baseline" in strength_text.lower() or "消融" in strength_text:
+        if "baseline" in strength_text.lower() or "基线" in strength_text or "消融" in strength_text:
             coverage.append("方法审计")
         if "限制" in strength_text or "limitations" in strength_text.lower():
             coverage.append("限制/可复现性")

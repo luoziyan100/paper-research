@@ -564,6 +564,31 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertNotIn("本地 benchmark", section)
         self.assertNotIn("本地对照报告, 网页搜索", section)
 
+    def test_chinese_benchmark_quality_counts_localized_baseline_coverage(self):
+        benchmarks = [
+            BenchmarkReport(
+                title="Method report",
+                source="/tmp/method.md",
+                summary="method",
+                strengths=["检查基线方法是否充分。"],
+                source_type="local",
+                search_note="local",
+            )
+        ]
+        report = ReportWriterAgent().write(
+            paper_text=CHINESE_PAPER_TEXT,
+            benchmark_reports=benchmarks,
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        section = report.sections["对照报告质量"]
+
+        self.assertIn("方法审计", section)
+        self.assertNotIn("通用研究报告模式", section)
+
     def test_chinese_benchmark_quality_handles_empty_sources_readably(self):
         report = ReportWriterAgent().write(
             paper_text=CHINESE_PAPER_TEXT,
