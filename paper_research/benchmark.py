@@ -156,13 +156,14 @@ class BenchmarkSearchAgent:
             lowered_content = content.lower()
             matched_terms = [term for term in terms if term.lower() in lowered_content]
             score = len(matched_terms)
-            scored_reports.append((score, path, content, matched_terms))
+            structure_score = _report_structure_score(content, self.language)
+            scored_reports.append((score, structure_score, path, content, matched_terms))
         matched_reports = [item for item in scored_reports if item[0] > 0]
         selected_reports = matched_reports or scored_reports[:2]
         results: List[BenchmarkReport] = []
-        for _, path, content, matched_terms in sorted(
+        for _, _, path, content, matched_terms in sorted(
             selected_reports,
-            key=lambda item: (-item[0], item[1].name),
+            key=lambda item: (-item[0], -item[1], item[2].name),
         )[:5]:
             results.append(
                 BenchmarkReport(
@@ -220,6 +221,15 @@ class BenchmarkSearchAgent:
                 )
             )
         return reports
+
+
+def _report_structure_score(content: str, language: str) -> int:
+    if language == "zh":
+        markers = ["主张", "证据", "限制", "局限", "后续", "方法", "实验"]
+        return sum(1 for marker in markers if marker in content)
+    lower = content.lower()
+    markers = ["claim", "evidence", "limitation", "risk", "future", "method", "experiment"]
+    return sum(1 for marker in markers if marker in lower)
 
 
 def _fallback_search_note(language: str) -> str:

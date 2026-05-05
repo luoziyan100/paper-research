@@ -2452,3 +2452,31 @@
 - `python3 -m unittest discover -s tests` passed with 79 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter85 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 86 - 2026-05-04 20:18 PDT
+
+### Current Problems
+
+- Local benchmark search sorted reports with equal keyword matches by filename.
+- A thin note could outrank a more structured report if its filename sorted earlier.
+
+### Planned Changes
+
+- Add a regression test where two local reports have identical keyword matches but different report structure.
+- Add a lightweight structure score for local benchmark tie-breaking.
+- Keep keyword match count as the primary ranking signal.
+
+### Changes Made
+
+- Added `test_local_benchmark_search_tiebreaks_on_report_structure`.
+- Local search now records a structure score based on claim/evidence/limitations/follow-up style markers.
+- Sorting now uses keyword score, then structure score, then filename.
+
+### Verification After Changes
+
+- Red target test first failed because `aaa_thin.md` outranked `zzz_structured.md`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_tiebreaks_on_report_structure tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_scores_more_than_first_five_files`
+- `python3 -m unittest discover -s tests` passed with 80 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter86 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

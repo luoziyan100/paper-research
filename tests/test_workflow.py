@@ -390,6 +390,26 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertIn("zzz_relevant.md", results[0].source)
 
+    def test_local_benchmark_search_tiebreaks_on_report_structure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "aaa_thin.md").write_text(
+                "多智能体 论文审查 评分标准 可复现性 限制 局限 方法 实验。",
+                encoding="utf-8",
+            )
+            (benchmark_dir / "zzz_structured.md").write_text(
+                "主张：多智能体论文审查流程需要清晰定义。\n"
+                "证据：评分标准应引用论文证据。\n"
+                "限制：可复现性、局限和失败模式需要单独检查。\n"
+                "后续：用方法审计和实验复核结论。",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir, language="zh")
+
+            results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertIn("zzz_structured.md", results[0].source)
+
     def test_chinese_local_benchmark_note_localizes_no_keyword_overlap(self):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)
