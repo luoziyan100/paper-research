@@ -362,13 +362,13 @@ def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
         _strip_html(body)
         for _, attrs_text, body in element_pattern.findall(raw_html)
         for attrs in [_parse_html_attrs(attrs_text)]
-        if "result__snippet" in attrs.get("class", "")
+        if _has_class(attrs, "result__snippet")
     ]
     results: List[Dict[str, str]] = []
     result_anchors = [
         (attrs, body)
         for attrs, body in parsed_anchors
-        if "result__a" in attrs.get("class", "")
+        if _has_class(attrs, "result__a")
     ]
     for index, (attrs, title_html) in enumerate(result_anchors):
         title = _strip_html(title_html)
@@ -388,6 +388,10 @@ def _parse_html_attrs(attrs: str) -> Dict[str, str]:
         name.lower(): unescape(double_quoted or single_quoted or unquoted)
         for name, double_quoted, single_quoted, unquoted in attr_pattern.findall(attrs)
     }
+
+
+def _has_class(attrs: Dict[str, str], class_name: str) -> bool:
+    return class_name in attrs.get("class", "").split()
 
 
 def _strip_html(value: str) -> str:

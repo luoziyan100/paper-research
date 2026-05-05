@@ -2834,3 +2834,30 @@
 - `python3 -m unittest discover -s tests` passed with 92 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter99 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 100 - 2026-05-04 20:54 PDT
+
+### Current Problems
+
+- DuckDuckGo result parsing matched CSS class names by substring.
+- A class like `not-result__a` could be treated as a real search result, producing false-positive benchmark sources.
+
+### Planned Changes
+
+- Add a regression test for false-positive result class names.
+- Match DuckDuckGo anchor and snippet classes as exact class tokens.
+- Preserve existing parsing for normal anchors and `<div class="result__snippet">` snippets.
+
+### Changes Made
+
+- Added `test_web_search_agent_requires_result_class_tokens`.
+- Added `_has_class` and used it for result anchors and snippets.
+
+### Verification After Changes
+
+- Red target test first failed because `not-result__a` was parsed as a web result.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_requires_result_class_tokens tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_div_snippets`
+- `python3 -m unittest discover -s tests` passed with 93 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter100 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

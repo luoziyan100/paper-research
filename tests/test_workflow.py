@@ -640,6 +640,25 @@ class ResearchWorkflowTest(unittest.TestCase):
 
         self.assertEqual(results[0].source, "/search?q=paper-analysis")
 
+    def test_web_search_agent_requires_result_class_tokens(self):
+        html = """
+        <a class="not-result__a" href="https://example.com/false-positive">
+          False Positive Result
+        </a>
+        <div class="not-result__snippet">
+          This should not be treated as a result snippet.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source_type, "built-in")
+        self.assertNotEqual(results[0].source, "https://example.com/false-positive")
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """
