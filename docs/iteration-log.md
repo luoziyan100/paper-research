@@ -2888,3 +2888,30 @@
 - `python3 -m unittest discover -s tests` passed with 94 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter101 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 102 - 2026-05-04 20:58 PDT
+
+### Current Problems
+
+- Web result extraction accepted `result__a` anchors even when they had no `href`.
+- Those entries became synthetic `web-search://...` sources, which looked like external benchmark evidence but had no real URL.
+
+### Planned Changes
+
+- Add a regression test for result anchors without `href`.
+- Require a non-empty cleaned source URL before accepting a web result.
+- Preserve normal web result parsing with real links.
+
+### Changes Made
+
+- Added `test_web_search_agent_ignores_result_anchors_without_href`.
+- `_extract_duckduckgo_results` now skips result anchors that do not provide a source.
+
+### Verification After Changes
+
+- Red target test first failed because the missing-`href` anchor produced a web result.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_ignores_result_anchors_without_href tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 95 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter102 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

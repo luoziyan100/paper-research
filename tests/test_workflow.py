@@ -677,6 +677,25 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source_type, "built-in")
         self.assertNotEqual(results[0].source, "https://example.com/false-positive")
 
+    def test_web_search_agent_ignores_result_anchors_without_href(self):
+        html = """
+        <a class="result__a">
+          Missing Href Result
+        </a>
+        <div class="result__snippet">
+          Missing href snippets should not create a synthetic source.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source_type, "built-in")
+        self.assertNotEqual(results[0].title, "Missing Href Result")
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """

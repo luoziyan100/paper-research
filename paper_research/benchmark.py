@@ -374,7 +374,7 @@ def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
         title = _strip_html(title_html)
         source = _clean_result_url(attrs.get("href", ""))
         snippet = snippets[index] if index < len(snippets) else ""
-        if title or source:
+        if source:
             results.append({"title": title, "url": source, "snippet": snippet})
     return results
 
