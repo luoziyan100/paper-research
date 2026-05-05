@@ -3687,3 +3687,31 @@
 - `python3 -m unittest discover -s tests` passed with 120 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter130 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 131 - 2026-05-04 23:15 PDT
+
+### Current Problems
+
+- Chinese papers using `技术路线`, `系统设计`, or `方案` headings were not parsed as method sections.
+- Generated method analysis could fall back to `需要进一步拆解的技术流程` despite concrete method text being present.
+
+### Planned Changes
+
+- Add a regression test for the `技术路线` heading.
+- Map common Chinese method aliases to the `method` section.
+- Preserve existing Chinese evaluation and plain method heading behavior.
+
+### Changes Made
+
+- Added `CHINESE_TECHNICAL_ROUTE_PAPER_TEXT`.
+- Added `test_chinese_technical_route_heading_is_parsed_as_method`.
+- Added `技术路线`, `系统设计`, and `方案` to Chinese heading normalization.
+
+### Verification After Changes
+
+- Red target test first failed because the method section used the generic technical-process fallback.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_technical_route_heading_is_parsed_as_method tests.test_workflow.ResearchWorkflowTest.test_chinese_evaluation_heading_is_parsed_as_experiments tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 121 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter131 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
