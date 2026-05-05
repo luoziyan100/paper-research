@@ -4442,3 +4442,33 @@
 - `python3 -m unittest discover -s tests` passed with 138 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter155 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 156 - 2026-05-05 00:53 PDT
+
+### Current Problems
+
+- The CLI success path printed only JSONL and DOCX paths.
+- Users had to open generated files to see the final score summary and source-confidence risks.
+
+### Planned Changes
+
+- Add CLI regression coverage for final score summary output.
+- Print the final round scorecard summary after output paths.
+- Preserve existing custom filename output behavior.
+
+### Changes Made
+
+- Added `test_cli_prints_final_score_summary`.
+- Updated `main(...)` to print `Final score summary: ...` when at least one round exists.
+
+### Verification After Changes
+
+- Red target test first failed because stdout only contained `Wrote ...` lines.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_prints_final_score_summary tests.test_cli_io.InputAndCliTest.test_cli_accepts_custom_output_filenames`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter156_en_after`
+- Manual CLI output now includes the final score summary and source-confidence risk text.
+- `python3 -m unittest discover -s tests` passed with 139 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter156 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

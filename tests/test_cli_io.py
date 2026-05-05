@@ -165,6 +165,32 @@ class InputAndCliTest(unittest.TestCase):
             self.assertIn("custom-rounds.jsonl", stdout.getvalue())
             self.assertIn("custom-report.docx", stdout.getvalue())
 
+    def test_cli_prints_final_score_summary(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "paper.txt"
+            output_dir = root / "out"
+            paper.write_text(
+                "Title: T\n\nAbstract\nWe study report scoring.\n",
+                encoding="utf-8",
+            )
+
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                exit_code = main(
+                    [
+                        str(paper),
+                        "--rounds",
+                        "1",
+                        "--output-dir",
+                        str(output_dir),
+                    ]
+                )
+
+            self.assertEqual(exit_code, 0)
+            self.assertIn("Final score summary:", stdout.getvalue())
+            self.assertIn("Quality band:", stdout.getvalue())
+
     def test_cli_reports_corrupt_resume_jsonl_without_traceback(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

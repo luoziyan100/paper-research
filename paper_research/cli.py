@@ -144,6 +144,8 @@ def main(argv: list[str] | None = None) -> int:
         parser.error(str(exc))
     print(f"Wrote {result.jsonl_path}")
     print(f"Wrote {result.docx_path}")
+    if result.rounds:
+        print(f"Final score summary: {result.rounds[-1].scorecard.summary}")
     return 0
 
 
