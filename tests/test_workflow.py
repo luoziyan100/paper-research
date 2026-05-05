@@ -825,6 +825,23 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("基线方法", evidence_score.rationale)
             self.assertNotIn("baseline", evidence_score.rationale.lower())
 
+    def test_chinese_scoring_counts_localized_agent_marker(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=CHINESE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            contribution_score = next(
+                score
+                for score in result.rounds[0].scorecard.scores
+                if score.name == "技术贡献"
+            )
+
+            self.assertGreaterEqual(contribution_score.points, 16)
+            self.assertIn("多智能体", contribution_score.rationale)
+            self.assertNotIn("agent", contribution_score.rationale.lower())
+
     def test_chinese_scorecard_cites_evidence_and_avoids_inflated_sample_score(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

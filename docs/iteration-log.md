@@ -2287,3 +2287,31 @@
 - `python3 -m unittest discover -s tests` passed with 75 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter79 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 80 - 2026-05-04 19:59 PDT
+
+### Current Problems
+
+- Chinese technical-contribution scoring still used the English keyword `agent`.
+- The generated report had already localized this concept to `智能体`, so contribution scoring undercounted one relevant marker.
+
+### Planned Changes
+
+- Add a regression test requiring Chinese `技术贡献` scoring to count localized agent terminology.
+- Replace the Chinese scoring keyword `agent` with `智能体`.
+- Keep English scoring keywords unchanged.
+
+### Changes Made
+
+- Added `test_chinese_scoring_counts_localized_agent_marker`.
+- Chinese `技术贡献` scoring now uses `智能体`.
+- The test now requires the contribution score to reach the 5-marker band while citing `多智能体` without `agent`.
+
+### Verification After Changes
+
+- Tightened red target test first failed because `技术贡献` scored 14 instead of the expected localized-marker score band.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_scoring_counts_localized_agent_marker`
+- `python3 -m unittest discover -s tests` passed with 76 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter80 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
