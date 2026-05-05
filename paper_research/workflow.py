@@ -371,7 +371,7 @@ class RubricCriticAgent:
                 "如果对照报告来自相同风格或相同领域，评分标准可能被样式偏见污染。",
             ]
             criterion_names = {criterion.name for criterion in rubric.criteria}
-            if "可复现性" not in criterion_names:
+            if not any("可复现性" in name for name in criterion_names):
                 issues.append("可复现性目前嵌在限制项中，对实证论文可能应该单独成为评分项。")
             recommendations = [
                 "要求未来每个评分都包含一个论文证据引用或转述。",
@@ -387,7 +387,7 @@ class RubricCriticAgent:
             "Benchmark reports can bias the scoring standard if they share the same style or research field.",
         ]
         criterion_names = {criterion.name for criterion in rubric.criteria}
-        if "Reproducibility" not in criterion_names:
+        if not any("Reproducibility" in name for name in criterion_names):
             issues.append(
                 "Reproducibility is embedded under limitations but may deserve an explicit criterion for empirical papers."
             )

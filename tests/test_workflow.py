@@ -1155,6 +1155,20 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertNotIn("研究价值", second_criteria)
             self.assertIn("上一轮评分标准批评", result.rounds[1].rubric.source_notes)
 
+    def test_second_round_chinese_critic_recognizes_explicit_reproducibility_criterion(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp), language="zh"),
+            )
+
+            second_issues = result.rounds[1].critic_review.issues
+
+            self.assertFalse(
+                any("可复现性目前嵌在限制项中" in issue for issue in second_issues),
+                second_issues,
+            )
+
     def test_second_round_english_rubric_evolves_from_critic_feedback(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

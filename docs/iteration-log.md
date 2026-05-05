@@ -3106,3 +3106,32 @@
 - `python3 -m unittest discover -s tests` passed with 101 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter109 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 110 - 2026-05-04 21:17 PDT
+
+### Current Problems
+
+- A real two-round Chinese sample run showed stale critic feedback.
+- Round 2 added `可复现性与证据引用`, but the critic still complained that reproducibility was only embedded in limitations.
+
+### Planned Changes
+
+- Add a regression test for the second-round Chinese critic.
+- Treat criterion names containing `可复现性` as explicit reproducibility criteria.
+- Apply the same containment check to English `Reproducibility` criterion names.
+
+### Changes Made
+
+- Added `test_second_round_chinese_critic_recognizes_explicit_reproducibility_criterion`.
+- Updated `RubricCriticAgent` criterion-name checks from exact membership to substring matching.
+
+### Verification After Changes
+
+- Ran a two-round Chinese sample command:
+  - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter110_zh`
+- Red target test first failed because round 2 still emitted the stale reproducibility issue.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_second_round_chinese_critic_recognizes_explicit_reproducibility_criterion tests.test_workflow.ResearchWorkflowTest.test_second_round_chinese_rubric_evolves_from_critic_feedback`
+- `python3 -m unittest discover -s tests` passed with 102 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter110 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
