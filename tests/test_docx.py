@@ -106,6 +106,20 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn("迭代式论文研究报告", core_xml)
             self.assertNotIn("Iterative Paper Research Report", core_xml)
 
+    def test_removes_invalid_xml_characters_from_core_title(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            document = DocxDocument(title="Bad\x0cTitle")
+            document.add(paragraph("content"))
+
+            document.save(path)
+
+            with zipfile.ZipFile(path) as archive:
+                core_xml = archive.read("docProps/core.xml").decode("utf-8")
+
+            self.assertIn("BadTitle", core_xml)
+            self.assertNotIn("\x0c", core_xml)
+
     def test_styles_define_multilingual_fonts(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"

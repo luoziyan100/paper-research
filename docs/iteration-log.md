@@ -5118,3 +5118,31 @@
 - `python3 -m unittest discover -s tests` passed with 159 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter178 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 179 - 2026-05-05 03:56 PDT
+
+### Current Problems
+
+- DOCX body text was sanitized in the prior round, but core document properties still accepted invalid XML characters in the title.
+- A control character in the document title could corrupt `docProps/core.xml`.
+
+### Planned Changes
+
+- Add a DOCX core-properties regression test for invalid title characters.
+- Reuse the XML text sanitizer for the core title before escaping.
+- Verify existing core title and language-specific metadata tests still pass.
+
+### Changes Made
+
+- Added `test_removes_invalid_xml_characters_from_core_title`.
+- Applied `_clean_xml_text` in `_core_properties_xml`.
+
+### Verification After Changes
+
+- Red target test first failed because `Bad\x0cTitle` was written into `docProps/core.xml`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_removes_invalid_xml_characters_from_core_title tests.test_docx.DocxWriterTest.test_removes_invalid_xml_control_characters`
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_writes_custom_docx_core_title tests.test_docx.DocxWriterTest.test_export_uses_language_specific_core_title`
+- `python3 -m unittest discover -s tests` passed with 160 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter179 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

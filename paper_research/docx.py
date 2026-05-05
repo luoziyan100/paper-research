@@ -129,7 +129,7 @@ def _document_relationships_xml() -> str:
 
 
 def _core_properties_xml(title: str) -> str:
-    escaped_title = escape(title)
+    escaped_title = escape(_clean_xml_text(title))
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cp:coreProperties
   xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
