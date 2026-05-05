@@ -752,7 +752,7 @@ def _infer_benchmark_source_type(source: str) -> str:
 
 def _legacy_search_note(source: str, language: str = "en") -> str:
     if language == "zh":
-        return f"从缺少 benchmark trace metadata 的旧版 JSONL 恢复：{source}。"
+        return f"从缺少对照报告追踪元数据的旧版 JSONL 恢复：{source}。"
     return f"Recovered from legacy JSONL without benchmark trace metadata: {source}."
 
 

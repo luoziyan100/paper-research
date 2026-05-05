@@ -2120,3 +2120,30 @@
 - `python3 -m unittest discover -s tests` passed with 73 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter73 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 74 - 2026-05-04 19:43 PDT
+
+### Current Problems
+
+- Chinese resume hydration for legacy JSONL search notes still said `benchmark trace metadata`.
+- This affected old-run compatibility paths and could surface in regenerated reports.
+
+### Planned Changes
+
+- Strengthen the Chinese legacy-resume test to require localized metadata wording.
+- Replace `benchmark trace metadata` with `对照报告追踪元数据` in Chinese recovery notes.
+- Keep English recovery wording unchanged.
+
+### Changes Made
+
+- Chinese `_legacy_search_note` now returns `从缺少对照报告追踪元数据的旧版 JSONL 恢复：...`.
+- The resume regression test now rejects `benchmark` and `trace metadata` in the Chinese search note.
+
+### Verification After Changes
+
+- Red target test first failed because the legacy search note still said `benchmark trace metadata`.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_resume_hydrates_legacy_benchmark_note_in_chinese`
+- `python3 -m unittest discover -s tests` passed with 73 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter74 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

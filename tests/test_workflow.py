@@ -1267,6 +1267,9 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             legacy_benchmark = result.rounds[0].benchmark_reports[0]
             self.assertIn("旧版 JSONL", legacy_benchmark.search_note)
+            self.assertIn("对照报告追踪元数据", legacy_benchmark.search_note)
+            self.assertNotIn("benchmark", legacy_benchmark.search_note.lower())
+            self.assertNotIn("trace metadata", legacy_benchmark.search_note.lower())
             self.assertNotIn("Recovered from legacy JSONL", legacy_benchmark.search_note)
 
     def test_continuous_runner_uses_duration_without_waiting_in_tests(self):
