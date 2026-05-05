@@ -4171,3 +4171,33 @@
 - `python3 -m unittest discover -s tests` passed with 133 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter146 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 147 - 2026-05-05 00:14 PDT
+
+### Current Problems
+
+- Local benchmark search ignored very short placeholders like `TBD`, but a longer `TODO: fill later ...` file could still be selected as a usable local benchmark.
+- Placeholder local files can pollute benchmark-informed report generation and hide the fact that no real external comparison was found.
+
+### Planned Changes
+
+- Extend placeholder-file regression coverage.
+- Add a local benchmark placeholder detector for TODO/TBD/fill-later content.
+- Preserve valid local benchmark selection and structured fallback behavior.
+
+### Changes Made
+
+- Extended `test_local_benchmark_search_ignores_placeholder_files` with a longer TODO file.
+- Added `_is_placeholder_benchmark`.
+- Skipped local benchmark files whose normalized content is `todo`, `tbd`, `placeholder`, `draft`, starts with `todo:` / `tbd:`, or contains `fill later`.
+
+### Verification After Changes
+
+- Red target test first failed because `todo.md` was selected as a local benchmark.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_ignores_placeholder_files tests.test_workflow.ResearchWorkflowTest.test_searches_local_benchmark_reports_when_provided tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_fallback_prefers_structured_reports_without_keyword_matches`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 1 --output-dir /tmp/paper_research_iter147_en_after`
+- `python3 -m unittest discover -s tests` passed with 133 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter147 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

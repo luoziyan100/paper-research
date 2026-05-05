@@ -664,12 +664,17 @@ class ResearchWorkflowTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)
             (benchmark_dir / "placeholder.md").write_text("TBD", encoding="utf-8")
+            (benchmark_dir / "todo.md").write_text(
+                "TODO: fill later with agent workflow evidence and baseline notes.",
+                encoding="utf-8",
+            )
             agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir)
 
             results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
 
             self.assertEqual(results[0].source_type, "built-in")
             self.assertNotIn("placeholder.md", [Path(result.source).name for result in results])
+            self.assertNotIn("todo.md", [Path(result.source).name for result in results])
 
     def test_local_benchmark_search_prioritizes_chinese_keyword_matches(self):
         with tempfile.TemporaryDirectory() as tmp:

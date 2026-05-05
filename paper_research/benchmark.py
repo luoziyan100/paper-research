@@ -154,7 +154,7 @@ class BenchmarkSearchAgent:
         terms = _keywords(paper_text, limit=8)
         for path in files:
             content = path.read_text(encoding="utf-8", errors="ignore")
-            if len(content.strip()) < 10:
+            if len(content.strip()) < 10 or _is_placeholder_benchmark(content):
                 continue
             lowered_content = content.lower()
             matched_terms = [term for term in terms if term.lower() in lowered_content]
@@ -236,6 +236,13 @@ def _report_structure_score(content: str, language: str) -> int:
     lower = content.lower()
     markers = ["claim", "evidence", "limitation", "risk", "future", "method", "experiment"]
     return sum(1 for marker in markers if marker in lower)
+
+
+def _is_placeholder_benchmark(content: str) -> bool:
+    normalized = " ".join(content.strip().lower().split())
+    if normalized in {"tbd", "todo", "placeholder", "draft"}:
+        return True
+    return normalized.startswith(("todo:", "tbd:")) or "fill later" in normalized
 
 
 def _fallback_search_note(language: str) -> str:
