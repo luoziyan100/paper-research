@@ -2035,3 +2035,31 @@
 - `python3 -m unittest discover -s tests` passed with 72 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter70 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 71 - 2026-05-04 19:37 PDT
+
+### Current Problems
+
+- Chinese rubric `source_notes` still said `benchmark 报告` and `Benchmark 数量`.
+- The generated phrase also had an awkward space after `基于`.
+
+### Planned Changes
+
+- Update the source-notes punctuation test to require `对照报告` wording.
+- Rename the Chinese benchmark count label to `对照报告数量`.
+- Remove the extra space after `基于`.
+
+### Changes Made
+
+- Chinese rubric source notes now start with `基于对照报告、当前报告生成`.
+- Second-round source notes now use `基于对照报告、当前报告、上一轮报告、上一轮评分标准批评生成`.
+- The benchmark count label is now `对照报告数量`.
+
+### Verification After Changes
+
+- Red target test first failed because source notes still emitted `benchmark 报告` and then exposed the extra `基于 ` spacing.
+- Target test passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_rubric_source_notes_use_readable_punctuation`
+- `python3 -m unittest discover -s tests` passed with 72 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter71 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

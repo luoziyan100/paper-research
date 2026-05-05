@@ -746,11 +746,13 @@ class ResearchWorkflowTest(unittest.TestCase):
             first_notes = result.rounds[0].rubric.source_notes
             second_notes = result.rounds[1].rubric.source_notes
 
-            self.assertIn("基于 benchmark 报告、当前报告生成", first_notes)
+            self.assertIn("基于对照报告、当前报告生成", first_notes)
+            self.assertIn("对照报告数量", first_notes)
             self.assertIn(
-                "基于 benchmark 报告、当前报告、上一轮报告、上一轮评分标准批评生成",
+                "基于对照报告、当前报告、上一轮报告、上一轮评分标准批评生成",
                 second_notes,
             )
+            self.assertNotIn("benchmark", first_notes.lower())
             self.assertNotIn("基于benchmark 报告, 当前报告", first_notes)
 
     def test_second_round_chinese_rubric_evolves_from_critic_feedback(self):

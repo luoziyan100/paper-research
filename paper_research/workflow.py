@@ -210,7 +210,7 @@ class RubricBuilderAgent:
                     max_points=20,
                 ),
             ]
-            sources = ["benchmark 报告", "当前报告"]
+            sources = ["对照报告", "当前报告"]
             if previous_report:
                 sources.append("上一轮报告")
             if prior_critic_review:
@@ -219,7 +219,7 @@ class RubricBuilderAgent:
                 title=f"第 {round_number} 轮评分标准",
                 criteria=criteria,
                 source_notes=(
-                    f"基于 {'、'.join(sources)}生成。Benchmark 数量："
+                    f"基于{'、'.join(sources)}生成。对照报告数量："
                     f"{len(benchmark_reports)}。当前报告：{current_report.title}。"
                     "每项封顶，总分保持 100。"
                 ),
