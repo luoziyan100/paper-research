@@ -15,6 +15,7 @@ from paper_research.workflow import (
     run_research_workflow,
 )
 from paper_research.models import BenchmarkReport
+from paper_research.text import first_sentences
 
 
 PAPER_TEXT = """
@@ -198,6 +199,13 @@ MARKDOWN_CHINESE_SECTION_PAPER_TEXT = """
 
 
 class ResearchWorkflowTest(unittest.TestCase):
+    def test_first_sentences_splits_chinese_punctuation(self):
+        text = "第一句说明研究问题。第二句说明方法！第三句说明限制？"
+
+        summary = first_sentences(text, count=2)
+
+        self.assertEqual(summary, "第一句说明研究问题。 第二句说明方法！")
+
     def test_runs_iterative_agents_and_records_every_round(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)

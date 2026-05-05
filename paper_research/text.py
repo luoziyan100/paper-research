@@ -137,7 +137,7 @@ def normalize_english_heading(normalized_line: str) -> str:
 
 
 def first_sentences(text: str, count: int = 2) -> str:
-    sentences = re.split(r"(?<=[.!?])\s+", " ".join(text.split()))
+    sentences = re.split(r"(?<=[.!?。！？])\s*", " ".join(text.split()))
     selected = [sentence for sentence in sentences if sentence][:count]
     return " ".join(selected)[:900]
 

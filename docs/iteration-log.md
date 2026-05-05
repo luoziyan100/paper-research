@@ -3465,3 +3465,30 @@
 - `python3 -m unittest discover -s tests` passed with 113 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter122 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 123 - 2026-05-04 21:58 PDT
+
+### Current Problems
+
+- `first_sentences` split only on English punctuation.
+- Chinese summaries using `。`, `！`, or `？` could keep too much text instead of selecting the requested number of sentences.
+
+### Planned Changes
+
+- Add a regression test for Chinese sentence punctuation.
+- Extend sentence splitting to Chinese sentence-ending punctuation.
+- Preserve existing English report and benchmark behavior.
+
+### Changes Made
+
+- Added `test_first_sentences_splits_chinese_punctuation`.
+- Updated `first_sentences` to split on `.`, `!`, `?`, `。`, `！`, and `？`.
+
+### Verification After Changes
+
+- Red target test first failed because all three Chinese sentences stayed together.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_first_sentences_splits_chinese_punctuation tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_extracts_method_audit_strength tests.test_workflow.ResearchWorkflowTest.test_runs_iterative_agents_and_records_every_round`
+- `python3 -m unittest discover -s tests` passed with 114 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter123 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
