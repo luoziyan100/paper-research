@@ -617,6 +617,18 @@ class ResearchWorkflowTest(unittest.TestCase):
                 sections["执行摘要"].lower(),
             )
 
+    def test_chinese_executive_summary_localizes_benchmark_term(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            summary = result.rounds[0].report.sections["执行摘要"]
+
+            self.assertIn("外部对照报告", summary)
+            self.assertNotIn("benchmark", summary.lower())
+
     def test_chinese_research_agenda_localizes_agent_terms(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

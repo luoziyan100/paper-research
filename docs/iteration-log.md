@@ -1841,3 +1841,30 @@
 - `python3 -m unittest discover -s tests` passed with 69 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter63 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 64 - 2026-05-04 19:13 PDT
+
+### Current Problems
+
+- Chinese `执行摘要` still used `外部 benchmark`.
+- This was another untranslated framework term in a high-visibility report section.
+
+### Planned Changes
+
+- Add a regression test for the Chinese executive summary.
+- Replace `外部 benchmark` with a natural Chinese phrase.
+- Preserve existing Chinese DOCX generation and evidence-ledger behavior.
+
+### Changes Made
+
+- Added `test_chinese_executive_summary_localizes_benchmark_term`.
+- `执行摘要` now uses `外部对照报告`.
+
+### Verification After Changes
+
+- Red test first failed because the summary did not contain `外部对照报告` and still contained `benchmark`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_executive_summary_localizes_benchmark_term tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+- `python3 -m unittest discover -s tests` passed with 70 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter64 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
