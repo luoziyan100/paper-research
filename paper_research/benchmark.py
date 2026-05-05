@@ -147,7 +147,7 @@ class BenchmarkSearchAgent:
         files = sorted(
             path
             for path in self.benchmark_dir.rglob("*")
-            if path.suffix.lower() in {".txt", ".md"}
+            if path.suffix.lower() in {".txt", ".md", ".markdown"}
         )
         scored_reports = []
         terms = _keywords(paper_text, limit=8)

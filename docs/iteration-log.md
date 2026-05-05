@@ -2507,3 +2507,30 @@
 - `python3 -m unittest discover -s tests` passed with 81 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter87 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 88 - 2026-05-04 20:23 PDT
+
+### Current Problems
+
+- Local benchmark search only loaded `.txt` and `.md` files.
+- `.markdown` benchmark reports were skipped, causing unnecessary fallback to built-in reports.
+
+### Planned Changes
+
+- Add a regression test for `.markdown` local benchmark files.
+- Include `.markdown` in the local benchmark file suffix allow-list.
+- Verify existing `.md` local search still works.
+
+### Changes Made
+
+- Added `test_searches_local_markdown_extension_benchmark_reports`.
+- Local search now accepts `.markdown` files.
+
+### Verification After Changes
+
+- Red target test first failed because search fell back to `built-in://claim-evidence-round-1`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_searches_local_markdown_extension_benchmark_reports tests.test_workflow.ResearchWorkflowTest.test_searches_local_benchmark_reports_when_provided`
+- `python3 -m unittest discover -s tests` passed with 82 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter88 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

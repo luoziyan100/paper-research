@@ -334,6 +334,21 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(result.rounds[0].benchmark_reports[0].source_type, "local")
             self.assertIn("keyword", result.rounds[0].benchmark_reports[0].search_note)
 
+    def test_searches_local_markdown_extension_benchmark_reports(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            benchmark_dir = Path(tmp)
+            (benchmark_dir / "excellent_report.markdown").write_text(
+                "This excellent report connects experiment evidence, limitations, "
+                "and future follow-up questions.",
+                encoding="utf-8",
+            )
+            agent = BenchmarkSearchAgent(benchmark_dir=benchmark_dir)
+
+            results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+            self.assertIn("excellent_report.markdown", results[0].source)
+            self.assertEqual(results[0].source_type, "local")
+
     def test_local_benchmark_search_prioritizes_chinese_keyword_matches(self):
         with tempfile.TemporaryDirectory() as tmp:
             benchmark_dir = Path(tmp)
