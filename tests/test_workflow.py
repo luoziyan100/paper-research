@@ -1668,6 +1668,8 @@ We analyze data quality.
         self.assertIn("实验或结果部分不够明确", report_text)
         self.assertNotIn("The method section was not explicit", report_text)
         self.assertNotIn("The experiments or results section was not explicit", report_text)
+        self.assertNotIn("实验部分提供了覆盖提升的方向性证据", report_text)
+        self.assertIn("实验部分尚未提供足够的结果细节", report_text)
 
     def test_chinese_limitation_section_localizes_framework_terms(self):
         paper_text = """

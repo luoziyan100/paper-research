@@ -59,6 +59,11 @@ class ReportWriterAgent:
             method_summary = _zh_method_summary(method)
             evidence_summary = _zh_evidence_summary(experiments)
             limitation_summary = _zh_limitation_summary(limitations)
+            evidence_interpretation = (
+                "实验部分提供了覆盖提升的方向性证据"
+                if experiments.strip()
+                else "实验部分尚未提供足够的结果细节"
+            )
             sections = {
                 "执行摘要": (
                     f"本报告将论文理解为一个关于{problem_summary}的研究。"
@@ -73,7 +78,7 @@ class ReportWriterAgent:
                 "论文主张与证据账本": (
                     f"主张：论文试图证明{problem_summary}具有可行性或有效性。"
                     f"\n证据：{evidence_summary}。"
-                    f"\n解释：方法部分显示，{method_summary}；实验部分提供了覆盖提升的方向性证据。"
+                    f"\n解释：方法部分显示，{method_summary}；{evidence_interpretation}。"
                     "\n验证缺口：当前样例没有给出详细数据表、基线方法设置或显著性检验，"
                     "因此结论只能被视为需要复核的方向性证据。"
                 ),

@@ -4977,3 +4977,31 @@
 - `python3 -m unittest discover -s tests` passed with 155 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter173 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 174 - 2026-05-05 03:41 PDT
+
+### Current Problems
+
+- Chinese reports without an experiment/results section still said the experiment section provided directional coverage evidence.
+- This contradicted the localized `实验或结果部分不够明确` evidence summary.
+
+### Planned Changes
+
+- Extend the missing-section regression test to reject unsupported positive evidence claims.
+- Make the Chinese claim-evidence ledger explanation conditional on whether experiment text exists.
+- Verify existing Chinese evidence-ledger behavior still passes.
+
+### Changes Made
+
+- Updated `test_chinese_missing_sections_use_chinese_defaults` to require `实验部分尚未提供足够的结果细节`.
+- Added an `evidence_interpretation` branch in the Chinese report writer.
+
+### Verification After Changes
+
+- Red target test first failed because the report still contained `实验部分提供了覆盖提升的方向性证据`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_missing_sections_use_chinese_defaults tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_evidence_ledger_avoids_repeating_evidence_summary tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+- `python3 -m unittest discover -s tests` passed with 155 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter174 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
