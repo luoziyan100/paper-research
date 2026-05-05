@@ -51,16 +51,28 @@ class ReportScoringAgent:
                 points = min(criterion.max_points, 6 + min(hits, 5) * 2)
                 if "验证缺口" in evidence or "没有给出" in evidence:
                     points = min(points, 14)
+                points, cap_note = _apply_source_confidence_cap(
+                    points,
+                    criterion.max_points,
+                    rubric.source_notes,
+                    language,
+                )
                 marker_text = "、".join(matched_keywords) if matched_keywords else "无"
-                rationale = f"找到 {hits} 个相关标记（{marker_text}）。证据：{evidence}"
+                rationale = f"找到 {hits} 个相关标记（{marker_text}）。证据：{evidence}{cap_note}"
             else:
                 evidence = _find_evidence_snippet(report, keywords, language)
                 points = min(criterion.max_points, 8 + min(hits, 5) * 2)
+                points, cap_note = _apply_source_confidence_cap(
+                    points,
+                    criterion.max_points,
+                    rubric.source_notes,
+                    language,
+                )
                 marker_text = ", ".join(matched_keywords) if matched_keywords else "none"
                 rationale = (
                     f"Found {hits} evidence markers for {criterion.name.lower()} "
                     f"in the generated report. Matched markers: {marker_text}. "
-                    f"Evidence: {evidence}"
+                    f"Evidence: {evidence}{cap_note}"
                 )
             scores.append(
                 CriterionScore(
@@ -195,6 +207,30 @@ def _contains_marker(text: str, keyword: str, language: str) -> bool:
     if lowered_keyword in {"reproduc", "result", "experiment"}:
         return lowered_keyword in text
     return re.search(rf"(?<![a-z]){re.escape(lowered_keyword)}(?![a-z])", text) is not None
+
+
+def _apply_source_confidence_cap(
+    points: int,
+    max_points: int,
+    source_notes: str,
+    language: str,
+) -> tuple[int, str]:
+    if not _has_no_external_benchmark_sources(source_notes):
+        return points, ""
+    cap = max(1, int(max_points * 0.8))
+    if points <= cap:
+        return points, ""
+    if language == "zh":
+        return cap, " 来源置信度上限已应用：外部对照报告数量为 0。"
+    return cap, " source confidence cap applied: external benchmark source count is 0."
+
+
+def _has_no_external_benchmark_sources(source_notes: str) -> bool:
+    return (
+        re.search(r"external source count:\s*0\b", source_notes, re.IGNORECASE)
+        is not None
+        or re.search(r"外部来源数量：\s*0\b", source_notes) is not None
+    )
 
 
 def _validate_language(language: str) -> None:

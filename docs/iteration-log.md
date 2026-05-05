@@ -4010,3 +4010,37 @@
 - `python3 -m unittest discover -s tests` passed with 130 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter141 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 142 - 2026-05-04 23:58 PDT
+
+### Current Problems
+
+- After English problem framing improved, the two-round English sample reached 90/100 even though benchmark search used only built-in fallback patterns.
+- Keyword-complete reports could therefore receive a high score without external benchmark evidence.
+
+### Planned Changes
+
+- Add scoring-level coverage for a source-confidence cap when `External source count: 0`.
+- Add workflow-level coverage that a built-in-only English second round does not reach the high band.
+- Apply the cap per criterion and explain it in score rationales.
+
+### Changes Made
+
+- Added `test_builtin_only_rubric_caps_high_english_scores`.
+- Added `test_english_builtin_only_second_round_does_not_reach_high_band`.
+- Added source-note detection for `External source count: 0` / `外部来源数量：0`.
+- Applied an 80% per-criterion source-confidence cap when no external benchmark sources are present.
+- Added cap notes to affected score rationales.
+
+### Verification After Changes
+
+- Red scoring test first failed because the full-marker score remained 18/20.
+- Red workflow test first failed because the built-in-only second round scored 85/100 and still reached `high`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_scoring.ReportScoringAgentTest.test_builtin_only_rubric_caps_high_english_scores tests.test_workflow.ResearchWorkflowTest.test_english_builtin_only_second_round_does_not_reach_high_band tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_avoids_inflated_sample_score`
+- Manual English sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 2 --output-dir /tmp/paper_research_iter142_en_after2`
+- Manual sample quality check: built-in-only round 2 now scores 80/100 with `Quality band: good`; each fully matched criterion is capped at 16/20 with a source-confidence rationale note.
+- `python3 -m unittest discover -s tests` passed with 132 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter142 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

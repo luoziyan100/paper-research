@@ -538,6 +538,22 @@ class ResearchWorkflowTest(unittest.TestCase):
                 [score.rationale for score in scorecard.scores],
             )
 
+    def test_english_builtin_only_second_round_does_not_reach_high_band(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=2, output_dir=Path(tmp)),
+            )
+
+            second_scorecard = result.rounds[1].scorecard
+
+            self.assertLess(second_scorecard.total_score, 85)
+            self.assertIn("Quality band: good", second_scorecard.summary)
+            self.assertTrue(
+                any("source confidence cap" in score.rationale for score in second_scorecard.scores),
+                [score.rationale for score in second_scorecard.scores],
+            )
+
     def test_english_scorecard_summary_matches_low_score_threshold(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
