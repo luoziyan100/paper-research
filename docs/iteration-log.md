@@ -1980,3 +1980,31 @@
 - `python3 -m unittest discover -s tests` passed with 72 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter68 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 69 - 2026-05-04 19:33 PDT
+
+### Current Problems
+
+- Chinese benchmark search provenance still used `内置 fallback` and `本地 benchmark`.
+- Local search notes also used `keyword 命中`, which made DOCX/search trace text feel partly untranslated.
+
+### Planned Changes
+
+- Add stricter tests for Chinese local search notes and built-in fallback notes.
+- Rename the Chinese local note to `本地对照报告文件` and `关键词命中`.
+- Rename the Chinese fallback note to `内置回退` and remove `benchmark` from the note body.
+
+### Changes Made
+
+- Updated `_fallback_search_note` for Chinese to use `内置回退` and `网页对照报告`.
+- Updated `_local_search_note` for Chinese to use `本地对照报告文件` and `关键词命中`.
+- Expanded tests to reject `fallback`、`benchmark`、`keyword` in Chinese search notes.
+
+### Verification After Changes
+
+- Red target tests first failed because search notes still emitted `内置 fallback`, `本地 benchmark`, and `keyword 命中`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_prioritizes_chinese_keyword_matches tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_note_localizes_no_keyword_overlap tests.test_workflow.ResearchWorkflowTest.test_builtin_benchmark_fallback_returns_diverse_report_archetypes`
+- `python3 -m unittest discover -s tests` passed with 72 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter69 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

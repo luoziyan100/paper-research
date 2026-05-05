@@ -224,14 +224,14 @@ class BenchmarkSearchAgent:
 
 def _fallback_search_note(language: str) -> str:
     if language == "zh":
-        return "内置 fallback：未找到可用的本地或网页 benchmark，使用内置优秀报告模式。"
+        return "内置回退：未找到可用的本地或网页对照报告，使用内置优秀报告模式。"
     return "built-in fallback: no usable local or web benchmark reports were found."
 
 
 def _local_search_note(path: Path, matched_terms: Sequence[str], language: str) -> str:
     if language == "zh":
         terms = "、".join(matched_terms[:5]) if matched_terms else "无直接关键词命中"
-        return f"本地 benchmark 文件：{path.name}；keyword 命中：{terms}。"
+        return f"本地对照报告文件：{path.name}；关键词命中：{terms}。"
     terms = ", ".join(matched_terms[:5]) if matched_terms else "no direct keyword overlap"
     return f"Local benchmark file: {path.name}; keyword matches: {terms}."
 

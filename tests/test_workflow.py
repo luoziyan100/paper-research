@@ -349,8 +349,12 @@ class ResearchWorkflowTest(unittest.TestCase):
             results = agent.search(CHINESE_PAPER_TEXT, round_number=1, previous_report=None)
 
             self.assertIn("zzz_relevant.md", results[0].source)
+            self.assertIn("本地对照报告文件", results[0].search_note)
+            self.assertIn("关键词命中", results[0].search_note)
             self.assertIn("多智能体", results[0].search_note)
             self.assertIn("评分标准", results[0].search_note)
+            self.assertNotIn("本地 benchmark", results[0].search_note)
+            self.assertNotIn("keyword", results[0].search_note.lower())
             self.assertIn("把论文主张连接到实验证据。", results[0].strengths)
 
     def test_chinese_local_benchmark_extracts_method_audit_strength(self):
@@ -397,6 +401,8 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertIn("无直接关键词命中", results[0].search_note)
             self.assertNotIn("no direct keyword overlap", results[0].search_note)
+            self.assertNotIn("本地 benchmark", results[0].search_note)
+            self.assertNotIn("keyword", results[0].search_note.lower())
 
     def test_web_search_agent_extracts_external_report_results(self):
         html = """
@@ -497,7 +503,9 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertIn("built-in://methodology-round-1", sources)
         self.assertIn("built-in://limitations-round-1", sources)
         self.assertEqual(results[0].source_type, "built-in")
-        self.assertIn("fallback", results[0].search_note)
+        self.assertIn("内置回退", results[0].search_note)
+        self.assertNotIn("fallback", results[0].search_note.lower())
+        self.assertNotIn("benchmark", results[0].search_note.lower())
 
     def test_chinese_report_records_benchmark_source_quality(self):
         with tempfile.TemporaryDirectory() as tmp:
