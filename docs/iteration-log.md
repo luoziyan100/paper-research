@@ -4532,3 +4532,33 @@
 - `python3 -m unittest discover -s tests` passed with 140 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter158 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 159 - 2026-05-05 01:01 PDT
+
+### Current Problems
+
+- README documented `Final score summary` after the CLI change.
+- It did not document the localized Chinese label `最终评分摘要`, even though `--language zh` now uses it.
+
+### Planned Changes
+
+- Add documentation coverage for the Chinese CLI score-summary label.
+- Update README's CLI output description.
+- Preserve the localized CLI behavior.
+
+### Changes Made
+
+- Extended `test_readme_documents_benchmark_traceability_and_library_import`.
+- Added README text saying Chinese runs use `最终评分摘要`.
+
+### Verification After Changes
+
+- Red documentation test first failed because README did not mention `最终评分摘要`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import tests.test_cli_io.InputAndCliTest.test_cli_localizes_chinese_final_score_summary_label`
+- Manual sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 1 --output-dir /tmp/paper_research_iter159_zh_after`
+- Manual CLI output starts with `最终评分摘要：` for the final score line.
+- `python3 -m unittest discover -s tests` passed with 140 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter159 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

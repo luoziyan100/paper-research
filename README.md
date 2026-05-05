@@ -47,7 +47,8 @@ python3 -m paper_research examples/sample_paper.txt --rounds 2 --output-dir rese
 
 Successful runs print both output paths and a `Final score summary` line so you
 can see the latest score, quality band, and source-confidence risks without
-opening the generated files first.
+opening the generated files first. Chinese runs use the localized label
+`最终评分摘要`.
 
 Generate a Chinese report:
 

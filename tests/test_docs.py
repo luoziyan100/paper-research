@@ -20,6 +20,7 @@ class DocumentationTest(unittest.TestCase):
         self.assertIn("source confidence", readme)
         self.assertIn("External source count: 0", readme)
         self.assertIn("Final score summary", readme)
+        self.assertIn("最终评分摘要", readme)
         self.assertIn("--no-resume", readme)
 
 
