@@ -2534,3 +2534,30 @@
 - `python3 -m unittest discover -s tests` passed with 82 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter88 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 89 - 2026-05-04 20:25 PDT
+
+### Current Problems
+
+- Local benchmark search included hidden files such as `.draft.md`.
+- A hidden draft with strong keyword overlap could outrank published benchmark reports.
+
+### Planned Changes
+
+- Add a regression test with a hidden draft and a visible published report.
+- Skip local files when any path segment is hidden.
+- Preserve normal `.md` and `.markdown` local search behavior.
+
+### Changes Made
+
+- Added `test_local_benchmark_search_ignores_hidden_files`.
+- Local search now skips hidden files and files under hidden directories.
+
+### Verification After Changes
+
+- Red target test first failed because `.draft.md` was selected first.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_ignores_hidden_files tests.test_workflow.ResearchWorkflowTest.test_searches_local_markdown_extension_benchmark_reports`
+- `python3 -m unittest discover -s tests` passed with 83 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter89 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

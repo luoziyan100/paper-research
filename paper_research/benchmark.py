@@ -148,6 +148,7 @@ class BenchmarkSearchAgent:
             path
             for path in self.benchmark_dir.rglob("*")
             if path.suffix.lower() in {".txt", ".md", ".markdown"}
+            and not any(part.startswith(".") for part in path.relative_to(self.benchmark_dir).parts)
         )
         scored_reports = []
         terms = _keywords(paper_text, limit=8)
