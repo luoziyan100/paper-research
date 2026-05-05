@@ -357,30 +357,31 @@ def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
         r"<([a-zA-Z][a-zA-Z0-9:-]*)\s+([^>]*)>(.*?)</\1>",
         re.IGNORECASE | re.DOTALL,
     )
-    parsed_anchors = [
-        (_parse_html_attrs(attrs), body)
-        for attrs, body in anchor_pattern.findall(raw_html)
-    ]
-    snippets = [
-        _strip_html(body)
-        for _, attrs_text, body in element_pattern.findall(raw_html)
-        for attrs in [_parse_html_attrs(attrs_text)]
-        if _has_class(attrs, "result__snippet")
-    ]
+    events = []
+    for match in anchor_pattern.finditer(raw_html):
+        attrs = _parse_html_attrs(match.group(1))
+        if _has_class(attrs, "result__a"):
+            events.append((match.start(), "anchor", attrs, match.group(2)))
+    for match in element_pattern.finditer(raw_html):
+        attrs = _parse_html_attrs(match.group(2))
+        if _has_class(attrs, "result__snippet"):
+            events.append((match.start(), "snippet", attrs, match.group(3)))
+    events.sort(key=lambda item: item[0])
+
     results: List[Dict[str, str]] = []
-    result_anchors = [
-        (attrs, body)
-        for attrs, body in parsed_anchors
-        if _has_class(attrs, "result__a")
-    ]
-    snippet_index = 0
-    for attrs, title_html in result_anchors:
-        title = _strip_html(title_html)
-        source = _clean_result_url(attrs.get("href", ""))
-        if source:
-            snippet = snippets[snippet_index] if snippet_index < len(snippets) else ""
-            snippet_index += 1
-            results.append({"title": title, "url": source, "snippet": snippet})
+    pending_result_index: Optional[int] = None
+    for _, event_type, attrs, body in events:
+        if event_type == "anchor":
+            title = _strip_html(body)
+            source = _clean_result_url(attrs.get("href", ""))
+            if source:
+                results.append({"title": title, "url": source, "snippet": ""})
+                pending_result_index = len(results) - 1
+            else:
+                pending_result_index = None
+        elif pending_result_index is not None and not results[pending_result_index]["snippet"]:
+            results[pending_result_index]["snippet"] = _strip_html(body)
+            pending_result_index = None
     return results
 
 

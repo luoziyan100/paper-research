@@ -3328,3 +3328,30 @@
 - `python3 -m unittest discover -s tests` passed with 108 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter117 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 118 - 2026-05-04 21:42 PDT
+
+### Current Problems
+
+- The Iteration 117 snippet cursor fix handled skipped anchors without snippets.
+- It still reused a skipped anchor's own snippet for the next accepted result when the skipped anchor did have a snippet.
+
+### Planned Changes
+
+- Add a regression test for a skipped no-`href` result that has its own snippet.
+- Parse result anchors and snippets as ordered events.
+- Attach snippets only to the most recent accepted source-bearing result.
+
+### Changes Made
+
+- Added `test_web_search_agent_does_not_reuse_snippet_from_skipped_anchor`.
+- Reworked `_extract_duckduckgo_results` to pair snippets in HTML order instead of by raw list index.
+
+### Verification After Changes
+
+- Red target test first failed because the real result summary contained the skipped anchor's snippet.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_does_not_reuse_snippet_from_skipped_anchor tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_keeps_snippet_after_skipped_anchor_without_snippet tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_div_snippets`
+- `python3 -m unittest discover -s tests` passed with 109 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter118 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
