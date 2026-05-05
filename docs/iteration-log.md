@@ -3980,3 +3980,33 @@
 - `python3 -m unittest discover -s tests` passed with 129 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter140 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 141 - 2026-05-04 23:54 PDT
+
+### Current Problems
+
+- A fresh English sample run showed `Problem Framing` stayed at 12/20.
+- The `Executive Thesis` described the paper generally but did not explicitly state the research question, scope, or why the problem matters.
+
+### Planned Changes
+
+- Add a regression test for English executive-thesis problem framing.
+- Improve the English opening section with explicit question, scope, and importance language.
+- Preserve claim/evidence ledger behavior and prior anti-inflation scoring regression tests.
+
+### Changes Made
+
+- Added `test_english_executive_thesis_states_question_scope_and_importance`.
+- Updated `Executive Thesis` to include `Research question:`, `Scope:`, and `Why it matters:`.
+
+### Verification After Changes
+
+- Red target test first failed because `Research question:` was absent from the English executive thesis.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_executive_thesis_states_question_scope_and_importance tests.test_workflow.ResearchWorkflowTest.test_english_report_uses_claim_evidence_ledger_sections tests.test_workflow.ResearchWorkflowTest.test_english_scorecard_avoids_inflated_sample_score`
+- Manual English sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language en --rounds 2 --output-dir /tmp/paper_research_iter141_en_after`
+- Manual sample quality check: round 2 `Problem Framing` improved from 12/20 to 18/20. The total rose to 90/100, which suggests the next scoring-calibration iteration should cap high scores when only built-in benchmark patterns are available.
+- `python3 -m unittest discover -s tests` passed with 130 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter141 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

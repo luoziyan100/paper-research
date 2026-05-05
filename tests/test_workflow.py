@@ -452,6 +452,19 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("Evidence:", sections["Claim-Evidence Ledger"])
             self.assertIn("Verification gap:", sections["Claim-Evidence Ledger"])
 
+    def test_english_executive_thesis_states_question_scope_and_importance(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            thesis = result.rounds[0].report.sections["Executive Thesis"]
+
+            self.assertIn("Research question:", thesis)
+            self.assertIn("Scope:", thesis)
+            self.assertIn("Why it matters:", thesis)
+
     def test_english_scorecard_cites_report_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

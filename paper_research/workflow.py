@@ -109,9 +109,11 @@ class ReportWriterAgent:
 
         sections = {
             "Executive Thesis": (
-                f"This report interprets the paper as an attempt to solve: "
-                f"{_problem_statement(abstract)} It focuses on what the work claims, "
-                "what evidence supports those claims, and where the argument is fragile."
+                f"Research question: how should we evaluate {_problem_statement(abstract)} "
+                "Scope: the report covers the paper's claims, benchmark comparisons, rubric iteration, "
+                "evidence support, and fragile assumptions. "
+                "Why it matters: stronger problem framing makes the later evidence and limitation review "
+                "auditable instead of a generic summary."
             ),
             "Contribution Analysis": (
                 f"Core contribution signals: {_extract_contribution(abstract, method)} "
