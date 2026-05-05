@@ -51,7 +51,7 @@ CHINESE_PAPER_TEXT = """
 在三篇论文上，迭代审查提高了对假设、限制、baseline 和可复现性细节的覆盖。
 
 局限
-系统依赖 benchmark 报告质量，也可能让评分标准过拟合当前报告。
+系统依赖对照报告质量，也可能让评分标准过拟合当前报告。
 """
 
 NUMBERED_CHINESE_PAPER_TEXT = """
@@ -67,7 +67,7 @@ NUMBERED_CHINESE_PAPER_TEXT = """
 实验显示该系统提高了 baseline、限制和可复现性细节覆盖。
 
 四、局限
-系统仍依赖 benchmark 报告质量。
+系统仍依赖对照报告质量。
 """
 
 PAREN_NUMBERED_CHINESE_PAPER_TEXT = """
@@ -83,7 +83,7 @@ PAREN_NUMBERED_CHINESE_PAPER_TEXT = """
 实验显示该系统提高了 baseline、限制和可复现性细节覆盖。
 
 (四) 局限
-系统仍依赖 benchmark 报告质量。
+系统仍依赖对照报告质量。
 """
 
 INLINE_CHINESE_PAPER_TEXT = """
@@ -92,7 +92,7 @@ INLINE_CHINESE_PAPER_TEXT = """
 摘要：本文研究一个多智能体系统，用于生成中文论文研究报告。
 方法：系统把报告写作、评分标准生成和证据审查拆分为多角色流程。
 实验：实验显示该系统提高了 baseline、限制和可复现性细节覆盖。
-局限：系统仍依赖 benchmark 报告质量。
+局限：系统仍依赖对照报告质量。
 """
 
 SPACE_NUMBERED_CHINESE_PAPER_TEXT = """
@@ -108,7 +108,7 @@ SPACE_NUMBERED_CHINESE_PAPER_TEXT = """
 实验显示该系统提高了 baseline、限制和可复现性细节覆盖。
 
 四 局限
-系统仍依赖 benchmark 报告质量。
+系统仍依赖对照报告质量。
 """
 
 APPROACH_EVALUATION_PAPER_TEXT = """
@@ -160,7 +160,7 @@ MARKDOWN_CHINESE_TITLE_PAPER_TEXT = """
 实验显示该系统提高了 baseline、限制和可复现性细节覆盖。
 
 局限
-系统仍依赖 benchmark 报告质量。
+系统仍依赖对照报告质量。
 """
 
 
@@ -629,6 +629,41 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("外部对照报告", summary)
             self.assertNotIn("benchmark", summary.lower())
 
+    def test_chinese_limitation_section_localizes_framework_terms(self):
+        paper_text = """
+标题：中文限制术语测试
+
+摘要
+本文研究一个多智能体论文审查系统。
+
+方法
+系统把报告写作、评分标准生成和批评拆分为多角色流程。
+
+实验
+实验显示该系统提高了限制和可复现性细节覆盖。
+
+局限
+系统依赖对照报告质量，rubric 可能过拟合，critic 能力会影响纠偏。
+"""
+        report = ReportWriterAgent().write(
+            paper_text=paper_text,
+            benchmark_reports=[],
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        limitations = report.sections["限制与风险"]
+
+        self.assertIn("对照报告质量", limitations)
+        self.assertIn("评分标准可能过拟合当前报告", limitations)
+        self.assertIn("批评智能体的能力", limitations)
+        self.assertIn("对照报告敏感性", limitations)
+        self.assertNotIn("benchmark", limitations.lower())
+        self.assertNotIn("rubric", limitations.lower())
+        self.assertNotIn("agent", limitations.lower())
+
     def test_chinese_research_agenda_localizes_agent_terms(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(
@@ -856,7 +891,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("多角色流程", report.sections["方法与证据"])
             self.assertIn("baseline", report.sections["论文主张与证据账本"])
             self.assertNotIn("实验部分声称，实验声称", report.sections["论文主张与证据账本"])
-            self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
+            self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_numbered_chinese_headings_are_parsed(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -870,7 +905,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(report.title, "深度研究报告 - 编号标题论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
             self.assertIn("baseline", report.sections["论文主张与证据账本"])
-            self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
+            self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_parenthesized_numbered_chinese_headings_are_parsed(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -884,7 +919,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(report.title, "深度研究报告 - 括号编号论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
             self.assertIn("baseline", report.sections["论文主张与证据账本"])
-            self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
+            self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_inline_chinese_headings_are_parsed(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -898,7 +933,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(report.title, "深度研究报告 - 行内标题论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
             self.assertIn("baseline", report.sections["论文主张与证据账本"])
-            self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
+            self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_space_numbered_chinese_headings_are_parsed(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -912,7 +947,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(report.title, "深度研究报告 - 空格编号论文审查系统")
             self.assertIn("多角色流程", report.sections["方法与证据"])
             self.assertIn("baseline", report.sections["论文主张与证据账本"])
-            self.assertIn("benchmark 报告质量", report.sections["限制与风险"])
+            self.assertIn("对照报告质量", report.sections["限制与风险"])
 
     def test_continuous_runner_resumes_and_keeps_appending_rounds(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -191,12 +191,12 @@ def zh_evidence_summary(experiments: str) -> str:
 def zh_limitation_summary(limitations: str) -> str:
     lower = limitations.lower()
     risks = []
-    if "benchmark" in lower:
-        risks.append("结果依赖 benchmark 报告质量")
-    if "overfit" in lower or "rubric" in lower or "过拟合" in limitations:
+    if "benchmark" in lower or "对照报告" in limitations or "优秀报告" in limitations:
+        risks.append("结果依赖对照报告质量")
+    if "overfit" in lower or "rubric" in lower or "评分标准" in limitations or "过拟合" in limitations:
         risks.append("评分标准可能过拟合当前报告")
     if "critic" in lower:
-        risks.append("批评 agent 的能力会影响纠偏效果")
+        risks.append("批评智能体的能力会影响纠偏效果")
     if risks:
         return "；".join(risks)
     return "论文限制没有充分展开，需要从评估设计和可复现性角度补查"

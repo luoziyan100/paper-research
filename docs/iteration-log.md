@@ -1922,3 +1922,33 @@
 - `python3 -m unittest discover -s tests` passed with 71 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter66 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 67 - 2026-05-04 19:29 PDT
+
+### Current Problems
+
+- The Chinese `限制与风险` section still emitted `benchmark 敏感性` and `批评 agent`.
+- The limitation summarizer did not recognize already-localized input such as `对照报告质量`.
+- Several Chinese heading parser tests still normalized around English `benchmark` wording.
+
+### Planned Changes
+
+- Add a regression test that mixes `benchmark`、`rubric`、`critic` into a Chinese limitations paragraph.
+- Localize the limitation summary output to `对照报告质量`、`评分标准`、`批评智能体`.
+- Make the fixed review guidance use `对照报告敏感性`.
+
+### Changes Made
+
+- Added `test_chinese_limitation_section_localizes_framework_terms`.
+- Updated Chinese limitation fixtures and assertions to expect `对照报告质量`.
+- `zh_limitation_summary` now recognizes both legacy English framework terms and localized Chinese terms.
+- The Chinese report guidance now says `对照报告敏感性`.
+
+### Verification After Changes
+
+- Red target tests first failed because limitations still contained `benchmark 敏感性`, `批评 agent`, and missed localized `对照报告质量` inputs.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_limitation_section_localizes_framework_terms tests.test_workflow.ResearchWorkflowTest.test_chinese_paper_headings_and_title_are_parsed tests.test_workflow.ResearchWorkflowTest.test_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_parenthesized_numbered_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_inline_chinese_headings_are_parsed tests.test_workflow.ResearchWorkflowTest.test_space_numbered_chinese_headings_are_parsed`
+- `python3 -m unittest discover -s tests` passed with 72 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter67 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
