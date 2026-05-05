@@ -548,6 +548,25 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source, "https://example.com/excellent-report")
         self.assertIn("Excellent Paper Research Report", results[0].title)
 
+    def test_web_search_agent_handles_href_before_class(self):
+        html = """
+        <a href="https://example.com/reversed-report" class="result__a">
+          Reversed Attribute Report
+        </a>
+        <a class="result__snippet">
+          This report connects evidence and limitations.
+        </a>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "https://example.com/reversed-report")
+        self.assertIn("Reversed Attribute Report", results[0].title)
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """

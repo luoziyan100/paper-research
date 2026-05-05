@@ -349,23 +349,37 @@ def _fetch_url(url: str) -> str:
 
 
 def _extract_duckduckgo_results(raw_html: str) -> List[Dict[str, str]]:
-    link_pattern = re.compile(
-        r"""<a[^>]*class=(["'])[^"']*result__a[^"']*\1[^>]*href=(["'])(.*?)\2[^>]*>(.*?)</a>""",
-        re.IGNORECASE | re.DOTALL,
-    )
-    snippet_pattern = re.compile(
-        r"""<a[^>]*class=(["'])[^"']*result__snippet[^"']*\1[^>]*>(.*?)</a>""",
-        re.IGNORECASE | re.DOTALL,
-    )
-    snippets = [_strip_html(match[1]) for match in snippet_pattern.findall(raw_html)]
+    anchor_pattern = re.compile(r"<a\s+([^>]*)>(.*?)</a>", re.IGNORECASE | re.DOTALL)
+    parsed_anchors = [
+        (_parse_html_attrs(attrs), body)
+        for attrs, body in anchor_pattern.findall(raw_html)
+    ]
+    snippets = [
+        _strip_html(body)
+        for attrs, body in parsed_anchors
+        if "result__snippet" in attrs.get("class", "")
+    ]
     results: List[Dict[str, str]] = []
-    for index, (_, _, href, title_html) in enumerate(link_pattern.findall(raw_html)):
+    result_anchors = [
+        (attrs, body)
+        for attrs, body in parsed_anchors
+        if "result__a" in attrs.get("class", "")
+    ]
+    for index, (attrs, title_html) in enumerate(result_anchors):
         title = _strip_html(title_html)
-        source = _clean_result_url(href)
+        source = _clean_result_url(attrs.get("href", ""))
         snippet = snippets[index] if index < len(snippets) else ""
         if title or source:
             results.append({"title": title, "url": source, "snippet": snippet})
     return results
+
+
+def _parse_html_attrs(attrs: str) -> Dict[str, str]:
+    attr_pattern = re.compile(r"""([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*(["'])(.*?)\2""", re.DOTALL)
+    return {
+        name.lower(): unescape(value)
+        for name, _, value in attr_pattern.findall(attrs)
+    }
 
 
 def _strip_html(value: str) -> str:

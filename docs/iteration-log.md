@@ -2698,3 +2698,31 @@
 - `python3 -m unittest discover -s tests` passed with 87 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter94 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 95 - 2026-05-04 20:41 PDT
+
+### Current Problems
+
+- DuckDuckGo result parsing required `class` to appear before `href` on result links.
+- If the HTML emitted `href` first, the workflow missed web results and used built-in fallback reports.
+
+### Planned Changes
+
+- Add a regression test for reversed `href`/`class` attribute order.
+- Parse anchor tags into attributes first, then inspect `class` and `href`.
+- Preserve support for single-quoted and double-quoted attributes.
+
+### Changes Made
+
+- Added `test_web_search_agent_handles_href_before_class`.
+- `_extract_duckduckgo_results` now parses generic anchor attributes and no longer depends on attribute order.
+- Added `_parse_html_attrs` for simple quoted attribute extraction.
+
+### Verification After Changes
+
+- Red target test first failed because search fell back to `built-in://claim-evidence-round-1`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_href_before_class tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_handles_single_quoted_result_attributes tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 88 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter95 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
