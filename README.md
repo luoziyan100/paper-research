@@ -93,6 +93,9 @@ python3 -m paper_research path/to/paper.txt \
   --output-dir research_output
 ```
 
+Add `--no-resume` when you want to ignore existing `research_rounds.jsonl`
+records and start a fresh continuous run.
+
 For a short dry run of continuous mode:
 
 ```bash

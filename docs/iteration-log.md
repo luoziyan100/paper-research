@@ -1760,3 +1760,30 @@
 - `python3 -m unittest discover -s tests` passed with 67 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter60 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 61 - 2026-05-04 19:06 PDT
+
+### Current Problems
+
+- CLI supports `--no-resume`, but README did not document how to start a fresh continuous run.
+- Users reading only README could miss how to ignore existing JSONL records.
+
+### Planned Changes
+
+- Add a README regression assertion for `--no-resume`.
+- Document the option in the continuous-run section.
+- Preserve existing traceability and benchmark-dir documentation.
+
+### Changes Made
+
+- Extended `test_readme_documents_benchmark_traceability_and_library_import`.
+- README now explains that `--no-resume` ignores existing `research_rounds.jsonl` records and starts fresh.
+
+### Verification After Changes
+
+- Red docs test first failed because README lacked `--no-resume`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_resumes_and_keeps_appending_rounds`
+- `python3 -m unittest discover -s tests` passed with 67 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter61 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
