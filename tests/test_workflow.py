@@ -223,6 +223,20 @@ class ResearchWorkflowTest(unittest.TestCase):
                 second_round.rubric.source_notes.lower(),
             )
 
+    def test_english_report_records_external_benchmark_source_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            section = result.rounds[0].report.sections["Benchmark Quality"]
+
+            self.assertIn("Source count: 3", section)
+            self.assertIn("External source count: 0", section)
+            self.assertIn("built-in fallback", section)
+            self.assertIn("Only built-in fallback patterns were used", section)
+
     def test_parses_approach_and_evaluation_headings(self):
         with tempfile.TemporaryDirectory() as tmp:
             result = run_research_workflow(

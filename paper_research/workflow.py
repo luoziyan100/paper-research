@@ -751,9 +751,16 @@ def _benchmark_quality_summary(
     if not coverage:
         coverage.append("general research-report pattern")
     source_type_text = ", ".join(source_types) if source_types else "none"
+    built_in_only_note = (
+        "Only built-in fallback patterns were used; this is not external literature evidence. "
+        if source_count and external_count == 0
+        else ""
+    )
     return (
-        f"Source count: {source_count}. Source types: {source_type_text}. "
+        f"Source count: {source_count}. External source count: {external_count}. "
+        f"Source types: {source_type_text}. "
         f"Coverage: {', '.join(coverage)}. Future web or local benchmarks should "
+        f"{built_in_only_note}"
         "continue tracking source diversity and field differences."
     )
 

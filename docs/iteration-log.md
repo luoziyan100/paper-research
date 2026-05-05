@@ -3079,3 +3079,30 @@
 - `python3 -m unittest discover -s tests` passed with 100 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter108 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 109 - 2026-05-04 21:14 PDT
+
+### Current Problems
+
+- English benchmark quality summaries still lacked external source counts after the Chinese path was improved.
+- The English report could also overstate built-in fallback archetypes as if they were external benchmark evidence.
+
+### Planned Changes
+
+- Add an English regression test for external benchmark source counts.
+- Add external source count and built-in-only warning text to English benchmark quality summaries.
+- Preserve the Chinese behavior added in the previous iteration.
+
+### Changes Made
+
+- Added `test_english_report_records_external_benchmark_source_count`.
+- Updated the English `_benchmark_quality_summary` text to include external source count and fallback-only warning.
+
+### Verification After Changes
+
+- Red target test first failed because the English section had no `External source count`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_english_report_records_external_benchmark_source_count tests.test_workflow.ResearchWorkflowTest.test_chinese_report_records_benchmark_source_quality`
+- `python3 -m unittest discover -s tests` passed with 101 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter109 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
