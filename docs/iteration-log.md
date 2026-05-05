@@ -3715,3 +3715,31 @@
 - `python3 -m unittest discover -s tests` passed with 121 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter131 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 132 - 2026-05-04 23:19 PDT
+
+### Current Problems
+
+- English section headings with Roman numeral prefixes such as `II. Method` were not normalized.
+- Method and evaluation sections could be missed in papers using traditional numbered headings.
+
+### Planned Changes
+
+- Add a regression test for Roman-numbered English headings.
+- Strip leading Roman numerals before English heading lookup.
+- Preserve existing approach/evaluation and Markdown title parsing.
+
+### Changes Made
+
+- Added `ROMAN_NUMBERED_ENGLISH_PAPER_TEXT`.
+- Added `test_parses_roman_numbered_english_headings`.
+- Updated `normalize_english_heading` to remove leading Roman numeral prefixes.
+
+### Verification After Changes
+
+- Red target test first failed because method and evaluation fell back to explicit-missing defaults.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_parses_roman_numbered_english_headings tests.test_workflow.ResearchWorkflowTest.test_parses_approach_and_evaluation_headings tests.test_workflow.ResearchWorkflowTest.test_markdown_title_heading_is_cleaned`
+- `python3 -m unittest discover -s tests` passed with 122 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter132 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

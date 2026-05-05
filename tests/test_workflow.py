@@ -165,6 +165,22 @@ The approach depends on curated negative examples and has not been tested on
 low-resource domains.
 """
 
+ROMAN_NUMBERED_ENGLISH_PAPER_TEXT = """
+Title: Roman Numbered Parsing
+
+I. Abstract
+We study a retrieval workflow for long paper analysis.
+
+II. Method
+The method combines retrieval filtering and verifier reranking.
+
+III. Evaluation
+On MMLU, the workflow improves factual consistency.
+
+IV. Limitations
+The approach depends on curated negative examples.
+"""
+
 MARKDOWN_TITLE_PAPER_TEXT = """
 # Markdown Research Paper
 
@@ -336,6 +352,19 @@ class ResearchWorkflowTest(unittest.TestCase):
             report = result.rounds[0].report
 
             self.assertIn("contrastive pretraining", report.sections["Method and Evidence"])
+            self.assertIn("MMLU", report.sections["Method and Evidence"])
+            self.assertNotIn("method section was not explicit", report.sections["Method and Evidence"].lower())
+
+    def test_parses_roman_numbered_english_headings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=ROMAN_NUMBERED_ENGLISH_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertIn("retrieval filtering", report.sections["Method and Evidence"])
             self.assertIn("MMLU", report.sections["Method and Evidence"])
             self.assertNotIn("method section was not explicit", report.sections["Method and Evidence"].lower())
 

@@ -115,6 +115,11 @@ def normalize_chinese_heading(line: str) -> str:
 
 
 def normalize_english_heading(normalized_line: str) -> str:
+    normalized_line = re.sub(
+        r"^(?:i|ii|iii|iv|v|vi|vii|viii|ix|x)\s+",
+        "",
+        normalized_line,
+    )
     heading_map = {
         "abstract": "abstract",
         "introduction": "introduction",
