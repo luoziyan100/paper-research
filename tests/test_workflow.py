@@ -548,8 +548,8 @@ class ResearchWorkflowTest(unittest.TestCase):
             refinement = result.rounds[1].report.sections["本轮改进"]
 
             self.assertIn("上一轮低分项", refinement)
-            self.assertIn("问题定义", refinement)
             self.assertIn("限制与失败模式", refinement)
+            self.assertNotIn("问题定义 12/20", refinement)
 
     def test_searches_local_benchmark_reports_when_provided(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -1234,7 +1234,7 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertIn("评分标准", document_xml)
             self.assertIn("评分标准批评", document_xml)
             self.assertIn("问题定义（20 分）：", document_xml)
-            self.assertIn("问题定义：12/20。", document_xml)
+            self.assertIn("问题定义：16/20。", document_xml)
             self.assertIn("搜索说明：", document_xml)
             self.assertNotIn("20 pts", document_xml)
             self.assertNotIn("搜索说明:", document_xml)
@@ -1319,6 +1319,18 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertIn("外部对照报告", summary)
             self.assertNotIn("benchmark", summary.lower())
+
+    def test_chinese_executive_summary_states_problem_scope_and_importance(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp), language="zh"),
+            )
+
+            summary = result.rounds[0].report.sections["执行摘要"]
+
+            self.assertIn("问题范围", summary)
+            self.assertIn("重要性", summary)
 
     def test_chinese_limitation_section_localizes_framework_terms(self):
         paper_text = """

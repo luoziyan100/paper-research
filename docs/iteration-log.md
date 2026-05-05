@@ -3917,3 +3917,34 @@
 - `python3 -m unittest discover -s tests` passed with 128 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter138 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 139 - 2026-05-04 23:48 PDT
+
+### Current Problems
+
+- A fresh Chinese sample run showed the report had a research problem, but the executive summary did not explicitly state problem scope or importance.
+- The missing terms caused `问题定义` to remain a low score even when the report content was otherwise clear.
+
+### Planned Changes
+
+- Add a regression test that Chinese executive summaries state problem scope and importance.
+- Improve the Chinese executive summary template without changing scoring rules.
+- Update score-dependent assertions to reflect the improved quality baseline.
+
+### Changes Made
+
+- Added `test_chinese_executive_summary_states_problem_scope_and_importance`.
+- Updated the Chinese `执行摘要` to include `问题范围` and `重要性`.
+- Updated Chinese DOCX and second-round low-score assertions from the old `问题定义：12/20` baseline to the new `问题定义：16/20` behavior.
+
+### Verification After Changes
+
+- Red target test first failed because `问题范围` was missing from the Chinese executive summary.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_executive_summary_states_problem_scope_and_importance tests.test_workflow.ResearchWorkflowTest.test_chinese_executive_summary_localizes_benchmark_term tests.test_workflow.ResearchWorkflowTest.test_chinese_report_uses_evidence_ledger_sections`
+- Manual Chinese sample run passed:
+  - `python3 -m paper_research examples/sample_paper.txt --language zh --rounds 2 --output-dir /tmp/paper_research_iter139_zh_after`
+- Manual sample quality check: round 2 total improved from 72/100 to 76/100; `问题定义` improved from 12/20 to 16/20 with matched markers `问题、范围、假设、重要、研究`.
+- `python3 -m unittest discover -s tests` passed with 129 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter139 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
