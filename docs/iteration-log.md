@@ -2588,3 +2588,31 @@
 - `python3 -m unittest discover -s tests` passed with 84 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter90 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 91 - 2026-05-04 20:30 PDT
+
+### Current Problems
+
+- Very short placeholder files such as `TBD` could still produce local benchmark reports.
+- This polluted fallback behavior when a benchmark directory only contained placeholders.
+
+### Planned Changes
+
+- Add a regression test for placeholder local benchmark files.
+- Skip only extremely short local file content to avoid dropping legitimate short Chinese notes.
+- Re-run the no-keyword Chinese note test to guard against over-filtering.
+
+### Changes Made
+
+- Added `test_local_benchmark_search_ignores_placeholder_files`.
+- Local search now skips files with fewer than 10 non-whitespace characters.
+
+### Verification After Changes
+
+- Red target test first failed because `placeholder.md` produced a `local` benchmark report.
+- Initial threshold was too high and full tests caught an over-filtering regression; threshold was lowered to preserve short valid notes.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_local_benchmark_search_ignores_placeholder_files tests.test_workflow.ResearchWorkflowTest.test_chinese_local_benchmark_note_localizes_no_keyword_overlap`
+- `python3 -m unittest discover -s tests` passed with 85 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter91 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

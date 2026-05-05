@@ -154,7 +154,7 @@ class BenchmarkSearchAgent:
         terms = _keywords(paper_text, limit=8)
         for path in files:
             content = path.read_text(encoding="utf-8", errors="ignore")
-            if not content.strip():
+            if len(content.strip()) < 10:
                 continue
             lowered_content = content.lower()
             matched_terms = [term for term in terms if term.lower() in lowered_content]
