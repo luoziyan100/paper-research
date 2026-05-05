@@ -202,7 +202,7 @@ def zh_problem_summary(abstract: str) -> str:
     sentence = first_sentences(abstract, count=1)
     if sentence:
         cleaned = re.sub(
-            r"^(本文|本研究|我们)(研究|提出|介绍|探讨|设计|构建|开发|分析)",
+            r"^(本文|本研究|我们)(研究|提出|介绍|探讨|设计|构建|开发|分析)了?",
             "",
             sentence,
         ).strip()

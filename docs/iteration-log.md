@@ -4893,3 +4893,31 @@
 - `python3 -m unittest discover -s tests` passed with 152 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter170 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 171 - 2026-05-05 03:34 PDT
+
+### Current Problems
+
+- Chinese abstracts beginning with `本文提出了一种...` kept the auxiliary `了` after lead-verb stripping.
+- Generated executive summaries could say `关于了一种...`, which is visibly ungrammatical.
+
+### Planned Changes
+
+- Add a regression test covering `本文提出了...` style abstracts.
+- Strip optional `了` after common Chinese lead verbs.
+- Verify existing Chinese report grounding and DOCX generation still pass.
+
+### Changes Made
+
+- Added `CHINESE_INTRO_LE_PAPER_TEXT` and `test_chinese_problem_summary_strips_le_after_intro_verb`.
+- Updated `zh_problem_summary` lead-verb cleanup to consume optional `了`.
+
+### Verification After Changes
+
+- Red target test first failed because the executive summary contained `关于了一种图神经网络方法`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_problem_summary_strips_le_after_intro_verb tests.test_workflow.ResearchWorkflowTest.test_chinese_report_preserves_domain_specific_topic`
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_chinese_contribution_analysis_keeps_domain_markers tests.test_workflow.ResearchWorkflowTest.test_can_generate_chinese_report_and_docx`
+- `python3 -m unittest discover -s tests` passed with 153 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter171 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

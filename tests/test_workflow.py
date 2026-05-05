@@ -294,6 +294,22 @@ GENERAL_CHINESE_PAPER_TEXT = """
 该方法依赖人工构造的负样本，尚未在低资源领域验证。
 """
 
+CHINESE_INTRO_LE_PAPER_TEXT = """
+标题：图神经网络鲁棒推理
+
+摘要
+本文提出了一种图神经网络方法，用于提升复杂关系推理的鲁棒性。
+
+方法
+模型结合结构编码和路径验证来减少错误推理链。
+
+实验
+实验显示该方法在多个关系推理数据集上提高了准确率。
+
+局限
+该方法依赖高质量图结构，跨领域泛化仍需验证。
+"""
+
 
 class ResearchWorkflowTest(unittest.TestCase):
     def test_first_sentences_splits_chinese_punctuation(self):
@@ -1585,6 +1601,21 @@ We analyze data quality.
         self.assertIn("对比预训练", contribution)
         self.assertIn("可靠推理", contribution)
         self.assertIn("验证器", contribution)
+
+    def test_chinese_problem_summary_strips_le_after_intro_verb(self):
+        report = ReportWriterAgent().write(
+            paper_text=CHINESE_INTRO_LE_PAPER_TEXT,
+            benchmark_reports=[],
+            previous_report=None,
+            prior_scorecard=None,
+            round_number=1,
+            language="zh",
+        )
+
+        summary = report.sections["执行摘要"]
+
+        self.assertIn("图神经网络", summary)
+        self.assertNotIn("关于了", summary)
 
     def test_chinese_limitation_section_localizes_framework_terms(self):
         paper_text = """
