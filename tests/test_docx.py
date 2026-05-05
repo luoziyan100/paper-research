@@ -106,6 +106,21 @@ class DocxWriterTest(unittest.TestCase):
             self.assertIn('w:hAnsi="Aptos"', styles_xml)
             self.assertIn('w:eastAsia="Microsoft YaHei"', styles_xml)
 
+    def test_heading_styles_define_outline_levels(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "report.docx"
+            document = DocxDocument(title="迭代式论文研究报告")
+            document.add(paragraph("content"))
+
+            document.save(path)
+
+            with zipfile.ZipFile(path) as archive:
+                styles_xml = archive.read("word/styles.xml").decode("utf-8")
+
+            self.assertIn('<w:outlineLvl w:val="0"/>', styles_xml)
+            self.assertIn('<w:outlineLvl w:val="1"/>', styles_xml)
+            self.assertIn('<w:outlineLvl w:val="2"/>', styles_xml)
+
     def test_export_uses_nested_heading_levels_for_report_sections(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "report.docx"

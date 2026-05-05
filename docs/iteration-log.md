@@ -2997,3 +2997,30 @@
 - `python3 -m unittest discover -s tests` passed with 98 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter105 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 106 - 2026-05-04 21:07 PDT
+
+### Current Problems
+
+- DOCX heading styles used visual formatting but did not define outline levels.
+- Word-compatible readers could fail to expose the report hierarchy cleanly in navigation or outline views.
+
+### Planned Changes
+
+- Add a regression test for Heading1/2/3 outline levels in `word/styles.xml`.
+- Add `w:outlineLvl` to each heading style.
+- Preserve nested heading export behavior for report sections.
+
+### Changes Made
+
+- Added `test_heading_styles_define_outline_levels`.
+- Added outline levels 0, 1, and 2 to Heading1, Heading2, and Heading3 styles.
+
+### Verification After Changes
+
+- Red target test first failed because no heading style had `w:outlineLvl`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docx.DocxWriterTest.test_heading_styles_define_outline_levels tests.test_docx.DocxWriterTest.test_export_uses_nested_heading_levels_for_report_sections`
+- `python3 -m unittest discover -s tests` passed with 99 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter106 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
