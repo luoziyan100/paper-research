@@ -1,5 +1,6 @@
 import contextlib
 import io
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -178,6 +179,37 @@ class InputAndCliTest(unittest.TestCase):
 
             self.assertEqual(raised.exception.code, 2)
             self.assertIn("Could not load existing JSONL", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
+
+    def test_cli_reports_invalid_resume_record_without_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            paper = root / "paper.txt"
+            output_dir = root / "out"
+            output_dir.mkdir()
+            paper.write_text("Title: T\n\nAbstract\ncontent", encoding="utf-8")
+            (output_dir / "research_rounds.jsonl").write_text(
+                json.dumps({"not": "a round"}) + "\n",
+                encoding="utf-8",
+            )
+            stderr = io.StringIO()
+
+            with contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    main(
+                        [
+                            str(paper),
+                            "--duration-hours",
+                            "1",
+                            "--max-rounds",
+                            "1",
+                            "--output-dir",
+                            str(output_dir),
+                        ]
+                    )
+
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("invalid round record on line 1", stderr.getvalue())
             self.assertNotIn("Traceback", stderr.getvalue())
 
     def test_cli_rejects_output_filenames_with_path_segments(self):

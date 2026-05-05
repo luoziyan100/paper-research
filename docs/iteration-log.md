@@ -1596,3 +1596,31 @@
 - `python3 -m unittest discover -s tests` passed with 62 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter54 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 55 - 2026-05-04 18:52 PDT
+
+### Current Problems
+
+- Resume JSONL with valid JSON but invalid round structure still failed with raw `KeyError` tracebacks.
+- Users could not tell which line in the existing JSONL needed repair.
+
+### Planned Changes
+
+- Add a CLI regression test for structurally invalid resume records.
+- Wrap round hydration failures with a file and line number.
+- Preserve legacy metadata hydration for valid older records.
+
+### Changes Made
+
+- Added `test_cli_reports_invalid_resume_record_without_traceback`.
+- `_load_jsonl_rounds(...)` now wraps `KeyError`, `TypeError`, and `ValueError` from `_round_from_dict(...)`.
+- The error now reports `invalid round record on line N`.
+
+### Verification After Changes
+
+- Initial test run exposed a missing test import for `json`; after fixing the test, the red test failed with `KeyError: 'benchmark_reports'`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_cli_reports_invalid_resume_record_without_traceback tests.test_cli_io.InputAndCliTest.test_cli_reports_corrupt_resume_jsonl_without_traceback tests.test_workflow.ResearchWorkflowTest.test_resume_hydrates_legacy_benchmark_metadata`
+- `python3 -m unittest discover -s tests` passed with 63 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter55 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
