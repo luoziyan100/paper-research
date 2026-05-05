@@ -629,11 +629,17 @@ def _load_jsonl_rounds(path: Path, language: str = "en") -> List[RoundResult]:
                     f"Could not load existing JSONL {path}: invalid JSON on line {line_number}."
                 ) from exc
             try:
-                rounds.append(_round_from_dict(data, language))
+                round_result = _round_from_dict(data, language)
             except (KeyError, TypeError, ValueError) as exc:
                 raise ValueError(
                     f"Could not load existing JSONL {path}: invalid round record on line {line_number}."
                 ) from exc
+            expected_round_number = len(rounds) + 1
+            if round_result.round_number != expected_round_number:
+                raise ValueError(
+                    f"Could not load existing JSONL {path}: non-contiguous round number on line {line_number}."
+                )
+            rounds.append(round_result)
     return rounds
 
 

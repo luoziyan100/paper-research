@@ -3189,3 +3189,33 @@
 - `python3 -m unittest discover -s tests` passed with 104 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter112 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 113 - 2026-05-04 21:27 PDT
+
+### Current Problems
+
+- Continuous-mode resume accepted JSONL files with non-contiguous `round_number` values.
+- A corrupted file starting at round 2 could be loaded, after which the runner would append another round 2 and produce ambiguous output.
+
+### Planned Changes
+
+- Add a resume regression test for non-contiguous round numbers.
+- Validate loaded JSONL rounds are numbered from 1 without gaps.
+- Preserve normal resume behavior and legacy metadata hydration.
+
+### Changes Made
+
+- Added `test_resume_rejects_non_contiguous_round_numbers`.
+- `_load_jsonl_rounds` now raises a clear `ValueError` when line order and `round_number` do not match.
+
+### Verification After Changes
+
+- Re-ran a two-round Chinese sample:
+  - `python3 -m paper_research examples/sample_paper.txt --rounds 2 --language zh --output-dir /tmp/paper_research_iter113_zh`
+- Confirmed the second-round stale reproducibility critic issue stayed fixed in the real JSONL output.
+- Red target test first failed because non-contiguous round numbers were accepted.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_resume_rejects_non_contiguous_round_numbers tests.test_workflow.ResearchWorkflowTest.test_continuous_runner_resumes_and_keeps_appending_rounds tests.test_workflow.ResearchWorkflowTest.test_resume_hydrates_legacy_benchmark_metadata`
+- `python3 -m unittest discover -s tests` passed with 105 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter113 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

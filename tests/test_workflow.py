@@ -1555,6 +1555,34 @@ class ResearchWorkflowTest(unittest.TestCase):
             self.assertEqual(legacy_benchmark.source_type, "built-in")
             self.assertIn("legacy JSONL", legacy_benchmark.search_note)
 
+    def test_resume_rejects_non_contiguous_round_numbers(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp)
+            bad_round = {
+                "round_number": 2,
+                "benchmark_reports": [],
+                "report": {"title": "Bad report", "sections": {"Summary": "Bad output"}},
+                "rubric": {"title": "Bad rubric", "criteria": [], "source_notes": "Bad notes"},
+                "scorecard": {"total_score": 0, "scores": [], "summary": "Bad score"},
+                "critic_review": {"issues": [], "recommendations": []},
+            }
+            (output_dir / "research_rounds.jsonl").write_text(
+                json.dumps(bad_round) + "\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "non-contiguous round number on line 1"):
+                run_continuous_workflow(
+                    paper_text=PAPER_TEXT,
+                    config=WorkflowConfig(rounds=1, output_dir=output_dir),
+                    continuous_config=ContinuousRunConfig(
+                        duration_seconds=0,
+                        sleep_seconds=0,
+                        max_rounds=1,
+                        resume=True,
+                    ),
+                )
+
     def test_resume_keeps_scalar_legacy_benchmark_strength_as_single_item(self):
         with tempfile.TemporaryDirectory() as tmp:
             output_dir = Path(tmp)
