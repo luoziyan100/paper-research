@@ -604,6 +604,24 @@ class ResearchWorkflowTest(unittest.TestCase):
         self.assertEqual(results[0].source, "https://example.com/unquoted")
         self.assertIn("Unquoted snippet connects evidence", results[0].summary)
 
+    def test_web_search_agent_cleans_q_redirect_urls(self):
+        html = """
+        <a class="result__a" href="/url?q=https%3A%2F%2Fexample.com%2Fclean-report">
+          Clean Redirect Report
+        </a>
+        <div class="result__snippet">
+          Redirect result connects evidence and limitations.
+        </div>
+        """
+        agent = BenchmarkSearchAgent(
+            web_search=True,
+            web_fetcher=lambda url: html,
+        )
+
+        results = agent.search(PAPER_TEXT, round_number=1, previous_report=None)
+
+        self.assertEqual(results[0].source, "https://example.com/clean-report")
+
     def test_chinese_web_search_uses_chinese_query_terms(self):
         captured_urls = []
         html = """

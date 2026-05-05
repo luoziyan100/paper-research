@@ -2780,3 +2780,30 @@
 - `python3 -m unittest discover -s tests` passed with 90 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter97 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 98 - 2026-05-04 20:48 PDT
+
+### Current Problems
+
+- Web result URL cleaning only recognized DuckDuckGo `uddg` redirect parameters.
+- Redirect links using a `q` parameter were preserved as intermediate URLs.
+
+### Planned Changes
+
+- Add a regression test for `?q=` redirect URLs.
+- Clean both `uddg` and `q` redirect parameters.
+- Verify existing direct web result extraction still works.
+
+### Changes Made
+
+- Added `test_web_search_agent_cleans_q_redirect_urls`.
+- `_clean_result_url` now unwraps `uddg` and `q` redirect parameters.
+
+### Verification After Changes
+
+- Red target test first failed because the source stayed `/url?q=...`.
+- Target tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_cleans_q_redirect_urls tests.test_workflow.ResearchWorkflowTest.test_web_search_agent_extracts_external_report_results`
+- `python3 -m unittest discover -s tests` passed with 91 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter98 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

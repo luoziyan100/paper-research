@@ -399,6 +399,7 @@ def _clean_result_url(href: str) -> str:
     href = unescape(href)
     parsed = urlparse(href)
     query = parse_qs(parsed.query)
-    if "uddg" in query and query["uddg"]:
-        return unquote(query["uddg"][0])
+    for redirect_param in ("uddg", "q"):
+        if redirect_param in query and query[redirect_param]:
+            return unquote(query[redirect_param][0])
     return href
