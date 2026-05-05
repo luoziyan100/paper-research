@@ -72,14 +72,18 @@ def paper_title(text: str) -> str:
 
 
 def clean_title_text(text: str) -> str:
-    title = text.strip()
+    title = _strip_title_markup(text)
     if title.lower().startswith("title:"):
-        return title.split(":", 1)[1].strip()
+        return _strip_title_markup(title.split(":", 1)[1])
     if title.startswith("标题：") or title.startswith("题目："):
-        return title.split("：", 1)[1].strip()
+        return _strip_title_markup(title.split("：", 1)[1])
     if title.startswith("标题:") or title.startswith("题目:"):
-        return title.split(":", 1)[1].strip()
+        return _strip_title_markup(title.split(":", 1)[1])
     return title
+
+
+def _strip_title_markup(text: str) -> str:
+    return text.strip().strip("*_`").strip()
 
 
 def normalize_chinese_heading(line: str) -> str:

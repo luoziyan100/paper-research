@@ -246,6 +246,22 @@ MARKDOWN_CHINESE_TITLE_PAPER_TEXT = """
 系统仍依赖对照报告质量。
 """
 
+MARKDOWN_BOLD_TITLE_PAPER_TEXT = """
+# **Title: Bold Markdown Paper**
+
+Abstract
+We study markdown title cleanup for research reports.
+
+Method
+The system reads emphasized markdown headings without leaking markup.
+
+Experiments
+The parser keeps report titles clean.
+
+Limitations
+The sample is small.
+"""
+
 MARKDOWN_CHINESE_SECTION_PAPER_TEXT = """
 # 标题：Markdown 中文章节论文
 
@@ -471,6 +487,18 @@ class ResearchWorkflowTest(unittest.TestCase):
 
             self.assertEqual(report.title, "深度研究报告 - Markdown 中文论文")
             self.assertNotIn("标题：", report.title)
+
+    def test_markdown_bold_title_markup_is_cleaned(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result = run_research_workflow(
+                paper_text=MARKDOWN_BOLD_TITLE_PAPER_TEXT,
+                config=WorkflowConfig(rounds=1, output_dir=Path(tmp)),
+            )
+
+            report = result.rounds[0].report
+
+            self.assertEqual(report.title, "Deep Research Report - Bold Markdown Paper")
+            self.assertNotIn("**", report.title)
 
     def test_english_report_uses_claim_evidence_ledger_sections(self):
         with tempfile.TemporaryDirectory() as tmp:

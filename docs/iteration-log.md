@@ -4865,3 +4865,31 @@
 - `python3 -m unittest discover -s tests` passed with 151 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter169 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 170 - 2026-05-05 03:32 PDT
+
+### Current Problems
+
+- Markdown titles wrapped in emphasis markup, such as `# **Title: Paper**`, leaked `**Title:` into generated report titles.
+- This made the final report title look like raw Markdown instead of a cleaned paper title.
+
+### Planned Changes
+
+- Add a regression test for emphasized Markdown title headings.
+- Strip common Markdown wrapper characters before and after title label cleanup.
+- Verify existing Markdown and Chinese title cleanup still works.
+
+### Changes Made
+
+- Added `MARKDOWN_BOLD_TITLE_PAPER_TEXT` and `test_markdown_bold_title_markup_is_cleaned`.
+- Added `_strip_title_markup` and used it inside `clean_title_text`.
+
+### Verification After Changes
+
+- Red target test first failed because the report title was `Deep Research Report - **Title: Bold Markdown Paper**`.
+- Target and related tests passed:
+  - `python3 -m unittest tests.test_workflow.ResearchWorkflowTest.test_markdown_bold_title_markup_is_cleaned tests.test_workflow.ResearchWorkflowTest.test_markdown_title_heading_is_cleaned tests.test_workflow.ResearchWorkflowTest.test_markdown_chinese_title_label_is_cleaned`
+  - `python3 -m unittest tests.test_cli_io.InputAndCliTest.test_load_paper_text_accepts_markdown_extension`
+- `python3 -m unittest discover -s tests` passed with 152 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter170 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.
