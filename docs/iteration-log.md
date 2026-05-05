@@ -1733,3 +1733,30 @@
 - `python3 -m unittest discover -s tests` passed with 67 tests.
 - `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter59 python3 -m compileall -q paper_research` passed.
 - `git diff --check` passed.
+
+## Iteration 60 - 2026-05-04 19:04 PDT
+
+### Current Problems
+
+- CLI now rejects missing or non-directory `--benchmark-dir` paths, but README did not document that stricter requirement.
+- Users could still expect nonexistent paths to silently fall back.
+
+### Planned Changes
+
+- Add a documentation regression assertion.
+- Document that `--benchmark-dir` must be an existing directory.
+- Preserve existing traceability and custom filename docs.
+
+### Changes Made
+
+- Extended `test_readme_documents_benchmark_traceability_and_library_import`.
+- README now says `--benchmark-dir` must point to an existing directory containing `.txt` or `.md` benchmark reports.
+
+### Verification After Changes
+
+- Red docs test first failed because README lacked the new benchmark-dir requirement.
+- Target tests passed:
+  - `python3 -m unittest tests.test_docs.DocumentationTest.test_readme_documents_benchmark_traceability_and_library_import tests.test_cli_io.InputAndCliTest.test_cli_rejects_missing_benchmark_dir_without_traceback tests.test_cli_io.InputAndCliTest.test_cli_rejects_file_benchmark_dir_without_traceback`
+- `python3 -m unittest discover -s tests` passed with 67 tests.
+- `PYTHONPYCACHEPREFIX=/tmp/paper_research_pycache_iter60 python3 -m compileall -q paper_research` passed.
+- `git diff --check` passed.

@@ -71,6 +71,9 @@ python3 -m paper_research path/to/paper.txt \
   --output-dir research_output
 ```
 
+`--benchmark-dir` must point to an existing directory containing `.txt` or `.md`
+benchmark reports.
+
 With web search fallback enabled:
 
 ```bash
